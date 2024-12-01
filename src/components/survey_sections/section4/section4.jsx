@@ -14,6 +14,7 @@ import TravelTimeDisplay from "../../../handlers/traveltime";
 import CleanlinessDisplay from "../../../handlers/icons_for_cleanliness";
 import TravelCostDisplay from "../../../handlers/icons_for_cost";
 import WaitingTimeDisplay from "../../../handlers/waiting_time_slider";
+import ChoiceInput from "../../../handlers/travel_emoji";
 
 const index_no = Math.floor(Math.random() * 8);
 
@@ -249,18 +250,25 @@ const Section4 = ({
                           key={option}
                           className="border border-gray-300 px-4 py-2 text-center"
                         >
-                          <input
-                            type="radio"
-                            name={`choice-${choice.choiceId}`}
-                            value={option}
-                            checked={
-                              selectedChoices[choice.choiceId]?.option ===
-                              option
-                            }
-                            onChange={() =>
-                              handleSelection(choice.choiceId, option)
-                            }
-                          />
+                          <label className="flex items-center justify-center gap-2">
+                            <input
+                              type="radio"
+                              name={`choice-${choice.choiceId}`}
+                              value={option}
+                              checked={
+                                selectedChoices[choice.choiceId]?.option ===
+                                option
+                              }
+                              onChange={() =>
+                                handleSelection(choice.choiceId, option)
+                              }
+                              className="form-radio h-4 w-4 text-blue-600"
+                            />
+                            {/* Add the icon next to the radio button */}
+                            <span className="text-2xl">
+                              <ChoiceInput emoji_required_for={option} />
+                            </span>
+                          </label>
                         </td>
                       ))}
                     </tr>
