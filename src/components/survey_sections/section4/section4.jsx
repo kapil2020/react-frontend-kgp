@@ -9,6 +9,8 @@ import choiceData7 from "./set7.json";
 import choiceData8 from "./set8.json";
 
 import AQIImageDisplay from "../../../handlers/imagegenerator";
+import TravelPurposeDisplay from "../../../handlers/icons_for_travel";
+import TravelTimeDisplay from "../../../handlers/traveltime";
 
 const index_no = Math.floor(Math.random() * 8);
 
@@ -182,6 +184,22 @@ const Section4 = ({
                             return (
                               <td key={index} className={tdClassNames}>
                                 <AQIImageDisplay aqiData={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "TripPurpose") {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                {/* // Image for TravelPurpose */}
+                                <TravelPurposeDisplay travelPurpose={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "TravelTime") {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                {/* // Image for TravelPurpose */}
+                                <TravelTimeDisplay Travel_time={value} />
                                 {value}
                               </td>
                             );

@@ -1,9 +1,9 @@
 import React from "react";
-import AQI_good from "../aqi_images/AQI_good.jpg";
-import AQI_moderate from "../aqi_images/AQI_moderate.jpg";
-import AQI_poor from "../aqi_images/AQI_poor.jpg";
-import AQI_severe from "../aqi_images/AQI_severe.jpg";
-import AQI_verypoor from "../aqi_images/AQI_verypoor.jpg";
+import AQI_good from "../aqi_images/AQI_good.jpeg";
+import AQI_moderate from "../aqi_images/AQI_moderate.jpeg";
+import AQI_poor from "../aqi_images/AQI_poor.jpeg";
+import AQI_severe from "../aqi_images/AQI_severe.jpeg";
+import AQI_verypoor from "../aqi_images/AQI_verypoor.jpeg";
 
 const AQIImageDisplay = ({ aqiData }) => {
   // Normalize and determine image path based on AQI category
