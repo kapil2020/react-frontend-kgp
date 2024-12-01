@@ -49,7 +49,7 @@ const SurveyIntro = () => {
           <div className="flex flex-col sm:flex-row justify-between mt-4">
             <div className="text-center sm:text-left mb-4 sm:mb-0 sm:pr-4">
               <p className="font-semibold">Kapil Meena</p>
-              <p className="text-sm sm:text-base">Research Scholar, IIT Kharagpur</p>
+              <p className="text-sm sm:text-base">Doctoral researcher, IIT Kharagpur</p>
               <a
                 href="mailto:kapil.meena@kgpin.iitkgp.ac.in"
                 className="text-blue-500 hover:underline"
