@@ -8,6 +8,8 @@ import choiceData6 from "./set6.json";
 import choiceData7 from "./set7.json";
 import choiceData8 from "./set8.json";
 
+import AQIImageDisplay from "../../../handlers/imagegenerator";
+
 const index_no = Math.floor(Math.random() * 8);
 
 const Section4 = ({
@@ -152,6 +154,7 @@ const Section4 = ({
                           key={option}
                           className="border border-gray-300 px-4 py-2 text-center"
                         >
+                          {/* Rendering the options with image */}
                           {option}
                         </th>
                       ))}
@@ -170,14 +173,26 @@ const Section4 = ({
                         <td className="border border-gray-300 px-4 py-2 font-semibold">
                           {attribute.replace(/([A-Z])/g, " $1").trim()}
                         </td>
-                        {Object.values(choice.options).map((details, index) => (
-                          <td
-                            key={index}
-                            className="border border-gray-300 px-4 py-2 text-center"
-                          >
-                            {details[attribute]}
-                          </td>
-                        ))}
+                        {Object.values(choice.options).map((details, index) => {
+                          const value = details[attribute];
+                          const tdClassNames = `border border-gray-300 px-4 py-2 text-center`;
+
+                          // Image Rendering
+                          if (attribute === "AQI") {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                <AQIImageDisplay aqiData={value} />
+                                {value}
+                              </td>
+                            );
+                          } else {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                {value}
+                              </td>
+                            );
+                          }
+                        })}
                       </tr>
                     ))}
                     <tr>
