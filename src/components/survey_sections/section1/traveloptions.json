@@ -1,0 +1,33 @@
+{
+  "travelModes": [
+    { "value": "car", "label": "Car" },
+    { "value": "metro", "label": "Metro" },
+    { "value": "bus", "label": "Bus" },
+    { "value": "bicycle", "label": "Bicycle" },
+    { "value": "walking", "label": "Walking" },
+    { "value": "two_wheeler", "label": "Two-Wheeler" },
+    { "value": "auto_rickshaw", "label": "Auto-rickshaw" }
+  ],
+  "ptAccessModes": [
+    { "value": "walk", "label": "Walk" },
+    { "value": "auto_rickshaw", "label": "Auto Rickshaw" },
+    { "value": "cycle_rickshaw", "label": "Cycle Rickshaw" }
+  ],
+  "frequencies": [
+    { "value": "everyday", "label": "Everyday" },
+    { "value": "few_days", "label": "Few days a week" },
+    { "value": "once_week", "label": "Once a week" }
+  ],
+  "tripPurposes": [
+    { "value": "work", "label": "Work" },
+    { "value": "education", "label": "Education" },
+    { "value": "leisure", "label": "Leisure" },
+    { "value": "other", "label": "Other" }
+  ],
+  "tripDistances": [
+    { "value": "less_2km", "label": "Less than 2km" },
+    { "value": "2_5km", "label": "2-5km" },
+    { "value": "5_10km", "label": "5-10km" },
+    { "value": "more_10km", "label": "More than 10km" }
+  ]
+}
