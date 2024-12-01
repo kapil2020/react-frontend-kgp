@@ -11,6 +11,9 @@ import choiceData8 from "./set8.json";
 import AQIImageDisplay from "../../../handlers/imagegenerator";
 import TravelPurposeDisplay from "../../../handlers/icons_for_travel";
 import TravelTimeDisplay from "../../../handlers/traveltime";
+import CleanlinessDisplay from "../../../handlers/icons_for_cleanliness";
+import TravelCostDisplay from "../../../handlers/icons_for_cost";
+import WaitingTimeDisplay from "../../../handlers/waiting_time_slider";
 
 const index_no = Math.floor(Math.random() * 8);
 
@@ -200,6 +203,30 @@ const Section4 = ({
                               <td key={index} className={tdClassNames}>
                                 {/* // Image for TravelPurpose */}
                                 <TravelTimeDisplay Travel_time={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "Cleanliness") {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                {/* // Image for TravelPurpose */}
+                                <CleanlinessDisplay cleanlinessLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "WaitingTime") {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                {/* // Image for TravelPurpose */}
+                                <WaitingTimeDisplay waitingLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "TravelCost") {
+                            return (
+                              <td key={index} className={tdClassNames}>
+                                {/* // Image for TravelPurpose */}
+                                <TravelCostDisplay costLevel={value} />
                                 {value}
                               </td>
                             );
