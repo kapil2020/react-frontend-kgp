@@ -109,22 +109,22 @@ const Section3 = ({
               questions: [
                 {
                   question:
-                    "I have complete information about the air pollution levels.",
+                    "I have complete information about the air pollution levels",
                   name: "info_about_air_pollution",
                 },
                 {
                   question:
-                    "I regularly use apps and portals to check air pollution information.",
+                    "I regularly use apps and portals to check air pollution information",
                   name: "check_air_pollution_apps",
                 },
                 {
                   question:
-                    "Air quality information influences how I plan my daily trips, including the mode, route, time of travel, and departure.",
+                    "Air quality information influences how I plan my daily trips, including the mode, route, time of travel, and departure",
                   name: "air_quality_influences_trip",
                 },
                 {
                   question:
-                    "I believe that being exposed to air pollution can affect my health.",
+                    "I believe that being exposed to air pollution can affect my health",
                   name: "air_pollution_impact_health",
                 },
               ],
@@ -134,17 +134,17 @@ const Section3 = ({
               questions: [
                 {
                   question:
-                    "I use public transport modes as they have lower exposure to air pollution.",
+                    "I use public transport modes as they have lower exposure to air pollution",
                   name: "public_transport_lower_pollution",
                 },
                 {
                   question:
-                    "I prefer public transport because it helps reduce air pollution in the city.",
+                    "I prefer public transport because it helps reduce air pollution in the city",
                   name: "prefer_public_transport_reduce_pollution",
                 },
                 {
                   question:
-                    "I believe public transport offers a cleaner environment in terms of exposure to pollutants when compared to active transport or using a private vehicle.",
+                    "I believe public transport offers a cleaner environment in terms of exposure to pollutants when compared to active transport or using a private vehicle",
                   name: "public_transport_cleaner_environment",
                 },
               ],
@@ -154,17 +154,17 @@ const Section3 = ({
               questions: [
                 {
                   question:
-                    "I am willing to reduce the use of my private vehicle if it contributes to lower air pollution in the city.",
+                    "I am willing to reduce the use of my private vehicle if it contributes to lower air pollution in the city",
                   name: "reduce_private_vehicle_use",
                 },
                 {
                   question:
-                    "I’m exposed to air pollution while using my personal travel mode.",
+                    "I’m exposed to air pollution while using my personal travel mode",
                   name: "pollution_exposure_current_mode",
                 },
                 {
                   question:
-                    "I would switch from a private vehicle to public transport if I knew it would reduce my exposure to air pollution.",
+                    "I would switch from a private vehicle to public transport if I knew it would reduce my exposure to air pollution",
                   name: "switch_to_public_transport",
                 },
               ],
@@ -175,17 +175,17 @@ const Section3 = ({
               questions: [
                 {
                   question:
-                    "I will take a route if it reduces my exposure to air pollution.",
+                    "I will take a route if it reduces my exposure to air pollution",
                   name: "take_route_reduce_pollution",
                 },
                 {
                   question:
-                    "I think avoiding high traffic volume roads can reduce my exposure to air pollution even if it takes less time.",
+                    "I think avoiding high traffic volume roads can reduce my exposure to air pollution even if it takes less time",
                   name: "avoid_high_traffic_pollution",
                 },
                 {
                   question:
-                    "I would take a greener route with better air quality even if it takes more time.",
+                    "I would take a greener route with better air quality even if it takes more time",
                   name: "take_greener_route",
                 },
               ],
@@ -195,22 +195,22 @@ const Section3 = ({
               questions: [
                 {
                   question:
-                    "If real-time air quality information was available, it would influence my choice of route or mode of transport.",
+                    "If real-time air quality information was available, it would influence my choice of route or mode of transport",
                   name: "real_time_info_influence_choice",
                 },
                 {
                   question:
-                    "I would be more likely to switch to public transport or greener routes if I had access to real-time air quality data.",
+                    "I would be more likely to switch to public transport or greener routes if I had access to real-time air quality data",
                   name: "switch_to_public_transport_greener",
                 },
                 {
                   question:
-                    "Technology-based tools, such as mobile apps, help me make better decisions about avoiding polluted areas during my commute.",
+                    "Technology-based tools, such as mobile apps, help me make better decisions about avoiding polluted areas during my commute",
                   name: "tech_tools_avoid_pollution",
                 },
                 {
                   question:
-                    "I ride EVs as they reduce pollution and have less impact on the environment.",
+                    "I ride EVs as they reduce pollution and have less impact on the environment",
                   name: "ride_ev_reduce_pollution",
                 },
               ],
