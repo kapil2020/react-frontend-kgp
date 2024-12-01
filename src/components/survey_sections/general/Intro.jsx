@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const SurveyIntro = ({
   title,
@@ -10,44 +11,88 @@ const SurveyIntro = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 sm:px-8 py-10">
-      <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-6 sm:p-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-6 sm:p-8"
+      >
         {/* Title Section */}
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-blue-900">
+        <motion.h1
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-blue-900"
+        >
           {title}
-        </h1>
+        </motion.h1>
 
         {/* Did You Know Section */}
-        <p className="mt-6 text-center text-gray-700 text-sm sm:text-lg leading-relaxed">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="mt-6 text-center text-gray-700 text-sm sm:text-lg leading-relaxed"
+        >
           <span className="font-bold">Did You Know?</span>
           <br />
           {didYouKnow}
-        </p>
+        </motion.p>
 
         {/* Call to Action Section */}
-        <p className="mt-4 text-center text-blue-600 font-medium text-sm sm:text-base">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 1 }}
+          className="mt-4 text-center text-blue-600 font-medium text-sm sm:text-base"
+        >
           Travel smart. Breathe healthy. 🌬️
-        </p>
+        </motion.p>
 
-        <hr className="border-t border-gray-300 my-8" />
+        <motion.hr
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 1 }}
+          className="border-t border-gray-300 my-8"
+        />
 
         {/* About the Survey Section */}
-        <div className="text-gray-800">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="text-gray-800"
+        >
           <h2 className="text-lg sm:text-xl font-semibold text-center">
             📝 About the Survey:
           </h2>
           <p className="mt-6 text-center text-sm sm:text-base leading-relaxed">
             {aboutSurvey}
           </p>
-        </div>
+        </motion.div>
 
-        <hr className="border-t border-gray-300 my-8" />
+        <motion.hr
+          initial={{ width: 0 }}
+          animate={{ width: "100%" }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="border-t border-gray-300 my-8"
+        />
 
         {/* Contact Info Section */}
-        <div className="text-gray-700">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.4, duration: 1 }}
+          className="text-gray-700"
+        >
           <h3 className="text-lg font-semibold text-center">📧 Contact Us</h3>
           <div className="flex flex-col sm:flex-row justify-around mt-6">
             {contactInfo.map((contact, index) => (
-              <div key={index} className="mb-6 sm:mb-0 text-center sm:text-left">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                key={index}
+                className="mb-6 sm:mb-0 text-center sm:text-left"
+              >
                 <p className="font-semibold">{contact.name}</p>
                 <p className="text-sm sm:text-base">{contact.role}</p>
                 <a
@@ -56,26 +101,34 @@ const SurveyIntro = ({
                 >
                   {contact.email}
                 </a>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Join Us Section */}
-        <p className="mt-6 text-center text-blue-800 font-medium text-sm sm:text-base">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.6, duration: 1 }}
+          className="mt-6 text-center text-blue-800 font-medium text-sm sm:text-base"
+        >
           {callToAction}
-        </p>
+        </motion.p>
 
         {/* Button Section */}
-        <div className="flex justify-center mt-8">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="flex justify-center mt-8"
+        >
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
             onClick={() => (window.location.href = surveyLink)}
           >
             Start Survey
           </button>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
