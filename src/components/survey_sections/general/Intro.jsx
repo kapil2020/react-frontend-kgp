@@ -59,7 +59,7 @@ const SurveyIntro = () => {
                 kapil.meena@kgpin.iitkgp.ac.in
               </a>{" "}
               <br />
-              (Research Scholar, IIT Kharagpur)
+              (Doctoral Scholar, IIT Kharagpur)
             </p>
             <p className="mt-1 w-1/2 text-sm sm:text-base">
               Prof. Arkopal Goswami: <br />

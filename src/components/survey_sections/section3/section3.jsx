@@ -114,17 +114,17 @@ const Section3 = ({
                 },
                 {
                   question:
-                    "I check the air pollution information portals/apps daily.",
+                    "I regularly use apps and portals to check air pollution information.",
                   name: "check_air_pollution_apps",
                 },
                 {
                   question:
-                    "Information about air quality influences my daily trip planning (mode, route, or time of travel).",
+                    "Air quality information influences how I plan my daily trips, including the mode, route, time of travel, and departure.",
                   name: "air_quality_influences_trip",
                 },
                 {
                   question:
-                    "I believe exposure to air pollution can impact my health.",
+                    "I believe that being exposed to air pollution can affect my health.",
                   name: "air_pollution_impact_health",
                 },
               ],
@@ -159,7 +159,7 @@ const Section3 = ({
                 },
                 {
                   question:
-                    "I’m exposed to air pollution while using my current travel mode.",
+                    "I’m exposed to air pollution while using my personal travel mode.",
                   name: "pollution_exposure_current_mode",
                 },
                 {
