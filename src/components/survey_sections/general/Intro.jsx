@@ -6,18 +6,17 @@ const SurveyIntro = () => {
       {/* Background Design */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-green-200 to-blue-300 opacity-70 animate-gradient-x"></div>
       <div className="absolute inset-0 pointer-events-none">
-        {/* Add abstract shapes */}
-        <div className="absolute top-10 left-20 w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-10 right-20 w-96 h-96 bg-green-400 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute top-10 left-5 md:left-20 w-48 md:w-72 h-48 md:h-72 bg-blue-400 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-10 right-5 md:right-20 w-60 md:w-96 h-60 md:h-96 bg-green-400 rounded-full blur-3xl opacity-50"></div>
       </div>
 
       {/* Main Content */}
       <div
-        className="relative z-10 lg:max-w-4xl sm:max-w-2xl w-full bg-white shadow-md rounded-xl p-6 sm:p-10 
+        className="relative z-10 max-w-full md:max-w-4xl sm:max-w-2xl w-full bg-white shadow-md rounded-xl p-6 sm:p-10 
           transition transform hover:scale-105 hover:shadow-xl duration-300"
       >
         {/* Title Section */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-gray-800 leading-tight">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-center text-gray-800 leading-tight">
           Impact of Air Pollution Exposure on Travel Behaviour
         </h1>
 
@@ -28,10 +27,11 @@ const SurveyIntro = () => {
               Did You Know?
               <br />
             </span>
-            Exposure to air pollution peaks during travel—more than any other daily activity! Whether stuck in traffic 🚗 or waiting at bus stops 🕒, commuting exposes you to harmful pollutants at alarming levels.
-          </p>
-          <p className="mt-4 text-center text-blue-700 font-medium text-sm sm:text-base">
-            Make smarter choices, reduce exposure, and safeguard your health.
+            Air pollution is the largest external threat to human health,
+            shortening global life expectancy by an average of 2.2 years. 🚶‍♂️🌍
+            Daily commutes expose us to peak levels of pollutants—more than any
+            other activity. This survey helps uncover smarter, healthier travel
+            solutions. 🚗💡
           </p>
         </div>
 
@@ -77,7 +77,7 @@ const SurveyIntro = () => {
 
         {/* Contact Section */}
         <div className="text-center text-gray-700">
-          <h3 className="text-lg font-semibold">Contact Us 📧</h3>
+          <h3 className="text-lg font-semibold">📧 For Queries or Assistance</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
             <div>
               <p className="font-medium">Mr. Kapil Meena</p>
@@ -90,17 +90,20 @@ const SurveyIntro = () => {
               <p className="text-sm text-gray-600">(Doctoral Scholar, IIT Kharagpur)</p>
             </div>
             <div>
-              <p className="font-medium">Prof. Arkopal Goswami</p>
+              <p className="font-medium">Arkopal K. Goswami, PhD</p>
+              <p className="text-sm text-gray-600">
+                Associate Professor <br />
+                Chairperson <br />
+                Ranbir and Chitra Gupta School of Infrastructure Design and
+                Management (RCGSIDM) <br />
+                Indian Institute of Technology Kharagpur
+              </p>
               <a
                 href="mailto:akgoswami@infra.iitkgp.ac.in"
                 className="text-blue-500 hover:text-blue-700 underline"
               >
                 akgoswami@infra.iitkgp.ac.in
               </a>
-              <p className="text-sm text-gray-600">
-                Associate Professor <br />
-                RCGSIDM, IIT Kharagpur
-              </p>
             </div>
           </div>
         </div>
