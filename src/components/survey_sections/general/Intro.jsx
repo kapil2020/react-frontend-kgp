@@ -27,11 +27,8 @@ const SurveyIntro = () => {
               Did You Know?
               <br />
             </span>
-            Our exposure to air pollution is highest during travel—more than any
-          other daily activity! 🚗 🚌 From sitting in traffic jams ⏳ to waiting
-          at bus stops 🕒, commuting exposes you to harmful pollutants at levels
-          far greater than indoors or other activities. 🌍💡 This survey helps uncover smarter, healthier travel
-            solutions. 🚗💡
+             Our exposure to air pollution is highest during travel—more than any other daily activity! 🚗 🚌 From sitting in traffic jams⏳to waiting at bus stops 🕒, commuting exposes you to harmful pollutants at levels
+          far greater than indoors or other activities. 🌍💡
           </p>
         </div>
 
