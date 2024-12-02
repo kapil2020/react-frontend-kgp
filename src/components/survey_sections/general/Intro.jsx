@@ -27,10 +27,10 @@ const SurveyIntro = () => {
               Did You Know?
               <br />
             </span>
-            Air pollution is the largest external threat to human health,
-            shortening global life expectancy by an average of 2.2 years. 🚶‍♂️🌍
-            Daily commutes expose us to peak levels of pollutants—more than any
-            other activity. This survey helps uncover smarter, healthier travel
+            Our exposure to air pollution is highest during travel—more than any
+          other daily activity! 🚗 🚌 From sitting in traffic jams ⏳ to waiting
+          at bus stops 🕒, commuting exposes you to harmful pollutants at levels
+          far greater than indoors or other activities. 🌍💡 This survey helps uncover smarter, healthier travel
             solutions. 🚗💡
           </p>
         </div>
@@ -90,7 +90,7 @@ const SurveyIntro = () => {
               <p className="text-sm text-gray-600">(Doctoral Scholar, IIT Kharagpur)</p>
             </div>
             <div>
-              <p className="font-medium">Arkopal K. Goswami, PhD</p>
+              <p className="font-medium">Prof. Arkopal K. Goswami, PhD</p>
               <p className="text-sm text-gray-600">
                 Associate Professor <br />
                 Chairperson <br />
