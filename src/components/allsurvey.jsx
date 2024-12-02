@@ -13,6 +13,14 @@ function AllSurvey() {
   const [form4Data, setForm4Data] = useState({});
   const [form5Data, setForm5Data] = useState({});
   const [allData, setAllData] = useState({});
+  const [starttime, setStartTime] = useState(null);
+  const [endtime, setEndTime] = useState(null);
+
+  useEffect(() => {
+    const now = new Date();
+    setStartTime(now);
+    console.log("Survey started at ", now);
+  }, []);
 
   useEffect(() => {
     setAllData({
@@ -26,7 +34,23 @@ function AllSurvey() {
   }, [form1Data, form2Data, form3Data, form4Data, form5Data]);
 
   const submitSurvey = async () => {
+    const now = new Date();
+    if (Object.keys(form1Data).length === 0) {
+      alert("Section 1 is compulsory. Please fill it to submit the survey.");
+      return;
+    }
+    setEndTime(now);
+    console.log("Survey ended at ", now);
+
+    const timeTaken = Math.round((now - starttime) / 1000);
+    console.log("Survey ended at ", now);
+    console.log("Time Taken: ", timeTaken);
     const surveyData = {
+      metadata: {
+        starttime: starttime.toISOString(),
+        endtime: now.toISOString(),
+        timeTaken: timeTaken,
+      },
       form1Data,
       form2Data,
       form3Data,
@@ -36,13 +60,17 @@ function AllSurvey() {
     console.log("Survey Data:", surveyData);
 
     try {
-      const response = await fetch("http://localhost:5000/api/survey/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(surveyData),
-      });
+      const response = await fetch(
+        // "http://localhost:5000/api/survey/submit",
+        "https://survey-iitkgp-backend-1.vercel.app/api/saveSurvey",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(surveyData),
+        }
+      );
       if (response.ok) {
         const data = await response.json();
         console.log("Survey Submitted successfully: ", data);
@@ -58,7 +86,7 @@ function AllSurvey() {
 
     // setTimeout(() => {
     //   window.location.href = "/";
-    // }, 5000);
+    // }, 3000);
   };
 
   return (
