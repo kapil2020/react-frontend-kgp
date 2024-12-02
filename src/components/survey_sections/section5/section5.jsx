@@ -8,6 +8,16 @@ import choiceData6 from "./set6.json";
 import choiceData7 from "./set7.json";
 import choiceData8 from "./set8.json";
 
+import AQIImageDisplay from "../../../handlers/imagegenerator";
+import TravelPurposeDisplay from "../../../handlers/icons_for_travel";
+import TravelTimeDisplay from "../../../handlers/traveltime";
+import CleanlinessDisplay from "../../../handlers/icons_for_cleanliness";
+import TravelCostDisplay from "../../../handlers/icons_for_cost";
+import WaitingTimeDisplay from "../../../handlers/waiting_time_slider";
+import GreenCoverDisplay from "../../../handlers/icon_greenCover";
+import PreTripInfoDisplay from "../../../handlers/icon_preTripInfo";
+import DelayDisplay from "../../../handlers/dealy_icon";
+
 const index_no = Math.floor(Math.random() * 8);
 
 const Section5 = ({
@@ -19,7 +29,8 @@ const Section5 = ({
   const [selectedRoutes, setSelectedRoutes] = useState({
     set: index_no + 1,
   });
-  let optionsDataAvailable = [
+
+  const optionsDataAvailable = [
     choiceData1,
     choiceData2,
     choiceData3,
@@ -36,7 +47,6 @@ const Section5 = ({
   const saveData = () => {
     setThisSection5FormData(selectedRoutes);
     setActiveSection(6);
-    console.log(selectedRoutes);
     alert("Data saved successfully!");
     setIsDone(true);
   };
@@ -46,7 +56,6 @@ const Section5 = ({
       ...prev,
       [choiceId]: route,
     }));
-    console.log("Selected Routes:", selectedRoutes);
   };
 
   return (
@@ -97,7 +106,7 @@ const Section5 = ({
           )}
           <span
             className={`transition-transform duration-300 ${
-              activeSection === 5 ? "rotate-180" : ""
+              activeSection === 4 ? "rotate-180" : ""
             }`}
           >
             {/* Arrow Icon */}
@@ -125,7 +134,7 @@ const Section5 = ({
         }`}
       >
         <section className="bg-blue-50 mt-4 p-4 rounded-lg shadow-md">
-          {section5Data.map((choiceSet, index) => (
+          {section5Data?.map((choiceSet, index) => (
             <div key={index} className="bg-white rounded-lg shadow-md p-4 mb-8">
               <h4 className="text-lg font-semibold mb-4">
                 Choice {index + 1}: Select Your Preferred Route
@@ -152,23 +161,94 @@ const Section5 = ({
                       "AirQualityLevel",
                       "TravelTime",
                       "TravelCost",
+                      "TripPurpose",
                       "Delay",
                       "GreenCover",
                       "PreTripInfoAvailable",
-                      "TripPurpose",
                     ].map((attribute) => (
                       <tr key={attribute}>
                         <td className="border border-gray-300 px-4 py-2 font-semibold">
                           {attribute.replace(/([A-Z])/g, " $1").trim()}
                         </td>
-                        {Object.values(choiceSet.routes).map((details, idx) => (
-                          <td
-                            key={idx}
-                            className="border border-gray-300 px-4 py-2 text-center"
-                          >
-                            {details[attribute]}
-                          </td>
-                        ))}
+                        {Object.values(choiceSet.routes).map((details, idx) => {
+                          const value = details[attribute];
+                          const tdClassNames =
+                            " border border-gray-300 px-4 py-1 text-center";
+
+                          if (attribute === "AirQualityLevel") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <div className="flex justify-center w-40">
+                                  <AQIImageDisplay aqiData={value} />
+                                </div>
+
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "TravelTime") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <TravelTimeDisplay Travel_time={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "TravelCost") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <TravelCostDisplay costLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "WaitingTime") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <WaitingTimeDisplay waitingLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "Cleanliness") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <CleanlinessDisplay cleanlinessLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "TripPurpose") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <TravelPurposeDisplay travelPurpose={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "GreenCover") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <GreenCoverDisplay greenCoverLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "Delay") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <DelayDisplay delayLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else if (attribute === "PreTripInfoAvailable") {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                <PreTripInfoDisplay infoLevel={value} />
+                                {value}
+                              </td>
+                            );
+                          } else {
+                            return (
+                              <td key={idx} className={tdClassNames}>
+                                {value}
+                              </td>
+                            );
+                          }
+                        })}
                       </tr>
                     ))}
                     <tr>
@@ -200,7 +280,6 @@ const Section5 = ({
               </div>
             </div>
           ))}
-          {/* Submit Button */}
           <div className="text-center mt-6">
             <button
               className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"

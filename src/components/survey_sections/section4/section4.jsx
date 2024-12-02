@@ -75,7 +75,7 @@ const Section4 = ({
         }}
       >
         <h3 className="text-lg font-bold">
-          Section 4: Stated Preference Survey:
+          Section 4: Stated Preference Survey(Route Choice)
         </h3>
         <div>
           {isDone && (

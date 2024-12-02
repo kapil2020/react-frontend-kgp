@@ -36,7 +36,7 @@ const AQIImageDisplay = ({ aqiData }) => {
       <img
         src={getImageByAQI(aqiData)}
         alt={`AQI category: ${aqiData}`}
-        className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl object-cover rounded shadow-lg"
+        className="flex justify-center w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl object-cover rounded shadow-lg"
       />
     </div>
   );
