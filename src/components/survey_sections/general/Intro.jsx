@@ -2,10 +2,18 @@ import React from "react";
 
 const SurveyIntro = () => {
   return (
-    <div className="flex flex-col items-center py-8 sm:py-16 px-6 sm:px-8 bg-gradient-to-b from-blue-50 to-green-50 min-h-screen">
-      {/* Card Container */}
+    <div className="relative flex flex-col items-center py-8 sm:py-16 px-6 sm:px-8 min-h-screen overflow-hidden">
+      {/* Background Design */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-green-200 to-blue-300 opacity-70 animate-gradient-x"></div>
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Add abstract shapes */}
+        <div className="absolute top-10 left-20 w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-10 right-20 w-96 h-96 bg-green-400 rounded-full blur-3xl opacity-50"></div>
+      </div>
+
+      {/* Main Content */}
       <div
-        className="lg:max-w-4xl sm:max-w-2xl w-full bg-white shadow-md rounded-xl p-6 sm:p-10 
+        className="relative z-10 lg:max-w-4xl sm:max-w-2xl w-full bg-white shadow-md rounded-xl p-6 sm:p-10 
           transition transform hover:scale-105 hover:shadow-xl duration-300"
       >
         {/* Title Section */}
@@ -20,9 +28,7 @@ const SurveyIntro = () => {
               Did You Know?
               <br />
             </span>
-            Exposure to air pollution peaks during travel—more than any other
-            daily activity! Whether stuck in traffic 🚗 or waiting at bus stops
-            🕒, commuting exposes you to harmful pollutants at alarming levels.
+            Exposure to air pollution peaks during travel—more than any other daily activity! Whether stuck in traffic 🚗 or waiting at bus stops 🕒, commuting exposes you to harmful pollutants at alarming levels.
           </p>
           <p className="mt-4 text-center text-blue-700 font-medium text-sm sm:text-base">
             Make smarter choices, reduce exposure, and safeguard your health.
