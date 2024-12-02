@@ -276,8 +276,10 @@ const Section6 = ({
             </label>
             <div className="flex gap-4">
               {[
-                { label: "Yes", value: "yes" },
-                { label: "No", value: "no" },
+                { label: "Car", value: "car" },
+                { label: "Two-wheeler", value: "Two_wheeler" },
+                { label: "Both", value: "both" },
+               { label: "None", value: "none" },
               ].map(({ label, value }) => (
                 <label
                   key={value}
