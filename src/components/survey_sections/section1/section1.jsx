@@ -83,7 +83,10 @@ const TravelDetails = ({
               }
             }}
           >
-            <h3 className="text-lg font-bold">Section 1: Trip Information</h3>
+            <h3 className="text-lg font-bold ">
+              Section 1: Trip Information{" "}
+              <span className="text-red-600">*</span>
+            </h3>
             <div className="">
               {isDone && (
                 <div>

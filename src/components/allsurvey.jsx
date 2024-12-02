@@ -3,6 +3,7 @@ import AirQualityAwareness from "./survey_sections/section2/section2";
 import Section3 from "./survey_sections/section3/section3";
 import Section4 from "./survey_sections/section4/section4";
 import Section5 from "./survey_sections/section5/section5";
+import Section6 from "./survey_sections/section6/section6";
 import { useEffect, useState } from "react";
 
 function AllSurvey() {
@@ -12,6 +13,7 @@ function AllSurvey() {
   const [form3Data, setForm3Data] = useState({});
   const [form4Data, setForm4Data] = useState({});
   const [form5Data, setForm5Data] = useState({});
+  const [form6Data, setForm6Data] = useState({});
   const [allData, setAllData] = useState({});
   const [starttime, setStartTime] = useState(null);
   const [endtime, setEndTime] = useState(null);
@@ -29,9 +31,10 @@ function AllSurvey() {
       form3Data,
       form4Data,
       form5Data,
+      form6Data,
     });
     console.log(allData);
-  }, [form1Data, form2Data, form3Data, form4Data, form5Data]);
+  }, [form1Data, form2Data, form3Data, form4Data, form5Data, form6Data]);
 
   const submitSurvey = async () => {
     const now = new Date();
@@ -56,6 +59,7 @@ function AllSurvey() {
       form3Data,
       form4Data,
       form5Data,
+      form6Data,
     };
     console.log("Survey Data:", surveyData);
 
@@ -123,6 +127,12 @@ function AllSurvey() {
         <Section5
           thisSection5FormData={form5Data}
           setThisSection5FormData={setForm5Data}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
+        <Section6
+          thisFormData={form6Data}
+          setThisFormData={setForm6Data}
           activeSection={activeSection}
           setActiveSection={setActiveSection}
         />
