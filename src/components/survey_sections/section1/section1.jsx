@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import traveloptions from "./traveloptions.json";
 import LocationRetrieval from "../general/LocationRetrival";
 import TripInformation from "./TripInformation";
+import { useTransport } from "../../transportContext/TransportContext";
 
 const TravelDetails = ({
   thisFormData,
@@ -9,12 +10,14 @@ const TravelDetails = ({
   activeSection,
   setActiveSection,
 }) => {
+  const { selectedTransport, setSelectedTransport } = useTransport();
   const [showPTAccess, setShowPTAccess] = useState(false);
   const [location, setLocation] = useState({ latitude: "", longitude: "" });
   const [landmark, setLandmark] = useState("");
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [isDone, setIsDone] = useState(false);
+
   const [formData, setFormData] = useState({
     location: { latitude: "", longitude: "" },
     landmark: "",
@@ -41,6 +44,8 @@ const TravelDetails = ({
   const handleModeChange = (event) => {
     const mode = event.target.value;
     setShowPTAccess(mode === "metro" || mode === "bus");
+    setSelectedTransport(mode);
+    console.log("Mode is ", selectedTransport);
     setFormData((prevData) => ({ ...prevData, travelMode: mode }));
   };
 
@@ -167,7 +172,8 @@ const TravelDetails = ({
 
             {/* Travel Mode Selection */}
             <label htmlFor="travel_mode" className="block mt-4">
-              Q.3 Select the primary mode of travel for your daily trip:
+              Q.3 Select the primary mode of travel for your daily trip
+              <span className="text-red-600">*</span>
             </label>
             <select
               id="travel_mode"
@@ -188,7 +194,10 @@ const TravelDetails = ({
             {/* Public Transport Access Mode */}
             {showPTAccess && (
               <div id="pt_access_mode" className="mt-4">
-                <label>If PT, what is the access mode?</label>
+                <label>
+                  If PT, what is the access mode?{" "}
+                  <span className="text-red-600">*</span>
+                </label>
                 <select
                   id="access_mode"
                   className="border rounded w-full mt-2 p-2"
@@ -212,7 +221,7 @@ const TravelDetails = ({
             {/* Frequency */}
             <label htmlFor="frequency" className="block mt-4">
               Q.4 How frequently do you travel in a week using the primary mode
-              mentioned?
+              mentioned? <span className="text-red-600">*</span>
             </label>
             <select
               id="frequency"
@@ -233,6 +242,7 @@ const TravelDetails = ({
             {/* Purpose */}
             <label htmlFor="purpose" className="block mt-4">
               Q.5 What is the main purpose of your daily trip?
+              <span className="text-red-600">*</span>
             </label>
             <select
               id="purpose"
@@ -253,6 +263,7 @@ const TravelDetails = ({
             {/* Distance */}
             <label htmlFor="distance" className="block mt-4">
               Q.6 How long is your most typical trip?
+              <span className="text-red-600">*</span>
             </label>
             <select
               id="distance"

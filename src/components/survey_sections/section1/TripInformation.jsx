@@ -114,7 +114,8 @@ const TripInformation = ({ setOrigin, setDestination }) => {
     <section id="trip-info" className="py-4 ">
       {/* Origin Dropdown */}
       <label htmlFor="origin" className="block">
-        Q.1 Select your typical origin location:
+        Q.1 Select your typical origin location
+        <span className="text-red-600">*</span>
       </label>
       <select
         id="origin"
@@ -137,7 +138,8 @@ const TripInformation = ({ setOrigin, setDestination }) => {
 
       {/* Destination Dropdown */}
       <label htmlFor="destination" className="block mt-4">
-        Q.2 Select your typical destination location:
+        Q.2 Select your typical destination location
+        <span className="text-red-600">*</span>
       </label>
       <select
         id="destination"

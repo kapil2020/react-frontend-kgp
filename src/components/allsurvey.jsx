@@ -5,6 +5,7 @@ import Section4 from "./survey_sections/section4/section4";
 import Section5 from "./survey_sections/section5/section5";
 import Section6 from "./survey_sections/section6/section6";
 import { useEffect, useState } from "react";
+import { TransportProvider } from "./transportContext/TransportContext";
 
 function AllSurvey() {
   const [activeSection, setActiveSection] = useState(0);
@@ -94,60 +95,62 @@ function AllSurvey() {
   };
 
   return (
-    <div className="">
-      <header className="">
-        <h3 className=" text-center p-4 text-4xl font-bold">Survey</h3>
-      </header>
-      <body>
-        <TravelDetails
-          thisFormData={form1Data}
-          setThisFormData={setForm1Data}
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        {/* Section 2 */}
-        <AirQualityAwareness
-          thisFormData={form2Data}
-          setThisFormData={setForm2Data}
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        <Section3
-          thisFormData={form3Data}
-          setThisFormData={setForm3Data}
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        <Section4
-          thisFormData={form4Data}
-          setThisFormData={setForm4Data}
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        <Section5
-          thisSection5FormData={form5Data}
-          setThisSection5FormData={setForm5Data}
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        <Section6
-          thisFormData={form6Data}
-          setThisFormData={setForm6Data}
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-        <br />
-        <div className="flex justify-center">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            onClick={submitSurvey}
-          >
-            Submit Survey
-          </button>
-        </div>
-        <br />
-      </body>
-    </div>
+    <TransportProvider>
+      <div className="">
+        <header className="">
+          <h3 className=" text-center p-4 text-4xl font-bold">Survey</h3>
+        </header>
+        <body>
+          <TravelDetails
+            thisFormData={form1Data}
+            setThisFormData={setForm1Data}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+          {/* Section 2 */}
+          <AirQualityAwareness
+            thisFormData={form2Data}
+            setThisFormData={setForm2Data}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+          <Section3
+            thisFormData={form3Data}
+            setThisFormData={setForm3Data}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+          <Section4
+            thisFormData={form4Data}
+            setThisFormData={setForm4Data}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+          <Section5
+            thisSection5FormData={form5Data}
+            setThisSection5FormData={setForm5Data}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+          <Section6
+            thisFormData={form6Data}
+            setThisFormData={setForm6Data}
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+          <br />
+          <div className="flex justify-center">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              onClick={submitSurvey}
+            >
+              Submit Survey
+            </button>
+          </div>
+          <br />
+        </body>
+      </div>
+    </TransportProvider>
   );
 }
 

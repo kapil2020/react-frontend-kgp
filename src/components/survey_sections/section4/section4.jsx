@@ -1,12 +1,31 @@
 import React, { useState } from "react";
-import choiceData1 from "./set1.json";
-import choiceData2 from "./set2.json";
-import choiceData3 from "./set3.json";
-import choiceData4 from "./set4.json";
-import choiceData5 from "./set5.json";
-import choiceData6 from "./set6.json";
-import choiceData7 from "./set7.json";
-import choiceData8 from "./set8.json";
+import { useTransport } from "../../transportContext/TransportContext";
+import car_choiceData1 from "./carData/set1.json";
+import car_choiceData2 from "./carData/set2.json";
+import car_choiceData3 from "./carData/set3.json";
+import car_choiceData4 from "./carData/set4.json";
+import car_choiceData5 from "./carData/set5.json";
+import car_choiceData6 from "./carData/set6.json";
+import car_choiceData7 from "./carData/set7.json";
+import car_choiceData8 from "./carData/set8.json";
+
+import pt_choiceData1 from "./PublicTransportData/set1.json";
+import pt_choiceData2 from "./PublicTransportData/set2.json";
+import pt_choiceData3 from "./PublicTransportData/set3.json";
+import pt_choiceData4 from "./PublicTransportData/set4.json";
+import pt_choiceData5 from "./PublicTransportData/set5.json";
+import pt_choiceData6 from "./PublicTransportData/set6.json";
+import pt_choiceData7 from "./PublicTransportData/set7.json";
+import pt_choiceData8 from "./PublicTransportData/set8.json";
+
+import tw_choiceData1 from "./twoWheelerData/set1.json";
+import tw_choiceData2 from "./twoWheelerData/set2.json";
+import tw_choiceData3 from "./twoWheelerData/set3.json";
+import tw_choiceData4 from "./twoWheelerData/set4.json";
+import tw_choiceData5 from "./twoWheelerData/set5.json";
+import tw_choiceData6 from "./twoWheelerData/set6.json";
+import tw_choiceData7 from "./twoWheelerData/set7.json";
+import tw_choiceData8 from "./twoWheelerData/set8.json";
 
 import AQIImageDisplay from "../../../handlers/imagegenerator";
 import TravelPurposeDisplay from "../../../handlers/icons_for_travel";
@@ -24,22 +43,53 @@ const Section4 = ({
   activeSection,
   setActiveSection,
 }) => {
+  const { selectedTransport, setSelectedTransport } = useTransport();
+
   const [selectedChoices, setSelectedChoices] = useState({
     set: index_no + 1,
   });
 
-  let optionsDataAvailable = [
-    choiceData1,
-    choiceData2,
-    choiceData3,
-    choiceData4,
-    choiceData5,
-    choiceData6,
-    choiceData7,
-    choiceData8,
+  let pt_optionsDataAvailable = [
+    pt_choiceData1,
+    pt_choiceData2,
+    pt_choiceData3,
+    pt_choiceData4,
+    pt_choiceData5,
+    pt_choiceData6,
+    pt_choiceData7,
+    pt_choiceData8,
+  ];
+
+  let car_optionsDataAvailable = [
+    car_choiceData1,
+    car_choiceData2,
+    car_choiceData3,
+    car_choiceData4,
+    car_choiceData5,
+    car_choiceData6,
+    car_choiceData7,
+    car_choiceData8,
+  ];
+
+  let tw_optionsDataAvailable = [
+    tw_choiceData1,
+    tw_choiceData2,
+    tw_choiceData3,
+    tw_choiceData4,
+    tw_choiceData5,
+    tw_choiceData6,
+    tw_choiceData7,
+    tw_choiceData8,
   ];
   const [isDone, setIsDone] = useState(false);
-  const choiceData = optionsDataAvailable[index_no];
+
+  let choiceData = car_optionsDataAvailable[index_no];
+
+  if (selectedTransport === "bus" || selectedTransport === "metro") {
+    choiceData = pt_optionsDataAvailable[index_no];
+  } else if (selectedTransport === "two_wheeler") {
+    choiceData = tw_optionsDataAvailable[index_no];
+  }
 
   const handleSelection = (choiceId, option) => {
     const selectedOption = choiceData.choices.find(
@@ -75,7 +125,7 @@ const Section4 = ({
         }}
       >
         <h3 className="text-lg font-bold">
-          Section 4: Stated Preference Survey(Route Choice)
+          Section 4: Stated Preference Survey(Mode Choice)
         </h3>
         <div>
           {isDone && (
