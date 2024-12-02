@@ -24,12 +24,29 @@ const SurveyIntro = () => {
             daily activity! Whether stuck in traffic 🚗 or waiting at bus stops
             🕒, commuting exposes you to harmful pollutants at alarming levels.
           </p>
-          <p
-            className="mt-4 text-center text-blue-700 font-medium text-sm sm:text-base
-              opacity-0 animate-fade-in"
-          >
+          <p className="mt-4 text-center text-blue-700 font-medium text-sm sm:text-base">
             Make smarter choices, reduce exposure, and safeguard your health.
           </p>
+        </div>
+
+        {/* Divider */}
+        <hr className="my-6 sm:my-8 border-gray-200" />
+
+        {/* Call-to-Action */}
+        <div className="mt-8">
+          <p className="text-center text-gray-800 font-medium">
+            Join us in shaping the future of urban mobility. Your voice matters! 🚀
+          </p>
+          <div className="mt-6 flex justify-center">
+            <button
+              className="bg-blue-600 hover:bg-blue-700 focus:ring focus:ring-blue-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105 duration-300"
+              onClick={() => {
+                window.location.href = "/survey";
+              }}
+            >
+              Start Survey
+            </button>
+          </div>
         </div>
 
         {/* Divider */}
@@ -82,24 +99,6 @@ const SurveyIntro = () => {
                 RCGSIDM, IIT Kharagpur
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Call-to-Action */}
-        <div className="mt-8">
-          <p className="text-center text-gray-800 font-medium">
-            Join us in shaping the future of urban mobility. Your voice
-            matters! 🚀
-          </p>
-          <div className="mt-6 flex justify-center">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 focus:ring focus:ring-blue-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105 duration-300"
-              onClick={() => {
-                window.location.href = "/survey";
-              }}
-            >
-              Start Survey
-            </button>
           </div>
         </div>
       </div>
