@@ -158,13 +158,13 @@ const Section5 = ({
                   </thead>
                   <tbody>
                     {[
+                      "PreTripInfoAvailable",
                       "AirQualityLevel",
                       "TravelTime",
                       "TravelCost",
                       "TripPurpose",
                       "Delay",
                       "GreenCover",
-                      "PreTripInfoAvailable",
                     ].map((attribute) => (
                       <tr key={attribute}>
                         <td className="border border-gray-300 px-4 py-2 font-semibold">
@@ -270,7 +270,7 @@ const Section5 = ({
                             onChange={() =>
                               handleRouteSelection(`choice-${index}`, route)
                             }
-                            className="accent-blue-500 cursor-pointer"
+                            className="accent-blue-500 cursor-pointer w-4 h-4"
                           />
                         </td>
                       ))}
