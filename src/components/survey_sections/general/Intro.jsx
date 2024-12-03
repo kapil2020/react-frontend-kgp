@@ -42,7 +42,7 @@ const SurveyIntro = () => {
           </h2>
           <p className="mt-4 text-center text-gray-600 text-sm sm:text-base leading-relaxed">
             This survey explores how air quality impacts your travel decisions.
-            Discover how real-time air quality data influences your choice of
+            Discover how air pollution exposure influences your choice of
             routes and modes, encouraging a shift towards greener options like
             public transit 🚍 🚇.
           </p>
