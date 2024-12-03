@@ -96,7 +96,7 @@ const SurveyIntro = () => {
                 href="mailto:kapil.meena@kgpian.iitkgp.ac.in"
                 className="text-blue-800 transition-colors hover:text-blue-900"
               >
-                kapil.meena@kgpin.iitkgp.ac.in
+                kapil.meena@kgpian.iitkgp.ac.in
               </a>
             </div>
             <div className="space-y-2">
