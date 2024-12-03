@@ -168,7 +168,9 @@ const Section5 = ({
                     ].map((attribute) => (
                       <tr key={attribute}>
                         <td className="border border-gray-300 px-4 py-2 font-semibold">
-                          {attribute.replace(/([A-Z])/g, " $1").trim()}
+                          {attribute === "PreTripInfoAvailable"
+                            ? "Pre-trip AQI available"
+                            : attribute.replace(/([A-Z])/g, " $1").trim()}
                         </td>
                         {Object.values(choiceSet.routes).map((details, idx) => {
                           const value = details[attribute];
