@@ -272,7 +272,7 @@ const Section5 = ({
                             onChange={() =>
                               handleRouteSelection(`choice-${index}`, route)
                             }
-                            className="accent-blue-500 cursor-pointer w-4 h-4"
+                            className="accent-blue-500 cursor-pointer w-5 h-5"
                           />
                         </td>
                       ))}
