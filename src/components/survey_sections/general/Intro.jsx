@@ -10,14 +10,14 @@ const SurveyIntro = () => {
           Impact of Air Pollution Exposure on Travel Behaviour
         </h1>
 
-        {/* Content Grid */}
-        <div className="grid w-full grid-cols-1 gap-8 mt-8 md:grid-cols-2">
-          {/* Key Information */}
-          <div className="space-y-4">
+        {/* Content Grid with Vertical Divider */}
+        <div className="flex flex-col w-full mt-8 md:flex-row">
+          {/* Did You Know Section */}
+          <div className="w-full md:w-1/2 md:pr-4">
             <h2 className="text-xl font-semibold text-gray-800 sm:text-2xl">
               Did You Know?
             </h2>
-            <p className="text-base leading-relaxed text-gray-700 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg">
               Our exposure to air pollution is highest during travel—more than any
               other daily activity! 🚗 🚌 From sitting in traffic jams ⏳ to waiting
               at bus stops 🕒, commuting exposes you to harmful pollutants at levels
@@ -25,18 +25,21 @@ const SurveyIntro = () => {
             </p>
           </div>
 
+          {/* Vertical Divider */}
+          <div className="hidden md:block md:w-px md:bg-gray-300 md:mx-4"></div>
+
           {/* About Section */}
-          <div className="space-y-4">
+          <div className="w-full mt-8 md:w-1/2 md:pl-4 md:mt-0">
             <h2 className="text-xl font-semibold text-gray-800 sm:text-2xl">
               About the Survey 📝
             </h2>
-            <p className="text-base leading-relaxed text-gray-700 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg">
               This survey explores how air quality impacts your travel decisions.
               Discover how air pollution exposure influences your choice of routes
               and modes, encouraging a shift towards greener options like public
               transit 🚍 🚇.
             </p>
-            <p className="text-base font-medium leading-relaxed text-green-700 sm:text-lg">
+            <p className="mt-4 text-base font-medium leading-relaxed text-center text-green-700 sm:text-lg">
               Your participation contributes to creating smarter, healthier urban
               mobility solutions for a sustainable future. 🌱
             </p>
@@ -44,9 +47,9 @@ const SurveyIntro = () => {
         </div>
 
         {/* Call-to-Action */}
-        <div className="mt-8">
+        <div className="mt-12">
           <button
-            className="px-6 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-600 rounded-full shadow-lg hover:scale-105 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            className="px-8 py-3 text-lg font-semibold text-white transition-transform transform bg-gradient-to-r from-green-400 to-blue-500 rounded-full shadow-lg hover:scale-105 hover:from-green-500 hover:to-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
             onClick={() => {
               window.location.href = "/survey";
             }}
@@ -117,7 +120,7 @@ const SurveyIntro = () => {
       {/* Sticky Start Button for Mobile */}
       <div className="fixed bottom-4 left-0 right-0 z-20 flex justify-center md:hidden">
         <button
-          className="px-6 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-600 rounded-full shadow-lg hover:scale-105 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          className="px-6 py-3 text-lg font-semibold text-white transition-transform transform bg-gradient-to-r from-green-400 to-blue-500 rounded-full shadow-lg hover:scale-105 hover:from-green-500 hover:to-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
           onClick={() => {
             window.location.href = "/survey";
           }}
