@@ -109,8 +109,8 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your gender
               </option>
-              <option value="men">Men</option>
-              <option value="women">Women</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
               <option value="prefer_not_to_say">Prefer not to say</option>
             </select>
           </div>
@@ -194,7 +194,7 @@ const Section6 = ({
           {/* Monthly Household Income */}
           <div className="mb-6">
             <label htmlFor="income" className="block mb-2">
-              Monthly household income (in Rs):
+              Monthly indiviual income (in Rs):
             </label>
             <select
               id="income"
