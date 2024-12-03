@@ -2,9 +2,9 @@ import React from "react";
 
 const SurveyIntro = () => {
   return (
-    <div className="relative flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
+    <div className="relative flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-200 via-pink-100 to-yellow-200">
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-6 py-12 mx-4 bg-white bg-opacity-90 rounded-lg shadow-xl mt-8">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-6 py-12 mx-4 mt-8 bg-white bg-opacity-80 rounded-lg shadow-xl">
         {/* Title Section */}
         <h1 className="text-2xl font-extrabold text-center text-gray-800 sm:text-3xl md:text-4xl">
           Impact of Air Pollution Exposure on Travel Behaviour
@@ -71,15 +71,15 @@ const SurveyIntro = () => {
               >
                 Mr. Kapil Meena
               </a>
+              <p className="text-sm text-gray-600">
+                (Doctoral Scholar, IIT Kharagpur)
+              </p>
               <a
                 href="mailto:kapil.meena@kgpin.iitkgp.ac.in"
                 className="text-blue-600 transition-colors hover:text-blue-800"
               >
                 kapil.meena@kgpin.iitkgp.ac.in
               </a>
-              <p className="text-sm text-gray-600">
-                (Doctoral Scholar, IIT Kharagpur)
-              </p>
             </div>
             <div className="space-y-2">
               <a
@@ -113,11 +113,11 @@ const SurveyIntro = () => {
         </footer> */}
       </div>
 
-      {/* Background Decorations */}
+      {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-0 left-20 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-0 left-0 w-64 h-64 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-20 w-64 h-64 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Custom Styles */}
