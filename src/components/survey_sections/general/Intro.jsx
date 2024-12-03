@@ -93,7 +93,7 @@ const SurveyIntro = () => {
                 (Doctoral Scholar, IIT Kharagpur)
               </p>
               <a
-                href="mailto:kapil.meena@kgpin.iitkgp.ac.in"
+                href="mailto:kapil.meena@kgpian.iitkgp.ac.in"
                 className="text-blue-800 transition-colors hover:text-blue-900"
               >
                 kapil.meena@kgpin.iitkgp.ac.in
