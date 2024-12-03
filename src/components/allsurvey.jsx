@@ -69,6 +69,7 @@ function AllSurvey() {
         // "http://localhost:5000/api/survey/submit",
         // "https://survey-iitkgp-backend-1.vercel.app/api/saveSurvey",
         "https://survey-backend-zsdp.onrender.com/submit-survey",
+        // add new backend endpoint here and comment the above
         {
           method: "POST",
           headers: {
@@ -77,22 +78,34 @@ function AllSurvey() {
           body: JSON.stringify(surveyData),
         }
       );
+
       if (response.ok) {
-        const data = await response.json();
-        console.log("Survey Submitted successfully: ", data);
-        alert("Survey submitted successfully!");
+        const contentType = response.headers.get("Content-Type");
+
+        // Handle plain text responses
+        if (contentType && contentType.includes("text/plain")) {
+          const textResponse = await response.text(); // Read the plain text response
+          console.log("Success (Text):", textResponse);
+          alert("Data submitted successfully!");
+        } else if (contentType && contentType.includes("application/json")) {
+          const jsonResponse = await response.json(); // Parse JSON response
+          console.log("Success (JSON):", jsonResponse);
+          alert("Data submitted successfully!");
+        } else {
+          console.log("Unexpected response format");
+          alert("Data submitted successfully!"); // Generic success message
+        }
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 4000);
       } else {
-        console.log("Failed to submit survey: ", response.status);
-        alert("Failed to submit survey. Please try again.");
+        console.error(`Failed with status code: ${response.status}`);
+        alert("Error: Failed to submit data.");
       }
     } catch (err) {
       console.log(err);
       alert("An error occurred. Please try again.");
     }
-
-    // setTimeout(() => {
-    //   window.location.href = "/";
-    // }, 3000);
   };
 
   return (
