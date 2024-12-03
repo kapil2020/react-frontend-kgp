@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ResponseCounter from "./components/response_cnt/cnt_responses";
 
 import "./index.css";
 import App from "./App";
@@ -14,6 +15,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/survey" element={<AllSurvey />} />
+        <Route path="/count_response" element={<ResponseCounter />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
