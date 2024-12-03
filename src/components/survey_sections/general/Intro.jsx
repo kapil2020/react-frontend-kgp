@@ -2,9 +2,25 @@ import React from "react";
 
 const SurveyIntro = () => {
   return (
-    <div className="relative flex flex-col items-center min-h-screen bg-gray-100">
+    <div className="relative flex flex-col items-center min-h-screen bg-gray-100 overflow-hidden">
+      {/* Animated Background Waves */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden leading-none">
+        <svg
+          className="relative block w-full h-48"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#1E3A8A"
+            fillOpacity="1"
+            d="M0,64L48,74.7C96,85,192,107,288,112C384,117,480,107,576,96C672,85,768,75,864,69.3C960,64,1056,64,1152,85.3C1248,107,1344,149,1392,170.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+          ></path>
+        </svg>
+      </div>
+
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-5xl px-6 py-8 mx-4 mt-8 bg-white rounded-lg shadow-xl">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-5xl px-6 py-8 mx-4 mt-16 bg-white rounded-lg shadow-xl animate-fade-in">
         {/* Title Section */}
         <h1 className="text-2xl font-extrabold text-center text-blue-900 sm:text-3xl md:text-4xl">
           Impact of Air Pollution Exposure on Travel Behaviour
@@ -13,7 +29,7 @@ const SurveyIntro = () => {
         {/* Content Grid with Vertical Divider */}
         <div className="flex flex-col w-full mt-8 md:flex-row">
           {/* Did You Know Section */}
-          <div className="w-full md:w-1/2 md:pr-4">
+          <div className="w-full md:w-1/2 md:pr-4 animate-fade-in-left">
             <h2 className="text-xl font-semibold text-gray-800 sm:text-2xl">
               Did You Know?
             </h2>
@@ -29,7 +45,7 @@ const SurveyIntro = () => {
           <div className="hidden md:block md:w-px md:bg-gray-300 md:mx-4"></div>
 
           {/* About Section */}
-          <div className="w-full mt-8 md:w-1/2 md:pl-4 md:mt-0">
+          <div className="w-full mt-8 md:w-1/2 md:pl-4 md:mt-0 animate-fade-in-right">
             <h2 className="text-xl font-semibold text-gray-800 sm:text-2xl">
               About the Survey 📝
             </h2>
@@ -47,7 +63,7 @@ const SurveyIntro = () => {
         </div>
 
         {/* Call-to-Action */}
-        <div className="mt-12">
+        <div className="mt-12 animate-fade-in">
           <button
             className="px-8 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-800 rounded-full shadow-lg hover:scale-105 hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300"
             onClick={() => {
@@ -59,7 +75,7 @@ const SurveyIntro = () => {
         </div>
 
         {/* Contact Section */}
-        <div className="w-full mt-12 text-center text-gray-800">
+        <div className="w-full mt-12 text-center text-gray-800 animate-fade-in">
           <h3 className="text-xl font-semibold sm:text-2xl">
             📧 For Queries or Assistance
           </h3>
@@ -110,9 +126,20 @@ const SurveyIntro = () => {
         </div>
       </div>
 
-      {/* Background Pattern */}
-      <div className="absolute inset-0">
-        <div className="w-full h-full bg-fixed bg-center bg-cover" style={{ backgroundImage: 'url("/path-to-your-background-image.jpg")', opacity: 0.1 }}></div>
+      {/* Animated Background Waves at Bottom */}
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
+        <svg
+          className="relative block w-full h-48"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#1E3A8A"
+            fillOpacity="1"
+            d="M0,64L48,74.7C96,85,192,107,288,112C384,117,480,107,576,96C672,85,768,75,864,69.3C960,64,1056,64,1152,85.3C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          ></path>
+        </svg>
       </div>
 
       {/* Sticky Start Button for Mobile */}
@@ -126,6 +153,47 @@ const SurveyIntro = () => {
           Start Survey
         </button>
       </div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        .animate-fade-in {
+          animation: fadeIn 1s ease-in-out forwards;
+          opacity: 0;
+        }
+        .animate-fade-in-left {
+          animation: fadeInLeft 1s ease-in-out forwards;
+          opacity: 0;
+        }
+        .animate-fade-in-right {
+          animation: fadeInRight 1s ease-in-out forwards;
+          opacity: 0;
+        }
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes fadeInLeft {
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+        }
+        @keyframes fadeInRight {
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+        }
+      `}</style>
     </div>
   );
 };
