@@ -2,92 +2,112 @@ import React from "react";
 
 const SurveyIntro = () => {
   return (
-    <div className="relative flex flex-col items-center py-8 sm:py-16 px-6 sm:px-8 min-h-screen overflow-hidden">
-      {/* Background Design */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-green-200 to-blue-300 opacity-70 animate-gradient-x"></div>
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-10 left-5 md:left-20 w-48 md:w-72 h-48 md:h-72 bg-blue-400 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-10 right-5 md:right-20 w-60 md:w-96 h-60 md:h-96 bg-green-400 rounded-full blur-3xl opacity-50"></div>
+    <div className="relative flex flex-col items-center min-h-screen bg-gray-100 overflow-hidden">
+      {/* Animated Background Waves */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden leading-none">
+        <svg
+          className="relative block w-full h-48"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#1E3A8A"
+            fillOpacity="1"
+            d="M0,64L48,74.7C96,85,192,107,288,112C384,117,480,107,576,96C672,85,768,75,864,69.3C960,64,1056,64,1152,85.3C1248,107,1344,149,1392,170.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+          ></path>
+        </svg>
       </div>
 
       {/* Main Content */}
-      <div
-        className="relative z-10 max-w-full md:max-w-4xl sm:max-w-2xl w-full bg-white shadow-md rounded-xl p-6 sm:p-10 
-          transition transform hover:scale-105 hover:shadow-xl duration-300"
-      >
+      <div className="relative z-10 flex flex-col items-center w-full max-w-5xl px-6 py-8 mx-4 mt-16 bg-white rounded-lg shadow-xl animate-fade-in">
         {/* Title Section */}
-        <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-center text-gray-800 leading-tight">
+        <h1 className="text-2xl font-extrabold text-center text-blue-900 sm:text-3xl md:text-4xl">
           Impact of Air Pollution Exposure on Travel Behaviour
         </h1>
 
-        {/* Key Information */}
-        <div className="mt-6 sm:mt-8">
-          <p className="text-center text-gray-600 text-sm sm:text-base leading-relaxed">
-            <span className="font-semibold text-gray-900">
+        {/* Content Grid with Vertical Divider */}
+        <div className="flex flex-col w-full mt-8 md:flex-row">
+          {/* Did You Know Section */}
+          <div className="w-full md:w-1/2 md:pr-4 animate-fade-in-left">
+            <h2 className="text-xl font-semibold text-gray-800 sm:text-2xl">
               Did You Know?
-              <br />
-            </span>
-             Our exposure to air pollution is highest during travel—more than any other daily activity! 🚗 🚌 From sitting in traffic jams⏳to waiting at bus stops 🕒, commuting exposes you to harmful pollutants at levels
-          far greater than indoors or other activities. 🌍💡
-          </p>
-        </div>
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg">
+              Our exposure to air pollution is highest during travel—more than any
+              other daily activity! 🚗 🚌 From sitting in traffic jams ⏳ to waiting
+              at bus stops 🕒, commuting exposes you to harmful pollutants at levels
+              far greater than indoors or other activities. 🌍💡
+            </p>
+          </div>
 
-        {/* Divider */}
-        <hr className="my-6 sm:my-8 border-gray-200" />
+          {/* Vertical Divider */}
+          <div className="hidden md:block md:w-px md:bg-gray-300 md:mx-4"></div>
 
-        {/* About Section */}
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-center text-gray-700">
-            About the Survey 📝
-          </h2>
-          <p className="mt-4 text-center text-gray-600 text-sm sm:text-base leading-relaxed">
-            This survey explores how air quality impacts your travel decisions.
-            Discover how air pollution exposure influences your choice of
-            routes and modes, encouraging a shift towards greener options like
-            public transit 🚍 🚇.
-          </p>
-          <p className="mt-4 text-center text-green-600 font-medium text-sm sm:text-base">
-            Your participation contributes to creating smarter, healthier urban
-            mobility solutions for a sustainable future. 🌱
-          </p>
-        </div>
-
-        {/* Call-to-Action */}
-        <div className="mt-8">
-          <p className="text-center text-gray-800 font-medium">
-            Join us in shaping the future of urban mobility. Your voice matters! 🚀
-          </p>
-          <div className="mt-6 flex justify-center">
-            <button
-              className="bg-blue-600 hover:bg-blue-700 focus:ring focus:ring-blue-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105 duration-300"
-              onClick={() => {
-                window.location.href = "/survey";
-              }}
-            >
-              Start Survey
-            </button>
+          {/* About Section */}
+          <div className="w-full mt-8 md:w-1/2 md:pl-4 md:mt-0 animate-fade-in-right">
+            <h2 className="text-xl font-semibold text-gray-800 sm:text-2xl">
+              About the Survey 📝
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-gray-700 sm:text-lg">
+              This survey explores how air quality impacts your travel decisions.
+              Discover how air pollution exposure influences your choice of routes
+              and modes, encouraging a shift towards greener options like public
+              transit 🚍 🚇.
+            </p>
+            <p className="mt-4 text-base font-medium leading-relaxed text-center text-blue-800 sm:text-lg">
+              Your participation contributes to creating smarter, healthier urban
+              mobility solutions for a sustainable future. 🌱
+            </p>
           </div>
         </div>
 
-        {/* Divider */}
-        <hr className="my-6 sm:my-8 border-gray-200" />
+        {/* Call-to-Action */}
+        <div className="mt-12 animate-fade-in">
+          <button
+            className="px-8 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-800 rounded-full shadow-lg hover:scale-105 hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            onClick={() => {
+              window.location.href = "/survey";
+            }}
+          >
+            Start Survey
+          </button>
+        </div>
 
         {/* Contact Section */}
-        <div className="text-center text-gray-700">
-          <h3 className="text-lg font-semibold">📧 For Queries or Assistance</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-            <div>
-              <p className="font-medium">Mr. Kapil Meena</p>
+        <div className="w-full mt-12 text-center text-gray-800 animate-fade-in">
+          <h3 className="text-xl font-semibold sm:text-2xl">
+            📧 For Queries or Assistance
+          </h3>
+          <div className="grid grid-cols-1 gap-8 mt-8 sm:grid-cols-2">
+            <div className="space-y-2">
               <a
-                href="mailto:kapil.meena@kgpin.iitkgp.ac.in"
-                className="text-blue-500 hover:text-blue-700 underline"
+                href="https://sites.google.com/view/kapil-lab/home"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lg font-medium text-blue-800 transition-colors hover:text-blue-900"
               >
-                kapil.meena@kgpin.iitkgp.ac.in
+                Mr. Kapil Meena
               </a>
-              <p className="text-sm text-gray-600">(Doctoral Scholar, IIT Kharagpur)</p>
+              <p className="text-sm text-gray-600">
+                (Doctoral Scholar, IIT Kharagpur)
+              </p>
+              <a
+                href="mailto:kapil.meena@kgpian.iitkgp.ac.in"
+                className="text-blue-800 transition-colors hover:text-blue-900"
+              >
+                kapil.meena@kgpian.iitkgp.ac.in
+              </a>
             </div>
-            <div>
-              <p className="font-medium">Prof. Arkopal K. Goswami, PhD</p>
+            <div className="space-y-2">
+              <a
+                href="https://www.mustlab.in/faculty"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-lg font-medium text-blue-800 transition-colors hover:text-blue-900"
+              >
+                Prof. Arkopal K. Goswami, PhD
+              </a>
               <p className="text-sm text-gray-600">
                 Associate Professor <br />
                 Chairperson <br />
@@ -97,7 +117,7 @@ const SurveyIntro = () => {
               </p>
               <a
                 href="mailto:akgoswami@infra.iitkgp.ac.in"
-                className="text-blue-500 hover:text-blue-700 underline"
+                className="text-blue-800 transition-colors hover:text-blue-900"
               >
                 akgoswami@infra.iitkgp.ac.in
               </a>
@@ -105,6 +125,75 @@ const SurveyIntro = () => {
           </div>
         </div>
       </div>
+
+      {/* Animated Background Waves at Bottom */}
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
+        <svg
+          className="relative block w-full h-48"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#1E3A8A"
+            fillOpacity="1"
+            d="M0,64L48,74.7C96,85,192,107,288,112C384,117,480,107,576,96C672,85,768,75,864,69.3C960,64,1056,64,1152,85.3C1248,107,1344,149,1392,170.7L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          ></path>
+        </svg>
+      </div>
+
+      {/* Sticky Start Button for Mobile */}
+      <div className="fixed bottom-4 left-0 right-0 z-20 flex justify-center md:hidden">
+        <button
+          className="px-6 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-800 rounded-full shadow-lg hover:scale-105 hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          onClick={() => {
+            window.location.href = "/survey";
+          }}
+        >
+          Start Survey
+        </button>
+      </div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        .animate-fade-in {
+          animation: fadeIn 1s ease-in-out forwards;
+          opacity: 0;
+        }
+        .animate-fade-in-left {
+          animation: fadeInLeft 1s ease-in-out forwards;
+          opacity: 0;
+        }
+        .animate-fade-in-right {
+          animation: fadeInRight 1s ease-in-out forwards;
+          opacity: 0;
+        }
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes fadeInLeft {
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+        }
+        @keyframes fadeInRight {
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+        }
+      `}</style>
     </div>
   );
 };
