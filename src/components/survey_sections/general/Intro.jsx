@@ -2,64 +2,67 @@ import React from "react";
 
 const SurveyIntro = () => {
   return (
-    <div className="relative flex flex-col items-center py-8 sm:py-16 px-6 sm:px-8 min-h-screen overflow-hidden">
-      {/* Background Design */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-300 via-green-200 to-blue-300 opacity-70 animate-gradient-x"></div>
+    <div className="relative flex flex-col items-center min-h-screen overflow-hidden bg-gray-50">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-500 to-green-400 animate-gradient-xy"></div>
+
+      {/* Floating Particles */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-10 left-5 md:left-20 w-48 md:w-72 h-48 md:h-72 bg-blue-400 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-10 right-5 md:right-20 w-60 md:w-96 h-60 md:h-96 bg-green-400 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute top-1/4 left-1/3 w-72 h-72 bg-purple-300 opacity-20 rounded-full mix-blend-multiply filter blur-2xl animate-float"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-green-300 opacity-20 rounded-full mix-blend-multiply filter blur-2xl animate-float animation-delay-2000"></div>
+        <div className="absolute top-3/4 left-1/4 w-80 h-80 bg-blue-300 opacity-20 rounded-full mix-blend-multiply filter blur-2xl animate-float animation-delay-4000"></div>
       </div>
 
       {/* Main Content */}
-      <div
-        className="relative z-10 max-w-full md:max-w-4xl sm:max-w-2xl w-full bg-white shadow-md rounded-xl p-6 sm:p-10 
-          transition transform hover:scale-105 hover:shadow-xl duration-300"
-      >
+      <div className="relative z-10 w-full max-w-4xl p-8 mx-4 bg-white rounded-3xl shadow-2xl bg-opacity-90 backdrop-filter backdrop-blur-lg">
         {/* Title Section */}
-        <h1 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-center text-gray-800 leading-tight">
+        <h1 className="text-3xl font-extrabold text-center text-gray-800 sm:text-4xl md:text-5xl">
           Impact of Air Pollution Exposure on Travel Behaviour
         </h1>
 
         {/* Key Information */}
-        <div className="mt-6 sm:mt-8">
-          <p className="text-center text-gray-600 text-sm sm:text-base leading-relaxed">
+        <div className="mt-8">
+          <p className="text-lg leading-relaxed text-center text-gray-700 sm:text-xl">
             <span className="font-semibold text-gray-900">
               Did You Know?
               <br />
             </span>
-             Our exposure to air pollution is highest during travel—more than any other daily activity! 🚗 🚌 From sitting in traffic jams⏳to waiting at bus stops 🕒, commuting exposes you to harmful pollutants at levels
-          far greater than indoors or other activities. 🌍💡
+            Our exposure to air pollution is highest during travel—more than any
+            other daily activity! 🚗 🚌 From sitting in traffic jams ⏳ to
+            waiting at bus stops 🕒, commuting exposes you to harmful pollutants
+            at levels far greater than indoors or other activities. 🌍💡
           </p>
         </div>
 
-        {/* Divider */}
-        <hr className="my-6 sm:my-8 border-gray-200" />
+        {/* Decorative Divider */}
+        <div className="my-12 border-b-2 border-dashed border-gray-300"></div>
 
         {/* About Section */}
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-center text-gray-700">
+        <div className="space-y-6">
+          <h2 className="text-2xl font-semibold text-center text-gray-800">
             About the Survey 📝
           </h2>
-          <p className="mt-4 text-center text-gray-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-lg leading-relaxed text-center text-gray-700 sm:px-12">
             This survey explores how air quality impacts your travel decisions.
-            Discover how air pollution exposure influences your choice of
-            routes and modes, encouraging a shift towards greener options like
-            public transit 🚍 🚇.
+            Discover how air pollution exposure influences your choice of routes
+            and modes, encouraging a shift towards greener options like public
+            transit 🚍 🚇.
           </p>
-          <p className="mt-4 text-center text-green-600 font-medium text-sm sm:text-base">
+          <p className="text-lg font-medium leading-relaxed text-center text-green-700">
             Your participation contributes to creating smarter, healthier urban
             mobility solutions for a sustainable future. 🌱
           </p>
         </div>
 
         {/* Call-to-Action */}
-        <div className="mt-8">
-          <p className="text-center text-gray-800 font-medium">
-            Join us in shaping the future of urban mobility. Your voice matters! 🚀
+        <div className="mt-12 text-center">
+          <p className="text-xl font-medium text-gray-800">
+            Join us in shaping the future of urban mobility. Your voice matters!
+            🚀
           </p>
-          <div className="mt-6 flex justify-center">
+          <div className="mt-8">
             <button
-              className="bg-blue-600 hover:bg-blue-700 focus:ring focus:ring-blue-300 text-white font-semibold py-3 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105 duration-300"
+              className="px-8 py-4 text-lg font-semibold text-white transition-transform transform bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300"
               onClick={() => {
                 window.location.href = "/survey";
               }}
@@ -69,26 +72,26 @@ const SurveyIntro = () => {
           </div>
         </div>
 
-        {/* Divider */}
-        <hr className="my-6 sm:my-8 border-gray-200" />
+        {/* Decorative Divider */}
+        <div className="my-12 border-b-2 border-dashed border-gray-300"></div>
 
         {/* Contact Section */}
-        <div className="text-center text-gray-700">
-          <h3 className="text-lg font-semibold">📧 For Queries or Assistance</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-            <div>
-              <p className="font-medium">Mr. Kapil Meena</p>
+        <div className="text-center text-gray-800">
+          <h3 className="text-2xl font-semibold">📧 For Queries or Assistance</h3>
+          <div className="grid grid-cols-1 gap-8 mt-8 sm:grid-cols-2">
+            <div className="space-y-2">
+              <p className="text-xl font-medium">Mr. Kapil Meena</p>
               <a
                 href="mailto:kapil.meena@kgpin.iitkgp.ac.in"
-                className="text-blue-500 hover:text-blue-700 underline"
+                className="text-blue-600 transition-colors hover:text-blue-800"
               >
                 kapil.meena@kgpin.iitkgp.ac.in
               </a>
-              <p className="text-sm text-gray-600">(Doctoral Scholar, IIT Kharagpur)</p>
+              <p className="text-gray-600">(Doctoral Scholar, IIT Kharagpur)</p>
             </div>
-            <div>
-              <p className="font-medium">Prof. Arkopal K. Goswami, PhD</p>
-              <p className="text-sm text-gray-600">
+            <div className="space-y-2">
+              <p className="text-xl font-medium">Prof. Arkopal K. Goswami, PhD</p>
+              <p className="text-gray-600">
                 Associate Professor <br />
                 Chairperson <br />
                 Ranbir and Chitra Gupta School of Infrastructure Design and
@@ -97,7 +100,7 @@ const SurveyIntro = () => {
               </p>
               <a
                 href="mailto:akgoswami@infra.iitkgp.ac.in"
-                className="text-blue-500 hover:text-blue-700 underline"
+                className="text-blue-600 transition-colors hover:text-blue-800"
               >
                 akgoswami@infra.iitkgp.ac.in
               </a>
@@ -105,6 +108,43 @@ const SurveyIntro = () => {
           </div>
         </div>
       </div>
+
+      {/* Custom Animations */}
+      <style jsx>{`
+        .animate-gradient-xy {
+          background-size: 400% 400%;
+          animation: gradient-xy 15s ease infinite;
+        }
+        @keyframes gradient-xy {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(-10px);
+          }
+          50% {
+            transform: translateY(10px);
+          }
+        }
+      `}</style>
     </div>
   );
 };
