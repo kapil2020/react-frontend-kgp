@@ -67,7 +67,8 @@ function AllSurvey() {
     try {
       const response = await fetch(
         // "http://localhost:5000/api/survey/submit",
-        "https://survey-iitkgp-backend-1.vercel.app/api/saveSurvey",
+        // "https://survey-iitkgp-backend-1.vercel.app/api/saveSurvey",
+        "https://survey-backend-zsdp.onrender.com/submit-survey",
         {
           method: "POST",
           headers: {
