@@ -2,31 +2,18 @@ import React from "react";
 
 const SurveyIntro = () => {
   return (
-    <div className="relative flex flex-col items-center min-h-screen overflow-hidden bg-gray-900">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0">
-        <video
-          autoPlay
-          loop
-          muted
-          className="w-full h-full object-cover"
-        >
-          <source src="/path-to-your-background-video.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-      </div>
-
+    <div className="relative flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-6 py-12 mx-4 bg-white bg-opacity-80 rounded-lg shadow-xl backdrop-filter backdrop-blur-lg sm:px-8 md:px-12 md:py-16">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-4xl px-6 py-12 mx-4 bg-white bg-opacity-90 rounded-lg shadow-xl mt-8">
         {/* Title Section */}
-        <h1 className="text-2xl font-extrabold text-center text-white sm:text-4xl md:text-5xl">
+        <h1 className="text-2xl font-extrabold text-center text-gray-800 sm:text-3xl md:text-4xl">
           Impact of Air Pollution Exposure on Travel Behaviour
         </h1>
 
         {/* Call-to-Action */}
-        <div className="mt-8">
+        <div className="mt-6">
           <button
-            className="px-8 py-4 text-lg font-semibold text-white transition-transform transform bg-blue-600 rounded-full shadow-lg hover:scale-105 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            className="px-6 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-600 rounded-full shadow-lg hover:scale-105 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
             onClick={() => {
               window.location.href = "/survey";
             }}
@@ -36,9 +23,9 @@ const SurveyIntro = () => {
         </div>
 
         {/* Key Information */}
-        <div className="mt-12">
-          <p className="text-lg leading-relaxed text-center text-white sm:text-xl">
-            <span className="font-semibold text-white">
+        <div className="mt-8">
+          <p className="text-base leading-relaxed text-center text-gray-700 sm:text-lg">
+            <span className="font-semibold text-gray-900">
               Did You Know?
               <br />
             </span>
@@ -50,28 +37,28 @@ const SurveyIntro = () => {
         </div>
 
         {/* Decorative Divider */}
-        <div className="my-12 border-b border-gray-300"></div>
+        <div className="my-8 border-b border-gray-300 w-full"></div>
 
         {/* About Section */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-semibold text-center text-white">
+          <h2 className="text-xl font-semibold text-center text-gray-800 sm:text-2xl">
             About the Survey 📝
           </h2>
-          <p className="text-lg leading-relaxed text-center text-white sm:px-12">
+          <p className="text-base leading-relaxed text-center text-gray-700 sm:text-lg">
             This survey explores how air quality impacts your travel decisions.
             Discover how air pollution exposure influences your choice of routes
             and modes, encouraging a shift towards greener options like public
             transit 🚍 🚇.
           </p>
-          <p className="text-lg font-medium leading-relaxed text-center text-green-300">
+          <p className="text-base font-medium leading-relaxed text-center text-green-700 sm:text-lg">
             Your participation contributes to creating smarter, healthier urban
             mobility solutions for a sustainable future. 🌱
           </p>
         </div>
 
         {/* Contact Section */}
-        <div className="mt-12 text-center text-white">
-          <h3 className="text-2xl font-semibold">
+        <div className="mt-12 text-center text-gray-800">
+          <h3 className="text-xl font-semibold sm:text-2xl">
             📧 For Queries or Assistance
           </h3>
           <div className="grid grid-cols-1 gap-8 mt-8 sm:grid-cols-2">
@@ -80,28 +67,30 @@ const SurveyIntro = () => {
                 href="https://sites.google.com/view/kapil-lab/home"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xl font-medium text-blue-400 transition-colors hover:text-blue-500"
+                className="text-lg font-medium text-blue-600 transition-colors hover:text-blue-800"
               >
                 Mr. Kapil Meena
               </a>
               <a
                 href="mailto:kapil.meena@kgpin.iitkgp.ac.in"
-                className="text-blue-400 transition-colors hover:text-blue-500"
+                className="text-blue-600 transition-colors hover:text-blue-800"
               >
                 kapil.meena@kgpin.iitkgp.ac.in
               </a>
-              <p className="text-gray-300">(Doctoral Scholar, IIT Kharagpur)</p>
+              <p className="text-sm text-gray-600">
+                (Doctoral Scholar, IIT Kharagpur)
+              </p>
             </div>
             <div className="space-y-2">
               <a
                 href="https://www.mustlab.in/faculty"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xl font-medium text-blue-400 transition-colors hover:text-blue-500"
+                className="text-lg font-medium text-blue-600 transition-colors hover:text-blue-800"
               >
                 Prof. Arkopal K. Goswami, PhD
               </a>
-              <p className="text-gray-300">
+              <p className="text-sm text-gray-600">
                 Associate Professor <br />
                 Chairperson <br />
                 Ranbir and Chitra Gupta School of Infrastructure Design and
@@ -110,7 +99,7 @@ const SurveyIntro = () => {
               </p>
               <a
                 href="mailto:akgoswami@infra.iitkgp.ac.in"
-                className="text-blue-400 transition-colors hover:text-blue-500"
+                className="text-blue-600 transition-colors hover:text-blue-800"
               >
                 akgoswami@infra.iitkgp.ac.in
               </a>
@@ -119,14 +108,41 @@ const SurveyIntro = () => {
         </div>
 
         {/* Footer (Optional) */}
-        {/* <footer className="mt-12 text-sm text-center text-gray-400">
+        {/* <footer className="mt-12 text-sm text-center text-gray-500">
           © 2023 Your Organization Name. All rights reserved.
         </footer> */}
       </div>
 
+      {/* Background Decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-0 w-64 h-64 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-20 w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+      </div>
+
       {/* Custom Styles */}
       <style jsx>{`
-        /* Add any custom styles here */
+        .animate-blob {
+          animation: blob 8s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        @keyframes blob {
+          0%,
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+        }
       `}</style>
     </div>
   );
