@@ -125,7 +125,8 @@ const Section4 = ({
         }}
       >
         <h3 className="text-lg font-bold">
-          Section 4: Stated Preference Survey(Mode Choice)
+          Section 4: Stated Preference Survey(Mode Choice){" "}
+          <span className="text-red-600">*</span>
         </h3>
         <div>
           {isDone && (

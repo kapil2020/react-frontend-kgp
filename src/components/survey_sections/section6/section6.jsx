@@ -279,7 +279,7 @@ const Section6 = ({
                 { label: "Car", value: "car" },
                 { label: "Two-wheeler", value: "Two_wheeler" },
                 { label: "Both", value: "both" },
-               { label: "None", value: "none" },
+                { label: "None", value: "none" },
               ].map(({ label, value }) => (
                 <label
                   key={value}
@@ -298,6 +298,20 @@ const Section6 = ({
                 </label>
               ))}
             </div>
+          </div>
+          <div>
+            <label className="block mt-4">
+              Panel Data Information (optional):
+            </label>
+            <textarea
+              onChange={(e) =>
+                handleResponseChange(e.target.name, e.target.value)
+              }
+              name="panel_data"
+              placeholder="Add your comments or additional information here..."
+              className="border rounded w-full mt-2 p-2"
+              rows="4"
+            ></textarea>
           </div>
 
           <div className="flex justify-center mt-8">

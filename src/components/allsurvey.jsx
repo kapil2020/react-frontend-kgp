@@ -46,14 +46,19 @@ function AllSurvey() {
     setEndTime(now);
     console.log("Survey ended at ", now);
 
-    const timeTaken = Math.round((now - starttime) / 1000);
-    console.log("Survey ended at ", now);
-    console.log("Time Taken: ", timeTaken);
+    const timeTakenSeconds = Math.round((now - starttime) / 1000);
+    const minutes = Math.floor(timeTakenSeconds / 60);
+    const seconds = timeTakenSeconds % 60;
+    console.log(`Survey ended at ${now}`);
+    console.log(`Time Taken: ${minutes} minutes and ${seconds} seconds`);
     const surveyData = {
       metadata: {
         starttime: starttime.toISOString(),
         endtime: now.toISOString(),
-        timeTaken: timeTaken,
+        timeTaken: {
+          minutes,
+          seconds,
+        },
       },
       form1Data,
       form2Data,

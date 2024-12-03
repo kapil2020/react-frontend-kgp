@@ -69,7 +69,8 @@ const Section5 = ({
         }}
       >
         <h3 className="text-lg font-bold">
-          Section 5: Route Preference Survey(Route Choice)
+          Section 5: Route Preference Survey(Route Choice){" "}
+          <span className="text-red-600">*</span>
         </h3>
         <div>
           {isDone && (
