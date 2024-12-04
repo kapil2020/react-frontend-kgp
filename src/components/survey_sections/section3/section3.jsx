@@ -210,7 +210,7 @@ const Section3 = ({
                 },
                 {
                   question:
-                    "I prefer EVs as they reduce pollution and have likely less impact on the environment",
+                    "I prefer EVs as they reduce pollution and likely have less impact on the environment",
                   name: "ride_ev_reduce_pollution",
                 },
               ],
