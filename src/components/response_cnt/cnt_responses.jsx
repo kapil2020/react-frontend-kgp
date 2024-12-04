@@ -70,4 +70,4 @@ const ResponseCounter = () => {
   );
 };
 
-export default ResponseCounter;
+export default ResponseCounter; 

@@ -2,88 +2,88 @@
   {
     "routes": {
       "Route A": {
-        "AirQualityLevel": "Very Poor (301-400)",
-        "TravelTime": "High: 40min",
-        "TravelCost": "Medium: 25 INR",
-        "Delay": "11-25% additional time",
-        "GreenCover": "Moderate",
-        "PreTripInfoAvailable": "Not Available",
-        "TripPurpose": "Work/Business"
-      },
-      "Route B": {
-        "AirQualityLevel": "Very Poor (301-400)",
-        "TravelTime": "High: 40min",
-        "TravelCost": "Medium: 25 INR",
-        "Delay": "11-25% additional time",
-        "GreenCover": "High Green Cover (tree-lined parks)",
-        "PreTripInfoAvailable": "Available",
-        "TripPurpose": "Work/Business"
-      }
-    }
-  },
-  {
-    "routes": {
-      "Route A": {
         "AirQualityLevel": "Satisfactory (51-100)",
-        "TravelTime": "Low: 20 min",
-        "TravelCost": "Medium: 25 INR",
-        "Delay": "11-25% additional time",
-        "GreenCover": "High Green Cover (tree-lined parks)",
-        "PreTripInfoAvailable": "Not Available",
-        "TripPurpose": "Work/Business"
-      },
-      "Route B": {
-        "AirQualityLevel": "Satisfactory (51-100)",
-        "TravelTime": "Low: 20 min",
-        "TravelCost": "Medium: 25 INR",
-        "Delay": "0-10% additional time",
-        "GreenCover": "High Green Cover (tree-lined parks)",
-        "PreTripInfoAvailable": "Not Available",
-        "TripPurpose": "Leisure/Personal"
-      }
-    }
-  },
-  {
-    "routes": {
-      "Route A": {
-        "AirQualityLevel": "Good (0-50)",
-        "TravelTime": "Low: 20 min",
+        "TravelTime": "Medium: 30 min",
         "TravelCost": "Medium: 25 INR",
         "Delay": "11-25% additional time",
         "GreenCover": "Low Green Cover (urban/industrial areas)",
         "PreTripInfoAvailable": "Available",
-        "TripPurpose": "Leisure/Personal"
+        "TripPurpose": "Work/Business"
       },
       "Route B": {
-        "AirQualityLevel": "Severe (401+)",
+        "AirQualityLevel": "Poor (201-300)",
         "TravelTime": "Low: 20 min",
-        "TravelCost": "High: 35 INR",
-        "Delay": "11-25% additional time",
-        "GreenCover": "Low Green Cover (urban/industrial areas)",
-        "PreTripInfoAvailable": "Available",
-        "TripPurpose": "Leisure/Personal"
-      }
-    }
-  },
-  {
-    "routes": {
-      "Route A": {
-        "AirQualityLevel": "Good (0-50)",
-        "TravelTime": "High: 40min",
         "TravelCost": "Low: 15 INR",
-        "Delay": "11-25% additional time",
-        "GreenCover": "Low Green Cover (urban/industrial areas)",
+        "Delay": "0-10% additional time",
+        "GreenCover": "Moderate",
+        "PreTripInfoAvailable": "Available",
+        "TripPurpose": "Education"
+      }
+    }
+  },
+  {
+    "routes": {
+      "Route A": {
+        "AirQualityLevel": "Very Poor (301-400)",
+        "TravelTime": "Medium: 30 min",
+        "TravelCost": "Medium: 25 INR",
+        "Delay": "26-50% additional time",
+        "GreenCover": "Moderate",
         "PreTripInfoAvailable": "Not Available",
         "TripPurpose": "Education"
       },
       "Route B": {
-        "AirQualityLevel": "Good (0-50)",
-        "TravelTime": "High: 40min",
+        "AirQualityLevel": "Moderate (101-200)",
+        "TravelTime": "Low: 20 min",
+        "TravelCost": "High: 35 INR",
+        "Delay": "0-10% additional time",
+        "GreenCover": "High Green Cover (tree-lined parks)",
+        "PreTripInfoAvailable": "Not Available",
+        "TripPurpose": "Work/Business"
+      }
+    }
+  },
+  {
+    "routes": {
+      "Route A": {
+        "AirQualityLevel": "Very Poor (301-400)",
+        "TravelTime": "Low: 20 min",
+        "TravelCost": "High: 35 INR",
+        "Delay": "26-50% additional time",
+        "GreenCover": "Moderate",
+        "PreTripInfoAvailable": "Not Available",
+        "TripPurpose": "Leisure/Personal"
+      },
+      "Route B": {
+        "AirQualityLevel": "Severe (401+)",
+        "TravelTime": "Medium: 30 min",
         "TravelCost": "Low: 15 INR",
         "Delay": "11-25% additional time",
-        "GreenCover": "Low Green Cover (urban/industrial areas)",
+        "GreenCover": "High Green Cover (tree-lined parks)",
+        "PreTripInfoAvailable": "Available",
+        "TripPurpose": "Work/Business"
+      }
+    }
+  },
+  {
+    "routes": {
+      "Route A": {
+        "AirQualityLevel": "Severe (401+)",
+        "TravelTime": "Low: 20 min",
+        "TravelCost": "High: 35 INR",
+        "Delay": "11-25% additional time",
+        "GreenCover": "Moderate",
         "PreTripInfoAvailable": "Available",
         "TripPurpose": "Leisure/Personal"
+      },
+      "Route B": {
+        "AirQualityLevel": "Moderate (101-200)",
+        "TravelTime": "High: 40 min",
+        "TravelCost": "Medium: 25 INR",
+        "Delay": "26-50% additional time",
+        "GreenCover": "Low Green Cover (urban/industrial areas)",
+        "PreTripInfoAvailable": "Not Available",
+        "TripPurpose": "Education"
       }
     }
   }
