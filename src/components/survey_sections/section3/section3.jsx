@@ -175,12 +175,12 @@ const Section3 = ({
               questions: [
                 {
                   question:
-                    "I will take a route if it reduces my exposure to air pollution",
+                    "I will take the shortest route, even if it exposes me to more pollution",
                   name: "take_route_reduce_pollution",
                 },
                 {
                   question:
-                    "I think avoiding high traffic volume roads can reduce my exposure to air pollution even if it takes less time",
+                    "I think avoiding high-volume commercial roads can reduce my exposure to air pollution, even if it takes more time",
                   name: "avoid_high_traffic_pollution",
                 },
                 {
@@ -210,7 +210,7 @@ const Section3 = ({
                 },
                 {
                   question:
-                    "I ride EVs as they reduce pollution and have less impact on the environment",
+                    "I prefer EVs as they reduce pollution and have likely less impact on the environment",
                   name: "ride_ev_reduce_pollution",
                 },
               ],
