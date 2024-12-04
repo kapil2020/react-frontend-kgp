@@ -38,74 +38,85 @@ function AllSurvey() {
   }, [form1Data, form2Data, form3Data, form4Data, form5Data, form6Data]);
 
   const submitSurvey = async () => {
-    const now = new Date();
+    const endTimeValue = new Date();
+
     if (Object.keys(form1Data).length === 0) {
       alert("Section 1 is compulsory. Please fill it to submit the survey.");
       return;
     }
-    setEndTime(now);
-    console.log("Survey ended at ", now);
+    setEndTime(endTimeValue);
+    console.log("Survey ended at ", endTimeValue);
 
-    const timeTakenSeconds = Math.round((now - starttime) / 1000);
+    const timeTakenSeconds = Math.round((endTimeValue - starttime) / 1000);
     const minutes = Math.floor(timeTakenSeconds / 60);
     const seconds = timeTakenSeconds % 60;
-    console.log(`Survey ended at ${now}`);
     console.log(`Time Taken: ${minutes} minutes and ${seconds} seconds`);
-    const surveyData = {
-      metadata: {
-        starttime: starttime.toISOString(),
-        endtime: now.toISOString(),
-        timeTaken: {
-          minutes,
-          seconds,
+
+    // Ensure starttime and endTimeValue are valid Date objects
+    if (!(starttime instanceof Date) || isNaN(starttime)) {
+      alert("Start time is invalid. Please refresh the page and try again.");
+      return;
+    }
+    if (!(endTimeValue instanceof Date) || isNaN(endTimeValue)) {
+      alert("End time is invalid. Please try again.");
+      return;
+    }
+
+    // Prepare the payload
+    const payload = {
+      data: {
+        metadata: {
+          starttime: starttime.toISOString(),
+          endtime: endTimeValue.toISOString(),
+          timeTaken: {
+            minutes,
+            seconds,
+          },
         },
+        form1Data,
+        form2Data,
+        form3Data,
+        form4Data,
+        form5Data,
+        form6Data,
       },
-      form1Data,
-      form2Data,
-      form3Data,
-      form4Data,
-      form5Data,
-      form6Data,
     };
-    console.log("Survey Data:", surveyData);
+
+    console.log("Payload to be sent:", payload);
 
     try {
       const response = await fetch(
-        // "http://localhost:5000/api/survey/submit",
-        // "https://survey-iitkgp-backend-1.vercel.app/api/saveSurvey",
-        "https://survey-backend-zsdp.onrender.com/submit-survey",
-        // add new backend endpoint here and comment the above
+        // "https://x8ki-letl-twmt.n7.xano.io/api:dk41aEwM/data",
+        "https://x8ki-letl-twmt.n7.xano.io/api:obmd9-Mc/survey",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(surveyData),
+          body: JSON.stringify(payload),
         }
       );
 
       if (response.ok) {
         const contentType = response.headers.get("Content-Type");
 
-        // Handle plain text responses
-        if (contentType && contentType.includes("text/plain")) {
-          const textResponse = await response.text(); // Read the plain text response
-          console.log("Success (Text):", textResponse);
-          alert("Data submitted successfully!");
-        } else if (contentType && contentType.includes("application/json")) {
-          const jsonResponse = await response.json(); // Parse JSON response
+        if (contentType && contentType.includes("application/json")) {
+          const jsonResponse = await response.json();
           console.log("Success (JSON):", jsonResponse);
           alert("Data submitted successfully!");
         } else {
-          console.log("Unexpected response format");
-          alert("Data submitted successfully!"); // Generic success message
+          const textResponse = await response.text();
+          console.log("Success (Text):", textResponse);
+          alert("Data submitted successfully!");
         }
+
         setTimeout(() => {
           window.location.href = "/";
         }, 4000);
       } else {
-        console.error(`Failed with status code: ${response.status}`);
-        alert("Error: Failed to submit data.");
+        const errorText = await response.text();
+        console.error(`Failed with status code: ${response.status}`, errorText);
+        alert(`Error: Failed to submit data. ${errorText}`);
       }
     } catch (err) {
       console.log(err);
