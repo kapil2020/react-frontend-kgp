@@ -11,6 +11,8 @@ const getIconForOption = (option) => {
       return "🚌"; // Bus emoji
     case "ipt":
       return "🛺"; // Auto-rickshaw emoji
+    case "two_wheeler":
+      return "🚴"; // Two-wheeler emoji
     default:
       return "❓"; // Default icon for unknown options
   }
