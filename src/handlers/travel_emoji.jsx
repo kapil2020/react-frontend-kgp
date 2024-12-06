@@ -14,7 +14,7 @@ const getIconForOption = (option) => {
     case "two_wheeler":
       return "🚴"; // Two-wheeler emoji
     default:
-      return "❓"; // Default icon for unknown options
+      return "🚴"; // Default icon for unknown options
   }
 };
 
