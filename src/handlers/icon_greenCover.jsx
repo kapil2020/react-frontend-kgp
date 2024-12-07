@@ -11,7 +11,7 @@ const GreenCoverDisplay = ({ greenCoverLevel }) => {
     switch (trimmedLevel.toLowerCase()) {
       case "low green cover (urban/industrial areas)":
         return { label: "Low Green Cover", count: 1 };
-      case "medium green cover":
+      case "Moderate":
         return { label: "Moderate", count: 2 };
       case "high green cover (tree-lined parks)":
         return { label: "High green cover", count: 3 };
