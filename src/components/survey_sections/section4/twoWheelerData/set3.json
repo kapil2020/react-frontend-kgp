@@ -44,7 +44,7 @@
           "AQI": "Moderate (101-200)",
           "TravelTime": "Medium: 30 min",
           "TravelCost": "Low: 50 INR",
-          "WaitingTime": "High: 35 INR",
+          "WaitingTime": "No Waiting",
           "Cleanliness": "High Cleanliness",
           "TripPurpose": "Leisure/Personal"
         },
@@ -52,7 +52,7 @@
           "AQI": "Satisfactory (51-100)",
           "TravelTime": "High: 45 min",
           "TravelCost": "Low: 50 INR",
-          "WaitingTime": "Low: 10 INR",
+          "WaitingTime": "Low: 5 min",
           "Cleanliness": "High Cleanliness",
           "TripPurpose": "Education"
         },
@@ -60,7 +60,7 @@
           "AQI": "Satisfactory (51-100)",
           "TravelTime": "Low: 15 min",
           "TravelCost": "Low: 50 INR",
-          "WaitingTime": "High: 30 INR",
+          "WaitingTime": "Low: 3 min",
           "Cleanliness": "High Cleanliness",
           "TripPurpose": "Education"
         },
@@ -68,7 +68,7 @@
           "AQI": "Moderate (101-200)",
           "TravelTime": "Low: 10 min",
           "TravelCost": "Low: 50 INR",
-          "WaitingTime": "Medium: 20 INR",
+          "WaitingTime": "High: 6 min",
           "Cleanliness": "Low Cleanliness",
           "TripPurpose": "Leisure/Personal"
         }
