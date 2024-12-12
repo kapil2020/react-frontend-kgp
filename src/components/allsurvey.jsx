@@ -18,6 +18,7 @@ function AllSurvey() {
   const [allData, setAllData] = useState({});
   const [starttime, setStartTime] = useState(null);
   const [endtime, setEndTime] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const now = new Date();
@@ -38,10 +39,24 @@ function AllSurvey() {
   }, [form1Data, form2Data, form3Data, form4Data, form5Data, form6Data]);
 
   const submitSurvey = async () => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+    }, 5000);
+
     const endTimeValue = new Date();
 
-    if (Object.keys(form1Data).length === 0) {
-      alert("Section 1 is compulsory. Please fill it to submit the survey.");
+    if (
+      Object.keys(form1Data).length === 0 ||
+      Object.keys(form2Data).length === 0 ||
+      Object.keys(form3Data).length === 0 ||
+      Object.keys(form4Data).length === 0 ||
+      Object.keys(form5Data).length === 0 ||
+      Object.keys(form6Data).length === 0
+    ) {
+      alert(
+        "All Sections are compulsory. Please fill it to submit the survey."
+      );
       return;
     }
     setEndTime(endTimeValue);
@@ -112,7 +127,7 @@ function AllSurvey() {
 
         setTimeout(() => {
           window.location.href = "/";
-        }, 4000);
+        }, 3000);
       } else {
         const errorText = await response.text();
         console.error(`Failed with status code: ${response.status}`, errorText);
@@ -173,8 +188,9 @@ function AllSurvey() {
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
               onClick={submitSurvey}
+              disabled={isSubmitting}
             >
-              Submit Survey
+              {isSubmitting ? "Submitting..." : "Submit Survey"}
             </button>
           </div>
           <br />
