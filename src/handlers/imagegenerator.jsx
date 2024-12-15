@@ -4,6 +4,7 @@ import AQI_moderate from "../aqi_images/AQI_moderate.jpeg";
 import AQI_poor from "../aqi_images/AQI_poor.jpeg";
 import AQI_severe from "../aqi_images/AQI_severe.jpeg";
 import AQI_verypoor from "../aqi_images/AQI_verypoor.jpeg";
+import AQI_satisfactory from "../aqi_images/AQI_satisfatory.jpeg";
 
 const AQIImageDisplay = ({ aqiData }) => {
   // Normalize and determine image path based on AQI category
@@ -13,11 +14,10 @@ const AQIImageDisplay = ({ aqiData }) => {
     }
     const normalizedCategory = aqiCategory.trim().toLowerCase();
 
-    if (
-      normalizedCategory === "good (0-50)" ||
-      normalizedCategory === "satisfactory (51-100)"
-    ) {
+    if (normalizedCategory === "good (0-50)") {
       return AQI_good;
+    } else if (normalizedCategory === "satisfactory (51-100)") {
+      return AQI_satisfactory;
     } else if (normalizedCategory === "moderate (101-200)") {
       return AQI_moderate;
     } else if (normalizedCategory === "poor (201-300)") {
