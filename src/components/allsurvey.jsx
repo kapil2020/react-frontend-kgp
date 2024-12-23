@@ -39,13 +39,6 @@ function AllSurvey() {
   }, [form1Data, form2Data, form3Data, form4Data, form5Data, form6Data]);
 
   const submitSurvey = async () => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 5000);
-
-    const endTimeValue = new Date();
-
     if (
       Object.keys(form1Data).length === 0 ||
       Object.keys(form2Data).length === 0 ||
@@ -59,6 +52,13 @@ function AllSurvey() {
       );
       return;
     }
+
+    const endTimeValue = new Date();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+    }, 5000);
+
     setEndTime(endTimeValue);
     console.log("Survey ended at ", endTimeValue);
 
