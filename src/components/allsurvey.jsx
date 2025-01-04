@@ -102,8 +102,8 @@ function AllSurvey() {
     try {
       const response = await fetch(
         // "https://x8ki-letl-twmt.n7.xano.io/api:dk41aEwM/data",
-       // "https://x8ki-letl-twmt.n7.xano.io/api:obmd9-Mc/survey",
-        "https://x8ki-letl-twmt.n7.xano.io/api:MQ5XQ7S7/main_survey",
+       // "https://x8ki-letl-twmt.n7.xano.io/api:obmd9-Mc/survey", previous sample pilot data
+              "https://x8ki-letl-twmt.n7.xano.io/api:MQ5XQ7S7/main_survey",
         {
           method: "POST",
           headers: {
