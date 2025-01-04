@@ -10,7 +10,7 @@
   ],
   "ptAccessModes": [
     { "value": "walk", "label": "Walk" },
-    { "value": "auto_rickshaw", "label": "Auto Rickshaw" },
+    { "value": "auto_rickshaw", "label": "Auto Rickshaw/ Toto" },
     { "value": "cycle_rickshaw", "label": "Cycle Rickshaw" }
   ],
   "frequencies": [
