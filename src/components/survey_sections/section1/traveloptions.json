@@ -3,8 +3,6 @@
     { "value": "car", "label": "Car" },
     { "value": "metro", "label": "Metro" },
     { "value": "bus", "label": "Bus" },
-    { "value": "bicycle", "label": "Bicycle" },
-    { "value": "walking", "label": "Walking" },
     { "value": "two_wheeler", "label": "Two-Wheeler" },
     { "value": "auto_rickshaw", "label": "Auto-rickshaw" }
   ],
