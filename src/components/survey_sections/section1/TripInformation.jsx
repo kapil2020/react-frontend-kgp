@@ -1,4 +1,5 @@
 import React from "react";
+import Select from "react-select";
 
 const TripInformation = ({ setOrigin, setDestination }) => {
   // const
@@ -99,6 +100,17 @@ const TripInformation = ({ setOrigin, setDestination }) => {
     ],
   };
 
+  const formatOptions = (options) =>
+    Object.entries(options).map(([region, locations]) => ({
+      label: region,
+      options: locations.map((location) => ({
+        label: location,
+        value: location,
+      })),
+    }));
+
+  const selectOptions = formatOptions(originOptions);
+
   return (
     <section id="trip-info" className="py-4 ">
       {/* Origin Dropdown */}
@@ -106,48 +118,25 @@ const TripInformation = ({ setOrigin, setDestination }) => {
         Q.1 Select your typical origin location
         <span className="text-red-600">*</span>
       </label>
-      <select
+      <Select
         id="origin"
-        className="border rounded w-full mt-2 p-2"
-        onChange={(e) => setOrigin(e.target.value)}
-      >
-        <option value="" disabled selected>
-          Select your origin location
-        </option>
-        {Object.keys(originOptions).map((region) => (
-          <optgroup label={region} key={region}>
-            {originOptions[region].map((location) => (
-              <option value={location} key={location}>
-                {location}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
+        className="border rounded w-full mt-2 "
+        // onChange={setOrigin}
+        options={selectOptions}
+        onChange={(selectedOptions) => setOrigin(selectedOptions?.value)}
+      />
 
       {/* Destination Dropdown */}
       <label htmlFor="destination" className="block mt-4">
         Q.2 Select your typical destination location
         <span className="text-red-600">*</span>
       </label>
-      <select
+      <Select
         id="destination"
-        className="border rounded w-full mt-2 p-2"
-        onChange={(e) => setDestination(e.target.value)}
-      >
-        <option value="" disabled selected>
-          Select your destination location
-        </option>
-        {Object.keys(originOptions).map((region) => (
-          <optgroup label={region} key={region}>
-            {originOptions[region].map((location) => (
-              <option value={location} key={location}>
-                {location}
-              </option>
-            ))}
-          </optgroup>
-        ))}
-      </select>
+        className="border rounded w-full mt-2 "
+        onChange={(selectedOptions) => setDestination(selectedOptions?.value)}
+        options={selectOptions}
+      />
     </section>
   );
 };
