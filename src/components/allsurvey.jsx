@@ -4,7 +4,7 @@ import Section3 from "./survey_sections/section3/section3";
 import Section4 from "./survey_sections/section4/section4";
 import Section5 from "./survey_sections/section5/section5";
 import Section6 from "./survey_sections/section6/section6";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TransportProvider } from "./transportContext/TransportContext";
 
 function AllSurvey() {
@@ -19,24 +19,19 @@ function AllSurvey() {
   const [starttime, setStartTime] = useState(null);
   const [endtime, setEndTime] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [enumatorName, setEnumeratorName] = useState("");
+
+  const enumatorNameRef = useRef("");
+  const handleEnumeratorNameChange = (e) => {
+    enumatorNameRef.current = e.target.value;
+    console.log(enumatorNameRef);
+  };
 
   useEffect(() => {
     const now = new Date();
     setStartTime(now);
     console.log("Survey started at ", now);
   }, []);
-
-  useEffect(() => {
-    setAllData({
-      form1Data,
-      form2Data,
-      form3Data,
-      form4Data,
-      form5Data,
-      form6Data,
-    });
-    console.log(allData);
-  }, [form1Data, form2Data, form3Data, form4Data, form5Data, form6Data]);
 
   const submitSurvey = async () => {
     if (
@@ -50,6 +45,11 @@ function AllSurvey() {
       alert(
         "All Sections are compulsory. Please fill it to submit the survey."
       );
+      return;
+    }
+
+    if (enumatorNameRef === "") {
+      alert("Please fill the enumerator's name");
       return;
     }
 
@@ -102,8 +102,8 @@ function AllSurvey() {
     try {
       const response = await fetch(
         // "https://x8ki-letl-twmt.n7.xano.io/api:dk41aEwM/data",
-       // "https://x8ki-letl-twmt.n7.xano.io/api:obmd9-Mc/survey", previous sample pilot data
-              "https://x8ki-letl-twmt.n7.xano.io/api:MQ5XQ7S7/main_survey",
+        // "https://x8ki-letl-twmt.n7.xano.io/api:obmd9-Mc/survey", previous sample pilot data
+        "https://x8ki-letl-twmt.n7.xano.io/api:MQ5XQ7S7/main_survey",
         {
           method: "POST",
           headers: {
@@ -147,6 +147,22 @@ function AllSurvey() {
           <h3 className=" text-center p-4 text-4xl font-bold">Survey</h3>
         </header>
         <body>
+          <div className="mx-auto w-full max-w-7xl rounded-lg shadow-sm bg-slate-200 mt-4 p-2">
+            <p className="">
+              Enumerator's Name<span className="text-red-600">*</span>:{"   "}
+              <span>
+                <textarea
+                  name="enumerator"
+                  id=""
+                  className=""
+                  onChange={handleEnumeratorNameChange}
+                  rows={1}
+                  cols={100}
+                ></textarea>
+              </span>
+            </p>
+          </div>
+
           <TravelDetails
             thisFormData={form1Data}
             setThisFormData={setForm1Data}
