@@ -7,19 +7,52 @@ const Section6 = ({
   setActiveSection,
 }) => {
   const [responses, setResponses] = useState({});
+  const [errors, setErrors] = useState({});
+  const [isDone, setIsDone] = useState(false);
 
   const handleResponseChange = (name, value) => {
     setResponses((prev) => ({ ...prev, [name]: value }));
+    // Clear error for this field when user makes a selection
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const [isDone, setIsDone] = useState(false);
+  const validateResponses = () => {
+    const requiredFields = [
+      "gender",
+      "age",
+      "occupation",
+      "education",
+      "income",
+      "household_size",
+      "car_count",
+      "two_wheeler_count",
+      "bicycle_count",
+    ];
+
+    const newErrors = {};
+    let isValid = true;
+
+    requiredFields.forEach((field) => {
+      if (!responses[field]) {
+        newErrors[field] = "This field is required";
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const saveData = () => {
-    setThisFormData(responses);
-    setActiveSection(0);
-    alert("Data saved successfully!");
-    setIsDone(true);
-    console.log("Section 6 Data: ", responses);
+    if (validateResponses()) {
+      setThisFormData(responses);
+      setActiveSection(0);
+      alert("Data saved successfully!");
+      setIsDone(true);
+      console.log("Section 6 Data: ", responses);
+    } else {
+      alert("Please fill in all required fields");
+    }
   };
 
   return (
@@ -93,10 +126,17 @@ const Section6 = ({
 
       {activeSection === 6 && (
         <div>
+          {Object.keys(errors).length > 0 && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              Please fill in all required fields
+            </div>
+          )}
+
           {/* Gender */}
           <div className="mb-6">
             <label htmlFor="gender" className="block mb-2">
-              Please specify your gender:
+              Please specify your gender:{" "}
+              <span className="text-red-500">*</span>
             </label>
             <select
               id="gender"
@@ -113,6 +153,9 @@ const Section6 = ({
               <option value="female">Female</option>
               <option value="prefer_not_to_say">Prefer not to say</option>
             </select>
+            {errors.gender && (
+              <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
+            )}
           </div>
 
           {/* Age */}
@@ -137,6 +180,9 @@ const Section6 = ({
               <option value="44-59">44-59</option>
               <option value="60_above">More than 60</option>
             </select>
+            {errors.age && (
+              <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+            )}
           </div>
 
           {/* Occupation */}
@@ -163,6 +209,9 @@ const Section6 = ({
               <option value="retired">Retired</option>
               <option value="other">Other</option>
             </select>
+            {errors.occupation && (
+              <p className="text-red-500 text-sm mt-1">{errors.occupation}</p>
+            )}
           </div>
 
           {/* Educational Level */}
@@ -189,6 +238,9 @@ const Section6 = ({
               <option value="graduate">Graduate</option>
               <option value="postgraduate">Postgraduate</option>
             </select>
+            {errors.education && (
+              <p className="text-red-500 text-sm mt-1">{errors.education}</p>
+            )}
           </div>
 
           {/* Monthly Household Income */}
@@ -213,6 +265,9 @@ const Section6 = ({
               <option value="1_1_5lakh">1 lakh - 1.5 lakh</option>
               <option value="above_1_5lakh">More than 1.5 lakh</option>
             </select>
+            {errors.income && (
+              <p className="text-red-500 text-sm mt-1">{errors.income}</p>
+            )}
           </div>
 
           {/* Household Size */}
@@ -236,6 +291,11 @@ const Section6 = ({
               <option value="3_5">3-5 people</option>
               <option value="more_5">More than 5</option>
             </select>
+            {errors.household_size && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.household_size}
+              </p>
+            )}
           </div>
 
           {/* Vehicles */}
@@ -264,6 +324,9 @@ const Section6 = ({
                       handleResponseChange(e.target.name, e.target.value)
                     }
                   />
+                  {errors[id] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[id]}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -311,6 +374,23 @@ const Section6 = ({
               placeholder="Add your comments or additional information here..."
               className="border rounded w-full mt-2 p-2"
               rows="4"
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block mt-4">
+              If you want a copy of your response, please provide your email and
+              our team will get in touch with you (optional):
+            </label>
+            <textarea
+              onChange={(e) =>
+                handleResponseChange(e.target.name, e.target.value)
+              }
+              name="email"
+              placeholder="johndoe@gmail.com"
+              itemType="email"
+              className="border rounded w-full mt-2 p-2"
+              rows="1"
             ></textarea>
           </div>
 

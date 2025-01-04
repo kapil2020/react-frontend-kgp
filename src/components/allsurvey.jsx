@@ -149,16 +149,20 @@ function AllSurvey() {
         <body>
           <div className="mx-auto w-full max-w-7xl rounded-lg shadow-sm bg-slate-200 mt-4 p-2">
             <p className="">
-              Enumerator's Name<span className="text-red-600">*</span>:{"   "}
               <span>
-                <textarea
-                  name="enumerator"
-                  id=""
-                  className=""
-                  onChange={handleEnumeratorNameChange}
-                  rows={1}
-                  cols={100}
-                ></textarea>
+                <div>
+                  <label className="block mt-4">
+                    Enumerator's Name<span className="text-red-600">*</span>:
+                    {"   "}
+                  </label>
+                  <textarea
+                    onChange={handleEnumeratorNameChange}
+                    name="panel_data"
+                    placeholder="Add your comments or additional information here..."
+                    className="border rounded w-full mt-2 p-2"
+                    rows="1"
+                  ></textarea>
+                </div>
               </span>
             </p>
           </div>

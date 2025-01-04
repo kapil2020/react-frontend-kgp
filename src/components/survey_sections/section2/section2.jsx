@@ -19,12 +19,43 @@ const AirQualityAwareness = ({
   });
 
   const [isDone, setIsDone] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (key, value) => {
     setFormData((prevData) => ({
       ...prevData,
       [key]: value,
     }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [key]: "",
+    }));
+  };
+
+  const ValidateForm = () => {
+    const newErrors = {};
+    const requiredFields = [
+      "healthEffectsAwareness",
+      "healthIssues",
+      "aqiExposure",
+      "aqiAwareness",
+      "aqiInfoSource",
+      "aqiFrequency",
+      "aqiActions",
+    ];
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        newErrors[field] = "This field is Required";
+      }
+    });
+
+    if (formData.symptoms.length === 0) {
+      newErrors.symptoms = "Please select at least one symptom.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleCheckboxChange = (value) => {
@@ -37,11 +68,16 @@ const AirQualityAwareness = ({
   };
 
   const handleSave = () => {
-    setActiveSection(0);
-    setThisFormData(formData);
-    setIsDone(true);
-    console.log("Air Quality Awareness Data:", formData);
-    alert("Data saved successfully!");
+    if (ValidateForm()) {
+      setActiveSection(0);
+      setThisFormData(formData);
+      setIsDone(true);
+      console.log("Air Quality Awareness Data:", formData);
+      alert("Data saved successfully!");
+    } else {
+      alert("Please Select atleast One Symptom");
+      console.log(errors);
+    }
   };
 
   return (
@@ -141,6 +177,11 @@ const AirQualityAwareness = ({
             <option value="no">No</option>
             <option value="dont_know">I don’t know</option>
           </select>
+          {errors.healthEffectsAwareness && (
+            <p className="text-red-500 text-sm">
+              {errors.healthEffectsAwareness}
+            </p>
+          )}
 
           <label htmlFor="health_issues" className="block mt-4">
             Q.12 Do you have any pre-existing health issues (like asthma,
@@ -160,6 +201,9 @@ const AirQualityAwareness = ({
             <option value="no">No</option>
             <option value="dont_know">I don’t know</option>
           </select>
+          {errors.healthIssues && (
+            <p className="text-red-500 text-sm">{errors.healthIssues}</p>
+          )}
 
           {/* Image Section */}
           <div className="text-center mt-6 bg-white border rounded-lg p-4 shadow-sm">
@@ -193,6 +237,9 @@ const AirQualityAwareness = ({
             <option value="very_poor">Very Poor</option>
             <option value="severe">Severe</option>
           </select>
+          {errors.aqiExposure && (
+            <p className="text-red-500 text-sm">{errors.aqiExposure}</p>
+          )}
 
           <label htmlFor="aqi_awareness" className="block mt-4">
             Q.14 Are you aware of the Air Quality Index (AQI) levels as shown in
@@ -213,6 +260,9 @@ const AirQualityAwareness = ({
             </option>
             <option value="not_aware">Not aware</option>
           </select>
+          {errors.aqiAwareness && (
+            <p className="text-red-500 text-sm">{errors.aqiAwareness}</p>
+          )}
 
           <label htmlFor="aqi_info_source" className="block mt-4">
             Q.15 Which information source do you use for checking the Air
@@ -233,6 +283,9 @@ const AirQualityAwareness = ({
             <option value="television">Television</option>
             <option value="not_check">Not check at all</option>
           </select>
+          {errors.aqiInfoSource && (
+            <p className="text-red-500 text-sm">{errors.aqiInfoSource}</p>
+          )}
 
           <label htmlFor="aqi_frequency" className="block mt-4">
             Q.16 How frequently do you look at the Air Quality Index/level?
@@ -252,6 +305,9 @@ const AirQualityAwareness = ({
             <option value="special_advisory">On some special advisory</option>
             <option value="never">Never</option>
           </select>
+          {errors.aqiFrequency && (
+            <p className="text-red-500 text-sm">{errors.aqiFrequency}</p>
+          )}
 
           <label htmlFor="aqi_actions" className="block mt-4">
             Q.17 What steps/actions do you take if air quality is affecting
@@ -272,6 +328,9 @@ const AirQualityAwareness = ({
             <option value="avoid_travel">Avoid the travel</option>
             <option value="no_action">No action</option>
           </select>
+          {errors.aqiActions && (
+            <p className="text-red-500 text-sm">{errors.aqiActions}</p>
+          )}
 
           <label className="block mt-4">
             Q.18 After or during travel, do you feel any of these? (Select all

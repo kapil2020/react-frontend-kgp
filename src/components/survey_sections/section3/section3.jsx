@@ -7,6 +7,7 @@ const Section3 = ({
   setActiveSection,
 }) => {
   const [responses, setResponses] = useState({});
+  const [errors, setErrors] = useState({});
 
   const handleResponseChange = (name, value) => {
     setResponses((prev) => ({ ...prev, [name]: value }));
@@ -14,12 +15,47 @@ const Section3 = ({
   };
 
   const [isDone, setIsDone] = useState(false);
+
+  const validateResponses = () => {
+    const newErrors = {};
+    let totalQuestions = 0;
+    let answeredQuestions = 0;
+
+    // Count total questions from all sections
+    const sections = [
+      "General Air Pollution Awareness",
+      "Attitudes Toward Public Transport (Bus, Metro)",
+      "Attitudes Toward Private Vehicles (Car, Two-Wheeler)",
+      "Attitudes Toward Route Preference (Existing Route vs. Greener Route)",
+      "Attitudes Toward Technology and Real-Time Information",
+    ];
+
+    // Calculate total questions from all sections
+    totalQuestions = Object.keys(responses).length;
+
+    // Count answered questions
+    answeredQuestions = Object.values(responses).filter(
+      (value) => value !== undefined && value !== ""
+    ).length;
+
+    if (answeredQuestions < 16) {
+      // Total number of questions in the form
+      setErrors({ general: "Please answer all questions before saving." });
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
   const saveData = () => {
-    setThisFormData(responses);
-    setActiveSection(0);
-    alert("Data saved successfully!");
-    setIsDone(true);
-    console.log(responses);
+    if (validateResponses()) {
+      setThisFormData(responses);
+      setActiveSection(0);
+      alert("Data saved successfully!");
+      setIsDone(true);
+      console.log(responses);
+    }
   };
 
   return (
@@ -93,6 +129,11 @@ const Section3 = ({
 
       {activeSection === 3 && (
         <div className="bg-blue-50 rounded-lg shadow-md p-6">
+          {errors.general && (
+            <p className="text-red-500 text-sm mb-4 text-center">
+              {errors.general}
+            </p>
+          )}
           <p className="text-gray-700 mb-6">
             <span className="text-2xl mr-2">📊</span>
             Rate your level of agreement with the following statements:{" "}
@@ -241,6 +282,9 @@ const Section3 = ({
                       </label>
                     ))}
                   </div>
+                  {errors[name] && (
+                    <p className="text-red-500 text-sm mt-2">{errors[name]}</p>
+                  )}
                 </div>
               ))}
             </div>

@@ -48,6 +48,7 @@ const Section4 = ({
   const [selectedChoices, setSelectedChoices] = useState({
     set: index_no + 1,
   });
+  const [errors, setErrors] = useState({});
 
   let pt_optionsDataAvailable = [
     pt_choiceData1,
@@ -106,12 +107,32 @@ const Section4 = ({
     console.log(selectedChoices);
   };
 
+  const validateChoices = () => {
+    const requiredChoices = choiceData.choices.map((choice) => choice.choiceId);
+    const newErrors = {};
+    let isValid = true;
+
+    requiredChoices.forEach((choiceId) => {
+      if (!selectedChoices[choiceId]) {
+        newErrors[choiceId] = "Please select an option";
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSave = () => {
-    setThisFormData(selectedChoices);
-    setActiveSection(0);
-    console.log("Stated Preference Survey Data:", selectedChoices);
-    setIsDone(true);
-    alert("Data saved successfully!");
+    if (validateChoices()) {
+      setThisFormData(selectedChoices);
+      setActiveSection(0);
+      console.log("Stated Preference Survey Data:", selectedChoices);
+      setIsDone(true);
+      alert("Data saved successfully!");
+    } else {
+      alert("Please make all required selections before saving");
+    }
   };
 
   return (
@@ -197,7 +218,8 @@ const Section4 = ({
               className="bg-blue-100 rounded-lg shadow-md p-4 mb-8"
             >
               <h3 className="text-lg font-bold mb-4">
-                Choice {choice.choiceId}: Select Your Preferred Travel Option
+                Choice {choice.choiceId}: Select Your Preferred Travel Option{" "}
+                <span className="text-red-600">*</span>
               </h3>
               <div className="overflow-x-auto">
                 <table className="table-auto w-full border-collapse border border-gray-300">
@@ -326,6 +348,11 @@ const Section4 = ({
                   </tbody>
                 </table>
               </div>
+              {errors[choice.choiceId] && (
+                <p className="text-red-500 mt-2 text-sm">
+                  {errors[choice.choiceId]}
+                </p>
+              )}
             </div>
           ))}
           <div className="text-center mt-6">

@@ -29,6 +29,7 @@ const Section5 = ({
   const [selectedRoutes, setSelectedRoutes] = useState({
     set: index_no + 1,
   });
+  const [errors, setErrors] = useState({});
 
   const optionsDataAvailable = [
     choiceData1,
@@ -44,11 +45,31 @@ const Section5 = ({
   const [isDone, setIsDone] = useState(false);
   const section5Data = optionsDataAvailable[index_no];
 
+  const validateSelections = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    // Check if all choices have been made
+    section5Data?.forEach((_, index) => {
+      if (!selectedRoutes[`choice-${index}`]) {
+        newErrors[`choice-${index}`] = "Please select a route for this choice";
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const saveData = () => {
-    setThisSection5FormData(selectedRoutes);
-    setActiveSection(6);
-    alert("Data saved successfully!");
-    setIsDone(true);
+    if (validateSelections()) {
+      setThisSection5FormData(selectedRoutes);
+      setActiveSection(6);
+      alert("Data saved successfully!");
+      setIsDone(true);
+    } else {
+      alert("Please make all required selections before saving");
+    }
   };
 
   const handleRouteSelection = (choiceId, route) => {
@@ -135,10 +156,16 @@ const Section5 = ({
         }`}
       >
         <section className="bg-blue-50 mt-4 p-4 rounded-lg shadow-md">
+          {Object.keys(errors).length > 0 && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              Please make all required selections
+            </div>
+          )}
           {section5Data?.map((choiceSet, index) => (
             <div key={index} className="bg-white rounded-lg shadow-md p-4 mb-8">
               <h4 className="text-lg font-semibold mb-4">
-                Choice {index + 1}: Select Your Preferred Route
+                Choice {index + 1}: Select Your Preferred Route{" "}
+                <span className="text-red-600">*</span>
               </h4>
               <div className="overflow-x-auto">
                 <table className="table-auto w-full border-collapse border border-gray-300">
@@ -281,6 +308,11 @@ const Section5 = ({
                   </tbody>
                 </table>
               </div>
+              {errors[`choice-${index}`] && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors[`choice-${index}`]}
+                </p>
+              )}
             </div>
           ))}
           <div className="text-center mt-6">

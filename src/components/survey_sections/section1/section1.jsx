@@ -17,6 +17,7 @@ const TravelDetails = ({
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [isDone, setIsDone] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     location: { latitude: "", longitude: "" },
@@ -41,6 +42,23 @@ const TravelDetails = ({
     }));
   }, [location, landmark, origin, destination]);
 
+  const validateForm = () => {
+    const newErrors = {};
+    // if (!formData.landmark) newErrors.landmark = "LandMark is required";
+    if (!formData.origin) newErrors.origin = "Origin is required";
+    if (!formData.destination)
+      newErrors.destination = "Destination is required";
+    if (!formData.travelMode) newErrors.travelMode = "Travel mode is required";
+    if (showPTAccess && !formData.accessMode)
+      newErrors.accessMode = "Access mode is required";
+    if (!formData.frequency) newErrors.frequency = "Frequency is required";
+    if (!formData.purpose) newErrors.purpose = "Purpose is required";
+    if (!formData.distance) newErrors.distance = "Distance is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleModeChange = (event) => {
     const mode = event.target.value;
     setShowPTAccess(mode === "metro" || mode === "bus");
@@ -51,14 +69,19 @@ const TravelDetails = ({
 
   const handleInputChange = (key, value) => {
     setFormData((prevData) => ({ ...prevData, [key]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [key]: undefined }));
   };
 
   const handleSave = () => {
-    setThisFormData(formData);
-    console.log("Form Data:", formData);
-    setIsDone(true);
-    alert("Data saved successfully!");
-    setActiveSection(0);
+    if (validateForm()) {
+      setThisFormData(formData);
+      console.log("Form Data: ", formData);
+      setIsDone(true);
+      alert("Data saved successfully!");
+      setActiveSection(0);
+    } else {
+      alert("Please fill otu all the required fields.");
+    }
     // Add save logic here (e.g., send to backend or localStorage)
   };
 
@@ -169,7 +192,12 @@ const TravelDetails = ({
               setOrigin={setOrigin}
               setDestination={setDestination}
             />
-
+            {errors.origin && (
+              <p className="text-red-500 text-sm">{errors.origin}</p>
+            )}
+            {errors.destination && (
+              <p className="text-red-500 text-sm">{errors.destination}</p>
+            )}
             {/* Travel Mode Selection */}
             <label htmlFor="travel_mode" className="block mt-4">
               Q.3 Select the primary mode of travel for your daily trip
@@ -178,7 +206,9 @@ const TravelDetails = ({
             <select
               id="travel_mode"
               onChange={handleModeChange}
-              className="border rounded w-full mt-2 p-2"
+              className={`border rounded w-full mt-2 p-2 ${
+                errors.travelMode ? "border-red-500" : ""
+              }`}
               value={formData.travelMode}
             >
               <option value="" disabled>
@@ -190,6 +220,9 @@ const TravelDetails = ({
                 </option>
               ))}
             </select>
+            {errors.travelMode && (
+              <p className="text-red-500 text-sm">{errors.travelMode}</p>
+            )}
 
             {/* Public Transport Access Mode */}
             {showPTAccess && (
@@ -215,6 +248,9 @@ const TravelDetails = ({
                     </option>
                   ))}
                 </select>
+                {errors.accessMode && (
+                  <p className="text-red-500 text-sm">{errors.accessMode}</p>
+                )}
               </div>
             )}
 
@@ -225,7 +261,9 @@ const TravelDetails = ({
             </label>
             <select
               id="frequency"
-              className="border rounded w-full mt-2 p-2"
+              className={`border rounded w-full mt-2 p-2 $${
+                errors.travelMode ? "border-red-500" : ""
+              }`}
               value={formData.frequency}
               onChange={(e) => handleInputChange("frequency", e.target.value)}
             >
@@ -238,6 +276,9 @@ const TravelDetails = ({
                 </option>
               ))}
             </select>
+            {errors.frequency && (
+              <p className="text-red-500 text-sm">{errors.frequency}</p>
+            )}
 
             {/* Purpose */}
             <label htmlFor="purpose" className="block mt-4">
@@ -246,7 +287,9 @@ const TravelDetails = ({
             </label>
             <select
               id="purpose"
-              className="border rounded w-full mt-2 p-2"
+              className={`border rounded w-full mt-2 p-2 ${
+                errors.purpose ? "border-red-500" : ""
+              }`}
               value={formData.purpose}
               onChange={(e) => handleInputChange("purpose", e.target.value)}
             >
@@ -259,6 +302,9 @@ const TravelDetails = ({
                 </option>
               ))}
             </select>
+            {errors.purpose && (
+              <p className="text-red-500 text-sm">{errors.purpose}</p>
+            )}
 
             {/* Distance */}
             <label htmlFor="distance" className="block mt-4">
@@ -267,7 +313,9 @@ const TravelDetails = ({
             </label>
             <select
               id="distance"
-              className="border rounded w-full mt-2 p-2"
+              className={`border rounded w-full mt-2 p-2 ${
+                errors.travelMode ? "border-red-500" : ""
+              }`}
               value={formData.distance}
               onChange={(e) => handleInputChange("distance", e.target.value)}
             >
@@ -280,6 +328,9 @@ const TravelDetails = ({
                 </option>
               ))}
             </select>
+            {errors.distance && (
+              <p className="text-red-500 text-sm">{errors.distance}</p>
+            )}
 
             {/* Save Button */}
             <div className="text-center mt-6">
