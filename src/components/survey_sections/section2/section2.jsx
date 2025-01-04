@@ -90,7 +90,11 @@ const AirQualityAwareness = ({
           else setActiveSection(2);
         }}
       >
-        <h3 className="text-lg font-bold">Section 2: Air Quality Awareness</h3>
+        <h3 className="text-lg font-bold">
+          Section 2: Air Quality Awareness{" "}
+          <span className="text-red-600">*</span>
+        </h3>
+
         <div>
           {isDone && (
             <div>

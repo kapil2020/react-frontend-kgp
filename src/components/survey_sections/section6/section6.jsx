@@ -67,7 +67,10 @@ const Section6 = ({
           else setActiveSection(6);
         }}
       >
-        Section 6: Socio-Demographic Survey
+        <div>
+          Section 6: Socio-Demographic Survey{" "}
+          <span className="text-red-600">*</span>
+        </div>
         <div>
           {isDone && (
             <div>

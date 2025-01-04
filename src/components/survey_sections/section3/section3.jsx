@@ -70,7 +70,9 @@ const Section3 = ({
           else setActiveSection(3);
         }}
       >
-        Section 3: Perception/Attitude
+        <div>
+          Section 3: Perception/Attitude <span className="text-red-600">*</span>
+        </div>
         <div>
           {isDone && (
             <div>
