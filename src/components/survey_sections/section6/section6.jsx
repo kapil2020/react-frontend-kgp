@@ -289,7 +289,7 @@ const Section6 = ({
             >
               <option value="" disabled selected>
                 Select household size
-              <select>
+              </option>
               <option value="">Select</option>
               <option value="1">1 person</option>
               <option value="2_3">2-3 people</option>
