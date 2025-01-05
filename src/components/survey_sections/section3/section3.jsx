@@ -275,7 +275,7 @@ const Section3 = ({
                           type="radio"
                           name={name}
                           value={i + 1}
-                          className="accent-blue-500 cursor-pointer"
+                          className="accent-blue-500 cursor-pointer scale-125"
                           onChange={(e) =>
                             handleResponseChange(name, e.target.value)
                           }
