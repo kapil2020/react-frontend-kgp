@@ -6,7 +6,11 @@ const Section6 = ({
   activeSection,
   setActiveSection,
 }) => {
-  const [responses, setResponses] = useState({});
+  const [responses, setResponses] = useState({
+    car_count: 0,
+    two_wheeler_count: 0,
+    bicycle_count: 0,
+  });
   const [errors, setErrors] = useState({});
   const [isDone, setIsDone] = useState(false);
 
@@ -24,9 +28,9 @@ const Section6 = ({
       "education",
       "income",
       "household_size",
-      "car_count",
-      "two_wheeler_count",
-      "bicycle_count",
+      // "car_count",
+      // "two_wheeler_count",
+      // "bicycle_count",
     ];
 
     const newErrors = {};
