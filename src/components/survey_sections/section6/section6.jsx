@@ -289,11 +289,12 @@ const Section6 = ({
             >
               <option value="" disabled selected>
                 Select household size
-              </option>
-              <option value="1">1</option>
-              <option value="1_3">1-3 people</option>
-              <option value="3_5">3-5 people</option>
-              <option value="more_5">More than 5</option>
+              <select>
+              <option value="">Select</option>
+              <option value="1">1 person</option>
+              <option value="2_3">2-3 people</option>
+              <option value="4_5">4-5 people</option>
+              <option value="more_6">6 or more people</option>
             </select>
             {errors.household_size && (
               <p className="text-red-500 text-sm mt-1">
