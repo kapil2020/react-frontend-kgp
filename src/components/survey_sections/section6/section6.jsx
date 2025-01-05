@@ -263,6 +263,7 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your income range
               </option>
+              <option value="none">none</option>
               <option value="less_25k">Less than 25k</option>
               <option value="25_50k">25k - 50k</option>
               <option value="50_1lakh">50k - 1 lakh</option>
