@@ -237,13 +237,10 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your education level
               </option>
-              <option value="primary_secondary">Primary/Secondary</option>
-              <option value="class_10">Class 10th</option>
-              <option value="higher_secondary">
-                Higher Secondary/Class 12th
-              </option>
-              <option value="graduate">Graduate</option>
-              <option value="postgraduate">Postgraduate</option>
+  <option value="grade_10_or_below">Grade 10 or below</option>
+  <option value="intermediate">Intermediate (Grade 12)</option>
+  <option value="graduate">Graduate</option>
+  <option value="postgraduate_above">Post Graduate and above</option>
             </select>
             {errors.education && (
               <p className="text-red-500 text-sm mt-1">{errors.education}</p>
