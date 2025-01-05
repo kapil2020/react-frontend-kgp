@@ -322,6 +322,7 @@ const Section6 = ({
                     name={id}
                     min="0"
                     placeholder="0"
+                    defaultValue={0}
                     className="border rounded p-2 w-full"
                     onChange={(e) =>
                       handleResponseChange(e.target.name, e.target.value)
