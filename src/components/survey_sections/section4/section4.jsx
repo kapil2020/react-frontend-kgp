@@ -86,7 +86,11 @@ const Section4 = ({
 
   let choiceData = car_optionsDataAvailable[index_no];
 
-  if (selectedTransport === "bus" || selectedTransport === "metro") {
+  if (
+    selectedTransport === "bus" ||
+    selectedTransport === "metro" ||
+    selectedTransport === "auto_rickshaw"
+  ) {
     choiceData = pt_optionsDataAvailable[index_no];
   } else if (selectedTransport === "two_wheeler") {
     choiceData = tw_optionsDataAvailable[index_no];
