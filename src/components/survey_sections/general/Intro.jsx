@@ -130,7 +130,8 @@ const SurveyIntro = () => {
           <img
             src="https://raw.githubusercontent.com/kapil2020/react-frontend-kgp/main/src/components/survey_sections/general/Screenshot_2023-06-18_114302-removebg-preview.png"
             alt="Logo"
-            className="w-24 h-24 mx-auto"
+            className="mx-auto max-w-full h-auto" // Adjusted to maintain aspect ratio
+            style={{ maxHeight: '150px' }} // Optional: Set a max height if needed
           />
         </div>
       </div>
