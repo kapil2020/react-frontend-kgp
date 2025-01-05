@@ -124,6 +124,15 @@ const SurveyIntro = () => {
             </div>
           </div>
         </div>
+
+        {/* Footer with Logo */}
+        <div className="w-full mt-12 text-center">
+          <img
+            src="https://raw.githubusercontent.com/kapil2020/react-frontend-kgp/main/src/components/survey_sections/general/Screenshot_2023-06-18_114302-removebg-preview.png"
+            alt="Logo"
+            className="w-24 h-24 mx-auto"
+          />
+        </div>
       </div>
 
       {/* Animated Background Waves at Bottom */}
