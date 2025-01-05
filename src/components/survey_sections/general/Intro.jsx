@@ -126,7 +126,7 @@ const SurveyIntro = () => {
         </div>
 
         {/* Footer with Logo */}
-        <div className="w-full mt-12 text-center">
+        <div className="w-full mt-8 text-center"> {/* Changed mt-12 to mt-8 to shift the logo up */}
           <img
             src="https://raw.githubusercontent.com/kapil2020/react-frontend-kgp/main/src/components/survey_sections/general/Screenshot_2023-06-18_114302-removebg-preview.png"
             alt="Logo"
