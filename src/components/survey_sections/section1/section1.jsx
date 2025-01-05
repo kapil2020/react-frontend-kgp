@@ -80,7 +80,7 @@ const TravelDetails = ({
       alert("Data saved successfully!");
       setActiveSection(0);
     } else {
-      alert("Please fill otu all the required fields.");
+      alert("Please fill out all the required fields.");
     }
     // Add save logic here (e.g., send to backend or localStorage)
   };
