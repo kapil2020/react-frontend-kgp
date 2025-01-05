@@ -94,6 +94,7 @@ function AllSurvey() {
         form4Data,
         form5Data,
         form6Data,
+        enumatorNameRef,
       },
     };
 
