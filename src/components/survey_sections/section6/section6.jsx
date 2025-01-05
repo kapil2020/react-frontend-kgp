@@ -237,10 +237,10 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your education level
               </option>
-  <option value="grade_10_or_below">Grade 10 or below</option>
-  <option value="intermediate">Intermediate (Grade 12)</option>
-  <option value="graduate">Graduate</option>
-  <option value="postgraduate_above">Post Graduate and above</option>
+            <option value="grade_10_or_below">Grade 10 or below</option>
+            <option value="intermediate">Intermediate (Grade 12)</option>
+            <option value="graduate">Graduate</option>
+            <option value="postgraduate_above">Post Graduate and above</option>
             </select>
             {errors.education && (
               <p className="text-red-500 text-sm mt-1">{errors.education}</p>
@@ -263,7 +263,7 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your income range
               </option>
-              <option value="none">none</option>
+              <option value="no_income">No Income</option>
               <option value="less_25k">Less than 25k</option>
               <option value="25_50k">25k - 50k</option>
               <option value="50_1lakh">50k - 1 lakh</option>
