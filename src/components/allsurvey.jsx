@@ -48,7 +48,7 @@ function AllSurvey() {
       return;
     }
 
-    if (enumatorNameRef === "") {
+    if (!enumatorNameRef.current) {
       alert("Please fill the enumerator's name");
       return;
     }
