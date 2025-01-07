@@ -184,6 +184,80 @@
           "TripPurpose": "Education"
         }
       }
+    },
+    {
+      "choiceId": 6,
+      "options": {
+        "TwoWheeler": {
+          "AQI": "Poor (201-300)",
+          "TravelTime": "Low: 20 min",
+          "TravelCost": "High: 35 INR",
+          "WaitingTime": "No Waiting",
+          "Cleanliness": "Low Cleanliness",
+          "TripPurpose": "Education"
+        },
+        "Bus": {
+          "AQI": "Good (0-50)",
+          "TravelTime": "Medium: 35 min",
+          "TravelCost": "Medium: 15 INR",
+          "WaitingTime": "Medium: 10 min",
+          "Cleanliness": "High Cleanliness",
+          "TripPurpose": "Work/Business"
+        },
+        "Metro": {
+          "AQI": "Good (0-50)",
+          "TravelTime": "Medium: 25 min",
+          "TravelCost": "High: 30 INR",
+          "WaitingTime": "Medium: 5 min",
+          "Cleanliness": "High Cleanliness",
+          "TripPurpose": "Education"
+        },
+        "IPT": {
+          "AQI": "Severe (401+)",
+          "TravelTime": "Medium: 20 min",
+          "TravelCost": "Medium: 20 INR",
+          "WaitingTime": "Low: 2 min",
+          "Cleanliness": "Low Cleanliness",
+          "TripPurpose": "Work/Business"
+        }
+      }
+    },
+    {
+      "choiceId": 7,
+      "options": {
+        "TwoWheeler": {
+          "AQI": "Very Poor (301-400)",
+          "TravelTime": "Medium: 30 min",
+          "TravelCost": "High: 35 INR",
+          "WaitingTime": "No Waiting",
+          "Cleanliness": "Moderate Cleanliness",
+          "TripPurpose": "Leisure/Personal"
+        },
+        "Bus": {
+          "AQI": "Poor (201-300)",
+          "TravelTime": "Medium: 35 min",
+          "TravelCost": "Low: 10 INR",
+          "WaitingTime": "High: 15 min",
+          "Cleanliness": "Low Cleanliness",
+          "TripPurpose": "Education"
+        },
+        "Metro": {
+          "AQI": "Moderate (101-200)",
+          "TravelTime": "Medium: 25 min",
+          "TravelCost": "High: 30 INR",
+          "WaitingTime": "Medium: 5 min",
+          "Cleanliness": "Moderate Cleanliness",
+          "TripPurpose": "Work/Business"
+        },
+        "IPT": {
+          "AQI": "Poor (201-300)",
+          "TravelTime": "High: 30 min",
+          "TravelCost": "High: 30 INR",
+          "WaitingTime": "Low: 2 min",
+          "Cleanliness": "Low Cleanliness",
+          "TripPurpose": "Education"
+        }
+      }
     }
   ]
 }
