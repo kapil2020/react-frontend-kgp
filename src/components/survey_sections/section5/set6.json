@@ -2,6 +2,28 @@
   {
     "routes": {
       "Route A": {
+        "AirQualityLevel": "Moderate (101-200)",
+        "TravelTime": "Medium: 30 min",
+        "TravelCost": "Low: 15 INR",
+        "Delay": "26-50% additional time",
+        "GreenCover": "Moderate",
+        "PreTripInfoAvailable": "Available",
+        "TripPurpose": "Work/Business"
+      },
+      "Route B": {
+        "AirQualityLevel": "Very Poor (301-400)",
+        "TravelTime": "High: 40min",
+        "TravelCost": "Medium: 25 INR",
+        "Delay": "11-25% additional time",
+        "GreenCover": "Low Green Cover (urban/industrial areas)",
+        "PreTripInfoAvailable": "Not Available",
+        "TripPurpose": "Leisure/Personal"
+      }
+    }
+  },
+  {
+    "routes": {
+      "Route A": {
         "AirQualityLevel": "Very Poor (301-400)",
         "TravelTime": "Low: 20 min",
         "TravelCost": "Low: 15 INR",
