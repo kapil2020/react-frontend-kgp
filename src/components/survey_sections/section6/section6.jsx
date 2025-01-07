@@ -237,13 +237,10 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your education level
               </option>
-              <option value="primary_secondary">Primary/Secondary</option>
-              <option value="class_10">Class 10th</option>
-              <option value="higher_secondary">
-                Higher Secondary/Class 12th
-              </option>
-              <option value="graduate">Graduate</option>
-              <option value="postgraduate">Postgraduate</option>
+            <option value="grade_10_or_below">Grade 10 or below</option>
+            <option value="intermediate">Intermediate (Grade 12)</option>
+            <option value="graduate">Graduate</option>
+            <option value="postgraduate_above">Post Graduate and above</option>
             </select>
             {errors.education && (
               <p className="text-red-500 text-sm mt-1">{errors.education}</p>
@@ -266,6 +263,7 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select your income range
               </option>
+              <option value="no_income">No Income</option>
               <option value="less_25k">Less than 25k</option>
               <option value="25_50k">25k - 50k</option>
               <option value="50_1lakh">50k - 1 lakh</option>
@@ -293,10 +291,10 @@ const Section6 = ({
               <option value="" disabled selected>
                 Select household size
               </option>
-              <option value="1">1</option>
-              <option value="1_3">1-3 people</option>
-              <option value="3_5">3-5 people</option>
-              <option value="more_5">More than 5</option>
+              <option value="1">1 person</option>
+              <option value="2_3">2-3 people</option>
+              <option value="4_5">4-5 people</option>
+              <option value="more_6">6 or more people</option>
             </select>
             {errors.household_size && (
               <p className="text-red-500 text-sm mt-1">
@@ -304,7 +302,33 @@ const Section6 = ({
               </p>
             )}
           </div>
-
+{/* Monthly Household Income */}
+<div className="mb-6">
+  <label htmlFor="household_income" className="block mb-2">
+    Monthly household income (in Rs):
+  </label>
+  <select
+    id="household_income"
+    name="household_income"
+    className="w-full border rounded p-2"
+    onChange={(e) =>
+      handleResponseChange(e.target.name, e.target.value)
+    }
+  >
+    <option value="" disabled selected>
+      Select your household income range
+    </option>
+    <option value="no_income">No Income</option>
+    <option value="less_25k">Less than ₹25,000</option>
+    <option value="25_50k">₹25,000 - ₹50,000</option>
+    <option value="50_1lakh">₹50,000 - ₹1,00,000</option>
+    <option value="1_2lakh">₹1,00,000 - ₹2,00,000</option>
+    <option value="above_2lakh">More than ₹2,00,000</option>
+  </select>
+  {errors.household_income && (
+    <p className="text-red-500 text-sm mt-1">{errors.household_income}</p>
+  )}
+</div>
           {/* Vehicles */}
           <div className="mb-6">
             <h5 className="text-gray-800 mb-2">

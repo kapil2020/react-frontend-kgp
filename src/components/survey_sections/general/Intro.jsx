@@ -124,6 +124,16 @@ const SurveyIntro = () => {
             </div>
           </div>
         </div>
+
+        {/* Footer with Logo */}
+        <div className="w-full mt-8 text-center"> {/* Changed mt-12 to mt-8 to shift the logo up */}
+          <img
+            src="https://raw.githubusercontent.com/kapil2020/react-frontend-kgp/main/src/components/survey_sections/general/Screenshot_2023-06-18_114302-removebg-preview.png"
+            alt="Logo"
+            className="mx-auto max-w-full h-auto" // Adjusted to maintain aspect ratio
+            style={{ maxHeight: '150px' }} // Optional: Set a max height if needed
+          />
+        </div>
       </div>
 
       {/* Animated Background Waves at Bottom */}
