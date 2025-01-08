@@ -15,7 +15,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/survey" element={<AllSurvey />} />
-        <Route path="/count_response" element={<ResponseCounter />} />
+        <Route path="/responses" element={<ResponseCounter />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
