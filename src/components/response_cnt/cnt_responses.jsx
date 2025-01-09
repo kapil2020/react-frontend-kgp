@@ -4,7 +4,7 @@ import * as Plot from "@observablehq/plot";
 
 const ResponseCounter = () => {
   const [responses, setResponses] = useState(null);
-  const [allresponses, setAllResponses] = useState([]); // Ensure this is an array
+  const [allresponses, setAllResponses] = useState([]);
   const [error, setError] = useState(null);
   const [form1_accessmode, setForm1_accessmode] = useState({
     metro: 0,
@@ -13,8 +13,6 @@ const ResponseCounter = () => {
   const [form1_distance, setForm1_distance] = useState(null);
   const [form1_purpose, setForm1_purpose] = useState(null);
   const [form1_travel_mode, setForm1_travel_mode] = useState(null);
-
-  // Metadata counts
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
@@ -32,13 +30,8 @@ const ResponseCounter = () => {
         }
 
         const jsonData = await res.json();
-
-        console.log("All responses are: ", jsonData);
-        console.log("1st response is: ", jsonData[0]);
-
-        // Set the full array of responses
         setAllResponses(jsonData);
-        setResponses(jsonData.length); // Set the total number of responses
+        setResponses(jsonData.length);
       } catch (err) {
         console.error("Error fetching data:", err);
         setError(err.message);
@@ -72,77 +65,86 @@ const ResponseCounter = () => {
       const createPiechart = (
         data,
         elementId,
-        chartWidth = 200,
-        chartHeight = 200
+        chartWidth = 300,
+        chartHeight = 300
       ) => {
-        // Check if the chart already exists
         const existingChart = d3.select(elementId).select("svg");
-        if (!existingChart.empty()) return; // Exit if the chart already exists
-        const radius = Math.min(chartWidth, chartHeight) / 2;
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+        if (!existingChart.empty()) return;
 
-        const arc = d3
-          .arc()
+        const radius = Math.min(chartWidth, chartHeight) / 2;
+        const color = d3.scaleOrdinal()
+          .domain(data.map(d => d.label))
+          .range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]);
+
+        const arc = d3.arc()
           .outerRadius(radius - 10)
           .innerRadius(0);
-        const pie = d3.pie().value((d) => d.value);
 
-        const svg = d3
-          .select(elementId)
+        const pie = d3.pie().value(d => d.value);
+
+        const svg = d3.select(elementId)
           .append("svg")
           .attr("width", chartWidth)
           .attr("height", chartHeight);
 
-        const g = svg
-          .append("g")
+        const g = svg.append("g")
           .attr("transform", `translate(${chartWidth / 2},${chartHeight / 2})`);
 
-        const gData = g
-          .selectAll(".arc")
+        const gData = g.selectAll(".arc")
           .data(pie(data))
           .enter()
           .append("g")
           .attr("class", "arc");
 
-        gData
-          .append("path")
+        gData.append("path")
           .attr("d", arc)
-          .style("fill", (d) => color(d.data.label));
+          .style("fill", d => color(d.data.label));
 
-        gData
-          .append("text")
-          .attr("transform", (d) => `translate(${arc.centroid(d)})`)
+        gData.append("text")
+          .attr("transform", d => `translate(${arc.centroid(d)})`)
           .attr("dy", ".35em")
-          .text((d) => d.data.label);
+          .text(d => d.data.label);
+
+        // Add legend
+        const legend = svg.append("g")
+          .attr("transform", `translate(${chartWidth - 100}, 20)`);
+
+        data.forEach((d, i) => {
+          legend.append("rect")
+            .attr("y", i * 20)
+            .attr("width", 18)
+            .attr("height", 18)
+            .style("fill", color(d.label));
+
+          legend.append("text")
+            .attr("x", 24)
+            .attr("y", i * 20 + 14)
+            .text(d.label);
+        });
       };
 
-      // Create pie charts for different fields
       const distanceData = aggregateData("distance");
       createPiechart(distanceData, "#distance-chart");
 
       const accessModeData = aggregateData("accessMode");
-      createPiechart(accessModeData, "#accessMode-chart");
+      createPiechart(accessModeData, "#access-mode-chart");
 
       const purposeData = aggregateData("purpose");
       createPiechart(purposeData, "#purpose-chart");
 
       const travelModeData = aggregateData("travelMode");
-
       createPiechart(travelModeData, "#travel-mode-chart");
 
-      console.log("Plot data:", plotData);
-
-      // Generate Plot using Plot library
       const plot = Plot.plot({
         x: {
           label: "Minutes Spent",
           type: "linear",
-          tickFormat: (d) => `${d} min`,
+          tickFormat: d => `${d} min`,
         },
         y: {
           label: "Seconds Spent",
           type: "linear",
-          tickFormat: (d) => `${d} sec`,
+          tickFormat: d => `${d} sec`,
         },
         marks: [
           Plot.ruleX([0]),
@@ -150,8 +152,8 @@ const ResponseCounter = () => {
           Plot.dot(plotData, {
             x: "minutes",
             y: "seconds",
-            fill: "blue",
-            r: 3,
+            fill: "steelblue",
+            r: 5,
           }),
         ],
       });
@@ -176,25 +178,25 @@ const ResponseCounter = () => {
             </h3>
             <div
               ref={containerRef}
-              className="w-auto py-4 flex justify-center mt-4 "
+              className="w-auto py-4 flex justify-center mt-4"
             />
             <div className="mt-4">plots</div>
             <div className="flex mt-20 p-10 justify-between mx-20">
               <div
                 id="distance-chart"
-                className="scale-150 rounded-lg shadow-lg p-4"
+                className="chart-container rounded-lg shadow-lg p-4"
               />
               <div
                 id="access-mode-chart"
-                className="rounded-lg shadow-lg p-4 scale-150"
+                className="chart-container rounded-lg shadow-lg p-4"
               />
               <div
                 id="purpose-chart"
-                className="rounded-lg shadow-lg p-4 scale-150"
+                className="chart-container rounded-lg shadow-lg p-4"
               />
               <div
                 id="travel-mode-chart"
-                className="rounded-lg shadow-lg p-4 scale-150"
+                className="chart-container rounded-lg shadow-lg p-4"
               />
             </div>
           </>
