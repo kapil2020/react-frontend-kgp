@@ -1,5 +1,5 @@
 import "./App.css";
-import SurveyIntro from "./components/survey_sections/general/Intro";
+import SurveyIntro from "./components/survey_frontend/survey_sections/general/Intro";
 
 function App() {
   return (

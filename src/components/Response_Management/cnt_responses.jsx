@@ -1,21 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import * as Plot from "@observablehq/plot";
+import MetaData_info from "./MetaData_response/metadata";
+import Form1_info from "./Form1_response/form1_response";
+import LazyForm1Response from "./Form1_response/LazyForm1Response";
 
 const ResponseCounter = () => {
   const [responses, setResponses] = useState(null);
   const [allresponses, setAllResponses] = useState([]); // Ensure this is an array
   const [error, setError] = useState(null);
-  const [form1_accessmode, setForm1_accessmode] = useState({
-    metro: 0,
-    bus: 0,
-  });
-  const [form1_distance, setForm1_distance] = useState(null);
-  const [form1_purpose, setForm1_purpose] = useState(null);
-  const [form1_travel_mode, setForm1_travel_mode] = useState(null);
 
   // Metadata counts
-  const [counts, setCounts] = useState({});
 
   useEffect(() => {
     const fetchResponses = async () => {
@@ -48,15 +43,8 @@ const ResponseCounter = () => {
     fetchResponses();
   }, []);
 
-  const containerRef = useRef();
-
   useEffect(() => {
     if (allresponses && allresponses.length > 0) {
-      const plotData = allresponses.map((eachResponse) => ({
-        seconds: eachResponse.data.metadata.timeTaken.seconds,
-        minutes: eachResponse.data.metadata.timeTaken.minutes,
-      }));
-
       const aggregateData = (field) => {
         const count = {};
         allresponses.forEach((response) => {
@@ -130,36 +118,7 @@ const ResponseCounter = () => {
 
       createPiechart(travelModeData, "#travel-mode-chart");
 
-      console.log("Plot data:", plotData);
-
       // Generate Plot using Plot library
-      const plot = Plot.plot({
-        x: {
-          label: "Minutes Spent",
-          type: "linear",
-          tickFormat: (d) => `${d} min`,
-        },
-        y: {
-          label: "Seconds Spent",
-          type: "linear",
-          tickFormat: (d) => `${d} sec`,
-        },
-        marks: [
-          Plot.ruleX([0]),
-          Plot.ruleY([0]),
-          Plot.dot(plotData, {
-            x: "minutes",
-            y: "seconds",
-            fill: "blue",
-            r: 3,
-          }),
-        ],
-      });
-
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
-        containerRef.current.appendChild(plot);
-      }
     }
   }, [allresponses]);
 
@@ -171,32 +130,9 @@ const ResponseCounter = () => {
         ) : responses !== null ? (
           <>
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Responses</h1>
-            <h3 className="font-semibold text-gray-700">
-              Time Spent on Survey:
-            </h3>
-            <div
-              ref={containerRef}
-              className="w-auto py-4 flex justify-center mt-4 "
-            />
-            <div className="mt-4">plots</div>
-            <div className="flex mt-20 p-10 justify-between mx-20">
-              <div
-                id="distance-chart"
-                className="scale-150 rounded-lg shadow-lg p-4"
-              />
-              <div
-                id="access-mode-chart"
-                className="rounded-lg shadow-lg p-4 scale-150"
-              />
-              <div
-                id="purpose-chart"
-                className="rounded-lg shadow-lg p-4 scale-150"
-              />
-              <div
-                id="travel-mode-chart"
-                className="rounded-lg shadow-lg p-4 scale-150"
-              />
-            </div>
+            <MetaData_info allResponses={allresponses} />
+            {/* <Form1_info allResponses={allresponses} /> */}
+            <LazyForm1Response allResponses={allresponses} />
           </>
         ) : (
           <p className="w-96 text-gray-500">Loading...</p>

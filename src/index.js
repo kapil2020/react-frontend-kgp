@@ -1,12 +1,12 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ResponseCounter from "./components/response_cnt/cnt_responses";
-
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import AllSurvey from "./components/allsurvey";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import ResponseCounter from "./components/Response_Management/cnt_responses";
+import AllSurvey from "./components/survey_frontend/allsurvey";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

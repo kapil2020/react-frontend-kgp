@@ -8,15 +8,15 @@ import choiceData6 from "./set6.json";
 import choiceData7 from "./set7.json";
 import choiceData8 from "./set8.json";
 
-import AQIImageDisplay from "../../../handlers/imagegenerator";
-import TravelPurposeDisplay from "../../../handlers/icons_for_travel";
-import TravelTimeDisplay from "../../../handlers/traveltime";
-import CleanlinessDisplay from "../../../handlers/icons_for_cleanliness";
-import TravelCostDisplay from "../../../handlers/icons_for_cost";
-import WaitingTimeDisplay from "../../../handlers/waiting_time_slider";
-import GreenCoverDisplay from "../../../handlers/icon_greenCover";
-import PreTripInfoDisplay from "../../../handlers/icon_preTripInfo";
-import DelayDisplay from "../../../handlers/dealy_icon";
+import AQIImageDisplay from "../../../../handlers/imagegenerator";
+import TravelPurposeDisplay from "../../../../handlers/icons_for_travel";
+import TravelTimeDisplay from "../../../../handlers/traveltime";
+import CleanlinessDisplay from "../../../../handlers/icons_for_cleanliness";
+import TravelCostDisplay from "../../../../handlers/icons_for_cost";
+import WaitingTimeDisplay from "../../../../handlers/waiting_time_slider";
+import GreenCoverDisplay from "../../../../handlers/icon_greenCover";
+import PreTripInfoDisplay from "../../../../handlers/icon_preTripInfo";
+import DelayDisplay from "../../../../handlers/dealy_icon";
 
 const index_no = Math.floor(Math.random() * 8);
 

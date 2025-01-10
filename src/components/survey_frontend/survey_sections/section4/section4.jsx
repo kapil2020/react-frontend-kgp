@@ -27,13 +27,13 @@ import tw_choiceData6 from "./twoWheelerData/set6.json";
 import tw_choiceData7 from "./twoWheelerData/set7.json";
 import tw_choiceData8 from "./twoWheelerData/set8.json";
 
-import AQIImageDisplay from "../../../handlers/imagegenerator";
-import TravelPurposeDisplay from "../../../handlers/icons_for_travel";
-import TravelTimeDisplay from "../../../handlers/traveltime";
-import CleanlinessDisplay from "../../../handlers/icons_for_cleanliness";
-import TravelCostDisplay from "../../../handlers/icons_for_cost";
-import WaitingTimeDisplay from "../../../handlers/waiting_time_slider";
-import ChoiceInput from "../../../handlers/travel_emoji";
+import AQIImageDisplay from "../../../../handlers/imagegenerator";
+import TravelPurposeDisplay from "../../../../handlers/icons_for_travel";
+import TravelTimeDisplay from "../../../../handlers/traveltime";
+import CleanlinessDisplay from "../../../../handlers/icons_for_cleanliness";
+import TravelCostDisplay from "../../../../handlers/icons_for_cost";
+import WaitingTimeDisplay from "../../../../handlers/waiting_time_slider";
+import ChoiceInput from "../../../../handlers/travel_emoji";
 
 const index_no = Math.floor(Math.random() * 8);
 
