@@ -69,7 +69,7 @@ function plotGroupedStacked(container, nestedData, title) {
   categories.forEach((cat) => {
     const catGroup = svg
       .append("g")
-      .attr("transform", translate(${x0(cat)},0));
+      .attr("transform", `translate(${x0(cat)},0)`);
 
     genders.forEach((g) => {
       const data = nestedData[cat][g] || {};
@@ -99,14 +99,14 @@ function plotGroupedStacked(container, nestedData, title) {
   const xAxis = d3.axisBottom(x0);
   svg
     .append("g")
-    .attr("transform", translate(0,${height - margin.bottom}))
+    .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(xAxis)
     .selectAll("text")
     .attr("transform", "rotate(-45)")
     .style("text-anchor", "end");
 
   const yAxis = d3.axisLeft(y);
-  svg.append("g").attr("transform", translate(${margin.left},0)).call(yAxis);
+  svg.append("g").attr("transform", `translate(${margin.left},0)`).call(yAxis);
 
   svg
     .append("text")
@@ -119,7 +119,7 @@ function plotGroupedStacked(container, nestedData, title) {
   // Refined Legend: Grouped by gender with age groups listed
   const legend = svg
     .append("g")
-    .attr("transform", translate(${width - margin.right + 20},${margin.top}));
+    .attr("transform", `translate(${width - margin.right + 20},${margin.top})`);
 
   let legendYOffset = 0;
 
@@ -211,7 +211,7 @@ const Form1_info = ({ allResponses }) => {
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", translate(${width / 2},${height / 2}));
+      .attr("transform", `translate(${width / 2},${height / 2})`);
 
     const arcs = svg
       .selectAll(".arc")
@@ -227,7 +227,7 @@ const Form1_info = ({ allResponses }) => {
 
     arcs
       .append("text")
-      .attr("transform", (d) => translate(${arc.centroid(d)}))
+      .attr("transform", (d) => `translate(${arc.centroid(d)})`)
       .attr("dy", ".35em")
       .style("font-size", "12px")
       .style("text-anchor", "middle")
