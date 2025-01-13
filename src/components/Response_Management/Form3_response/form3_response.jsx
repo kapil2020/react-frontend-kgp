@@ -31,7 +31,7 @@ function plotLikertScale(container, allResponses) {
   const containerWidth = container.getBoundingClientRect().width || 800;
   const width = containerWidth;
   const barHeight = 40;
-  const margin = { top: 40, right: 20, bottom: 60, left: 250 };
+  const margin = { top: 40, right: 20, bottom: 60, left: Math.min(200, width / 3) };
   const height = questions.length * barHeight + margin.top + margin.bottom;
 
   d3.select(container).select("svg").remove();
@@ -39,8 +39,8 @@ function plotLikertScale(container, allResponses) {
   const svg = d3
     .select(container)
     .append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
 
   const x = d3.scaleLinear().range([margin.left, width - margin.right]);
 
@@ -70,7 +70,7 @@ function plotLikertScale(container, allResponses) {
     .attr("y", barHeight / 2)
     .attr("dy", ".35em")
     .style("text-anchor", "end")
-    .style("font-size", "14px")
+    .style("font-size", `${Math.max(10, width / 60)}px`)
     .style("fill", "#333")
     .text((d) => d);
 
@@ -99,7 +99,7 @@ function plotLikertScale(container, allResponses) {
           .attr("y", barHeight / 2)
           .attr("dy", ".35em")
           .attr("text-anchor", "middle")
-          .style("font-size", "12px")
+          .style("font-size", `${Math.max(8, width / 100)}px`)
           .style("fill", "#000")
           .text(percentage > 0 ? `${percentage}%` : "");
 
@@ -113,7 +113,7 @@ function plotLikertScale(container, allResponses) {
     .attr("x", width / 2)
     .attr("y", height - margin.bottom / 2)
     .attr("text-anchor", "middle")
-    .style("font-size", "16px")
+    .style("font-size", `${Math.max(12, width / 40)}px`)
     .style("fill", "#333")
     .text("Percentage of Responses");
 }
@@ -135,6 +135,7 @@ const Form3_info = ({ allResponses }) => {
       <div
         ref={likertRef}
         className="rounded-md shadow-lg w-full bg-slate-200 flex justify-center scale-90 p-4"
+        style={{ maxWidth: "100%" }}
       ></div>
     </div>
   );
