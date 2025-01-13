@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import MetaData_info from "./MetaData_response/metadata";
 import LazyForm1Response from "./Form1_response/LazyForm1Response";
+import LazyForm3Response from "./Form3_response/LazyForm3Response";
 // import Form1_info from "./Form1_response/form1_response";
 // import * as d3 from "d3";
 
@@ -65,6 +66,7 @@ const ResponseCounter = () => {
             <MetaData_info allResponses={allresponses} />
             {/* <Form1_info allResponses={allresponses} /> */}
             <LazyForm1Response allResponses={allresponses} />
+            <LazyForm3Response allResponses={allresponses} />
           </>
         ) : (
           <p className="w-96 text-gray-500">Loading...</p>
