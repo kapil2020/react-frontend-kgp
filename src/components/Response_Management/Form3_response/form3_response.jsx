@@ -4,12 +4,10 @@ import * as d3 from "d3";
 function plotLikertScale(container, allResponses) {
   const likertValues = ["1", "2", "3", "4", "5"];
 
-  // Find questions from the first valid response
   const sample = allResponses.find((r) => r.data && r.data.form3Data);
   if (!sample) return;
   const questions = Object.keys(sample.data.form3Data);
 
-  // Initialize aggregation structure
   const aggregated = {};
   questions.forEach((q) => {
     aggregated[q] = {};
@@ -18,7 +16,6 @@ function plotLikertScale(container, allResponses) {
     });
   });
 
-  // Aggregate counts for each question and Likert value
   allResponses.forEach((response) => {
     const form3 = response.data && response.data.form3Data;
     if (form3) {
@@ -31,15 +28,12 @@ function plotLikertScale(container, allResponses) {
     }
   });
 
-  // Use container's width for the chart width
   const containerWidth = container.getBoundingClientRect().width || 800;
   const width = containerWidth;
-  const barHeight = 30;
-  // Increase left margin for longer labels
-  const margin = { top: 20, right: 20, bottom: 20, left: 250 };
+  const barHeight = 40;
+  const margin = { top: 40, right: 20, bottom: 60, left: 250 };
   const height = questions.length * barHeight + margin.top + margin.bottom;
 
-  // Clear previous chart content
   d3.select(container).select("svg").remove();
 
   const svg = d3
@@ -50,7 +44,6 @@ function plotLikertScale(container, allResponses) {
 
   const x = d3.scaleLinear().range([margin.left, width - margin.right]);
 
-  // Compute totals and find max total for scaling
   questions.forEach((q) => {
     const total = likertValues.reduce((sum, v) => sum + aggregated[q][v], 0);
     aggregated[q].total = total;
@@ -61,9 +54,8 @@ function plotLikertScale(container, allResponses) {
   const colorScale = d3
     .scaleOrdinal()
     .domain(likertValues)
-    .range(d3.schemeBrBG[5]);
+    .range(["#d73027", "#fc8d59", "#fee08b", "#d9ef8b", "#1a9850"]);
 
-  // Create a group for each question's bar chart row
   const questionGroups = svg
     .selectAll(".question")
     .data(questions)
@@ -72,16 +64,16 @@ function plotLikertScale(container, allResponses) {
     .attr("class", "question")
     .attr("transform", (d, i) => `translate(0, ${margin.top + i * barHeight})`);
 
-  // Add question labels on the left
   questionGroups
     .append("text")
     .attr("x", margin.left - 10)
     .attr("y", barHeight / 2)
     .attr("dy", ".35em")
     .style("text-anchor", "end")
+    .style("font-size", "14px")
+    .style("fill", "#333")
     .text((d) => d);
 
-  // Draw horizontal stacked bars for each question
   questionGroups.each(function (q) {
     const group = d3.select(this);
     let xStart = margin.left;
@@ -93,14 +85,34 @@ function plotLikertScale(container, allResponses) {
         group
           .append("rect")
           .attr("x", xStart)
-          .attr("y", 0)
-          .attr("height", barHeight - 5)
+          .attr("y", 5)
+          .attr("height", barHeight - 10)
           .attr("width", segmentWidth)
           .attr("fill", colorScale(lv));
+
+        group
+          .append("text")
+          .attr("x", xStart + segmentWidth / 2)
+          .attr("y", barHeight / 2)
+          .attr("dy", ".35em")
+          .attr("text-anchor", "middle")
+          .style("font-size", "12px")
+          .style("fill", "#fff")
+          .text(count > 0 ? count : "");
+
         xStart += segmentWidth;
       }
     });
   });
+
+  svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", height - margin.bottom / 2)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("fill", "#333")
+    .text("Number of Responses");
 }
 
 const Form3_info = ({ allResponses }) => {
@@ -114,12 +126,12 @@ const Form3_info = ({ allResponses }) => {
 
   return (
     <div className="mb-8 flex flex-col items-center">
-      <h3 className="font-serif font-semibold text-lg mb-2 text-center">
+      <h3 className="font-serif font-semibold text-lg mb-4 text-center">
         Form3 Likert Scale Overview
       </h3>
       <div
         ref={likertRef}
-        className="rounded-md shadow-lg w-full bg-slate-200 flex justify-center scale-90"
+        className="rounded-md shadow-lg w-full bg-slate-200 flex justify-center scale-90 p-4"
       ></div>
     </div>
   );
