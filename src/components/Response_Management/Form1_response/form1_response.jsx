@@ -7,7 +7,6 @@ function plotGroupedStacked(container, nestedData, title) {
   const gendersSet = new Set();
   const ageGroupsSet = new Set();
 
-  // Gather unique genders and age groups across all categories
   categories.forEach((cat) => {
     const genders = Object.keys(nestedData[cat]);
     genders.forEach((g) => {
@@ -67,7 +66,6 @@ function plotGroupedStacked(container, nestedData, title) {
     .domain(genders)
     .range(["#1f77b4", "#ff7f0e", "#2ca02c"]);
 
-  // Create grouped stacked bars
   categories.forEach((cat) => {
     const catGroup = svg
       .append("g")
@@ -103,7 +101,6 @@ function plotGroupedStacked(container, nestedData, title) {
     });
   });
 
-  // Axes and Title
   const xAxis = d3.axisBottom(x0);
   svg
     .append("g")
@@ -123,80 +120,90 @@ function plotGroupedStacked(container, nestedData, title) {
     .attr("text-anchor", "middle")
     .style("font-size", Math.min(containerWidth * 0.03, 16))
     .text(title);
-
-  // Legend
-  const legend = svg
-    .append("g")
-    .attr("transform", `translate(${width - margin.right + 20},${margin.top})`);
-
-  genders.forEach((g, i) => {
-    legend
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", i * 20)
-      .attr("width", 18)
-      .attr("height", 18)
-      .attr("fill", colorScale(g));
-
-    legend
-      .append("text")
-      .attr("x", 24)
-      .attr("y", i * 20 + 9)
-      .attr("dy", "0.35em")
-      .style("font-size", "12px")
-      .text(g);
-  });
 }
 
 const Form1_info = ({ allResponses }) => {
   const accessModeRef = useRef();
+  const distanceRef = useRef();
+  const purposeRef = useRef();
+  const travelModeRef = useRef();
 
-  const [form1_accessmode, setForm1_AccessMode] = useState({});
+  const [form1AccessMode, setForm1AccessMode] = useState({});
+  const [form1Distance, setForm1Distance] = useState({});
+  const [form1Purpose, setForm1Purpose] = useState({});
+  const [form1TravelMode, setForm1TravelMode] = useState({});
 
-  // Helper to update nested counts
-  function updateNestCount(currentState, key, gender, ageGroup) {
+  const updateNestCount = (currentState, key, gender, ageGroup) => {
     const newState = { ...currentState };
     if (!newState[key]) newState[key] = {};
     if (!newState[key][gender]) newState[key][gender] = {};
     if (!newState[key][gender][ageGroup]) newState[key][gender][ageGroup] = 0;
     newState[key][gender][ageGroup] += 1;
     return newState;
-  }
+  };
 
   useEffect(() => {
     if (!allResponses || allResponses.length === 0) return;
 
-    let accessModeObj = {};
+    let accessMode = {};
+    let distance = {};
+    let purpose = {};
+    let travelMode = {};
+
     allResponses.forEach((response) => {
       const form1 = response.data.form1Data;
       const form6 = response.data.form6Data;
       if (form1 && form6) {
-        const { accessMode } = form1;
+        const { accessMode: am, distance: dist, purpose: purp, travelMode: tm } = form1;
         const gender = form6.gender;
         const ageGroup = form6.age;
 
-        accessModeObj = updateNestCount(
-          accessModeObj,
-          accessMode,
-          gender,
-          ageGroup
-        );
+        accessMode = updateNestCount(accessMode, am, gender, ageGroup);
+        distance = updateNestCount(distance, dist, gender, ageGroup);
+        purpose = updateNestCount(purpose, purp, gender, ageGroup);
+        travelMode = updateNestCount(travelMode, tm, gender, ageGroup);
       }
     });
 
-    setForm1_AccessMode(accessModeObj);
+    setForm1AccessMode(accessMode);
+    setForm1Distance(distance);
+    setForm1Purpose(purpose);
+    setForm1TravelMode(travelMode);
   }, [allResponses]);
 
   useEffect(() => {
-    if (Object.keys(form1_accessmode).length && accessModeRef.current) {
-      plotGroupedStacked(accessModeRef.current, form1_accessmode, "Access Mode");
+    if (Object.keys(form1AccessMode).length && accessModeRef.current) {
+      plotGroupedStacked(accessModeRef.current, form1AccessMode, "Access Mode");
     }
-  }, [form1_accessmode]);
+  }, [form1AccessMode]);
+
+  useEffect(() => {
+    if (Object.keys(form1Distance).length && distanceRef.current) {
+      plotGroupedStacked(distanceRef.current, form1Distance, "Distance");
+    }
+  }, [form1Distance]);
+
+  useEffect(() => {
+    if (Object.keys(form1Purpose).length && purposeRef.current) {
+      plotGroupedStacked(purposeRef.current, form1Purpose, "Purpose");
+    }
+  }, [form1Purpose]);
+
+  useEffect(() => {
+    if (Object.keys(form1TravelMode).length && travelModeRef.current) {
+      plotGroupedStacked(travelModeRef.current, form1TravelMode, "Travel Mode");
+    }
+  }, [form1TravelMode]);
 
   return (
     <div className="my-10 scale-90 bg-slate-50 rounded-md p-4">
       <h2 className="font-serif font-bold text-xl mb-4">Form1 Information</h2>
-      <div ref={accessModeRef} className="rounded-md shadow-lg bg-slate-200"></div>
+      <div className="grid grid-cols-2 gap-4">
+        <div ref={accessModeRef} className="bg-slate-200 rounded-md shadow-lg"></div>
+        <div ref={distanceRef} className="bg-slate-200 rounded-md shadow-lg"></div>
+        <div ref={purposeRef} className="bg-slate-200 rounded-md shadow-lg"></div>
+        <div ref={travelModeRef} className="bg-slate-200 rounded-md shadow-lg"></div>
+      </div>
     </div>
   );
 };
