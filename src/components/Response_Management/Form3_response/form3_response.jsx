@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 function plotLikertScale(container, allResponses) {
@@ -80,6 +80,9 @@ function plotLikertScale(container, allResponses) {
 
     likertValues.forEach((lv) => {
       const count = aggregated[q][lv];
+      const percentage = aggregated[q].total
+        ? ((count / aggregated[q].total) * 100).toFixed(1)
+        : 0;
       const segmentWidth = x(count) - x(0);
       if (segmentWidth > 0) {
         group
@@ -97,8 +100,8 @@ function plotLikertScale(container, allResponses) {
           .attr("dy", ".35em")
           .attr("text-anchor", "middle")
           .style("font-size", "12px")
-          .style("fill", "#fff")
-          .text(count > 0 ? count : "");
+          .style("fill", "#000")
+          .text(percentage > 0 ? `${percentage}%` : "");
 
         xStart += segmentWidth;
       }
@@ -112,7 +115,7 @@ function plotLikertScale(container, allResponses) {
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("fill", "#333")
-    .text("Number of Responses");
+    .text("Percentage of Responses");
 }
 
 const Form3_info = ({ allResponses }) => {
