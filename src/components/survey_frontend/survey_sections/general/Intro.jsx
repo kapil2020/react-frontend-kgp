@@ -126,12 +126,12 @@ const SurveyIntro = () => {
         </div>
 
         {/* Footer with Logo */}
-        <div className="w-full mt-8 text-center"> {/* Changed mt-12 to mt-8 to shift the logo up */}
+        <div className="w-full mt-8 text-center">
           <img
-            src="https://raw.githubusercontent.com/kapil2020/react-frontend-kgp/main/src/components/survey_sections/general/Screenshot_2023-06-18_114302-removebg-preview.png"
+            src="https://raw.githubusercontent.com/kapil2020/react-frontend-kgp/main/src/components/survey_frontend/survey_sections/general/Screenshot_2023-06-18_114302-removebg-preview.png"
             alt="Logo"
-            className="mx-auto max-w-full h-auto" // Adjusted to maintain aspect ratio
-            style={{ maxHeight: '150px' }} // Optional: Set a max height if needed
+            className="mx-auto max-w-full h-auto"
+            style={{ maxHeight: '150px' }}
           />
         </div>
       </div>
@@ -151,59 +151,6 @@ const SurveyIntro = () => {
           ></path>
         </svg>
       </div>
-
-      {/* Sticky Start Button for Mobile */}
-      <div className="fixed bottom-4 left-0 right-0 z-20 flex justify-center md:hidden">
-        <button
-          className="px-6 py-3 text-lg font-semibold text-white transition-transform transform bg-blue-800 rounded-full shadow-lg hover:scale-105 hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-300"
-          onClick={() => {
-            window.location.href = "/survey";
-          }}
-        >
-          Start Survey
-        </button>
-      </div>
-
-      {/* Custom Styles */}
-      <style jsx>{`
-        .animate-fade-in {
-          animation: fadeIn 1s ease-in-out forwards;
-          opacity: 0;
-        }
-        .animate-fade-in-left {
-          animation: fadeInLeft 1s ease-in-out forwards;
-          opacity: 0;
-        }
-        .animate-fade-in-right {
-          animation: fadeInRight 1s ease-in-out forwards;
-          opacity: 0;
-        }
-        @keyframes fadeIn {
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes fadeInLeft {
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-        }
-        @keyframes fadeInRight {
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-        }
-      `}</style>
     </div>
   );
 };
