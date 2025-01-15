@@ -60,7 +60,7 @@ function plotGroupedStacked(container, nestedData, title) {
     .range([height - margin.bottom, margin.top]);
 
   const baseColors = {
-    male: "blue",
+    male: "#F8766D",
     female: "orange",
     other: "green",
   };
