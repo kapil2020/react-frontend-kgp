@@ -85,7 +85,7 @@ function plotLikertScaleStacked(container, allResponses) {
     .style("fill", "#333")
     .text("Likert Scale Legend:");
 
-  // We'll label them 1..5 as well
+  // We'll label them 1..5
   const legendLabels = ["1: Strongly Disagree", "2: Disagree", "3: Neutral", "4: Agree", "5: Strongly Agree"];
   legendLabels.forEach((lbl, i) => {
     const row = legendGroup.append("g").attr("transform", `translate(${i * 130},0)`);
@@ -163,15 +163,15 @@ function plotLikertScaleStacked(container, allResponses) {
     .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(xAxis);
 
-  // Title
+  // Instead of a chart title, label the x-axis as "% of count"
   svg
     .append("text")
     .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
-    .attr("y", margin.top / 2)
+    .attr("y", height - margin.bottom / 4)
     .attr("text-anchor", "middle")
-    .style("font-weight", "bold")
-    .style("font-size", "16px")
-    .text("Simple 100%-Stacked Likert Plot");
+    .style("font-size", "14px")
+    .style("fill", "#333")
+    .text("% of count");
 }
 
 // ---------------------------------------------
@@ -230,7 +230,7 @@ function plotLikertScaleDiverging(container, allResponses) {
   // Colors for negative, neutral, positive
   const color = {
     neg: "#d73027", // red
-    neu: "#f7f7f7", // light gray
+    neu: "#cccccc", // slightly darker gray so it's visible
     pos: "#1a9850", // green
   };
 
@@ -275,7 +275,7 @@ function plotLikertScaleDiverging(container, allResponses) {
     if (negPct < 0) {
       const xLeft = x(negPct);
       const xZero = x(0);
-      const negWidth = xZero - xLeft; // positive distance
+      const negWidth = xZero - xLeft;
       svg
         .append("rect")
         .attr("x", xLeft)
@@ -325,12 +325,11 @@ function plotLikertScaleDiverging(container, allResponses) {
 
     // Neutral
     if (neuPct > 0) {
-      // We'll place neutral just to the right of negative
-      // left edge: negPct, right edge: negPct+neuPct
       const leftPct = negPct;
       const rightPct = negPct + neuPct;
       const barX = x(leftPct);
       const barW = x(rightPct) - barX;
+
       svg
         .append("rect")
         .attr("x", barX)
@@ -387,7 +386,7 @@ function plotLikertScaleDiverging(container, allResponses) {
 }
 
 // ---------------------------------------------
-// The main component showing both plots
+// Main component showing both plots
 // ---------------------------------------------
 const Form3Comparison = ({ allResponses }) => {
   const stackedRef = useRef();
