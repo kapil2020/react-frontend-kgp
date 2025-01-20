@@ -14,6 +14,21 @@ const colorScheme = [
 ];
 
 /**
+ * A dictionary mapping each attribute to a more descriptive title.
+ * Feel free to rename or add more text.
+ */
+const attributeLabels = {
+  age: "Age",
+  gender: "Gender",
+  income: "Monthly Income",
+  car_count: "Car Count",
+  education: "Education Level",
+  occupation: "Occupation",
+  household_size: "Household Size",
+  household_income: "Household Income",
+};
+
+/**
  * Aggregates data by the specified attribute from form6Data.
  */
 function aggregateAttributeData(allResponses, attribute) {
@@ -281,13 +296,16 @@ const Form6Charts = ({ allResponses }) => {
   useEffect(() => {
     if (!allResponses || allResponses.length === 0) return;
 
+    // For each attribute, gather data and decide which chart to draw
     attributes.forEach((attribute, index) => {
       const data = aggregateAttributeData(allResponses, attribute);
       const container = chartsRef.current[attribute].current;
       if (!container) return;
 
+      // Lookup descriptive label from our dictionary
+      const attrLabel = attributeLabels[attribute] || attribute;
+
       // Even index -> Pie Chart, Odd index -> Bar Chart
-      const attrLabel = attribute.charAt(0).toUpperCase() + attribute.slice(1);
       if (index % 2 === 0) {
         plotPieChart(container, data, `${attrLabel} (Pie Chart)`);
       } else {
