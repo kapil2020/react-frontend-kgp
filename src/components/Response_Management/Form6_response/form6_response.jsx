@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-// Updated color scheme (ggplot-like / "Dark2"-inspired)
+// Updated "Dark2"-like color palette
 const colorScheme = [
   "#1B9E77",
   "#D95F02",
@@ -29,8 +29,8 @@ function aggregateAttributeData(allResponses, attribute) {
 }
 
 /**
- * A utility function to wrap text onto multiple lines if it's too long.
- * Uncomment in plotBarChart if you want text wrapping on x-axis ticks.
+ * Utility function to wrap text onto multiple lines if it's too long.
+ * Uncomment its usage in plotBarChart if you want multi-line x-axis labels.
  */
 function wrap(text, width) {
   text.each(function () {
@@ -70,10 +70,7 @@ function wrap(text, width) {
 }
 
 /**
- * Plots a Pie Chart with:
- *  - New color palette
- *  - Legend showing both count and percentage
- *  - Slightly bigger radius for clarity
+ * Plots a Pie Chart showing only percentage in the legend.
  */
 function plotPieChart(container, data, title) {
   d3.select(container).select("svg").remove();
@@ -83,16 +80,8 @@ function plotPieChart(container, data, title) {
   const height = 340;
   const radius = Math.min(width, height) / 2;
 
-  // Prepare color scale
+  // Color scale
   const color = d3.scaleOrdinal().domain(Object.keys(data)).range(colorScheme);
-
-  // Create arc & pie
-  const arc = d3.arc().outerRadius(radius - 10).innerRadius(0);
-
-  const pie = d3
-    .pie()
-    .value((d) => d.value)
-    .sort(null); // keep order stable
 
   // Convert data object -> array
   const dataset = Object.entries(data).map(([key, value]) => ({
@@ -100,8 +89,16 @@ function plotPieChart(container, data, title) {
     value,
   }));
 
-  // Calculate total for percentages
+  // Sum for percentage
   const total = d3.sum(dataset, (d) => d.value);
+
+  // Create arc & pie
+  const arc = d3.arc().outerRadius(radius - 10).innerRadius(0);
+
+  const pie = d3
+    .pie()
+    .value((d) => d.value)
+    .sort(null);
 
   // Create SVG
   const svg = d3
@@ -122,7 +119,7 @@ function plotPieChart(container, data, title) {
     .style("font-size", "14px")
     .text(title);
 
-  // Draw arcs
+  // Pie arcs
   const arcs = svg
     .selectAll(".arc")
     .data(pie(dataset))
@@ -140,6 +137,7 @@ function plotPieChart(container, data, title) {
     .append("g")
     .attr("transform", `translate(${radius + 20},${-radius + 10})`);
 
+  // Show only "label: xx%" in legend
   dataset.forEach((d, i) => {
     const legendRow = legend
       .append("g")
@@ -152,22 +150,18 @@ function plotPieChart(container, data, title) {
       .attr("fill", color(d.label));
 
     const percentage = ((d.value / total) * 100).toFixed(1);
-    // Show count & percentage
     legendRow
       .append("text")
       .attr("x", 24)
       .attr("y", 8)
       .attr("dy", "0.35em")
       .style("font-size", "12px")
-      .text(`${d.label}: ${d.value} (${percentage}%)`);
+      .text(`${d.label}: ${percentage}%`);
   });
 }
 
 /**
- * Plots a Bar Chart with:
- *  - Updated color palette
- *  - Larger margin
- *  - Percentage label above each bar, also showing count
+ * Plots a Bar Chart showing only percentage labels above each bar.
  */
 function plotBarChart(container, data, title) {
   d3.select(container).select("svg").remove();
@@ -176,7 +170,7 @@ function plotBarChart(container, data, title) {
   const values = Object.values(data);
   const total = d3.sum(values);
 
-  // Larger margins for better label spacing
+  // Larger margins
   const margin = { top: 60, right: 40, bottom: 100, left: 70 };
   const width = 640;
   const height = 420;
@@ -216,7 +210,7 @@ function plotBarChart(container, data, title) {
     .attr("height", (d) => y(0) - y(data[d]))
     .attr("fill", (d) => color(d));
 
-  // Labels above bars: "xx% (count: X)"
+  // Only show "xx%" above each bar
   svg
     .append("g")
     .selectAll("text.bar-label")
@@ -230,14 +224,11 @@ function plotBarChart(container, data, title) {
     .style("font-size", "12px")
     .text((d) => {
       const percentage = ((data[d] / total) * 100).toFixed(1);
-      return `${percentage}% (count: ${data[d]})`;
+      return `${percentage}%`;
     });
 
-  // X-axis
-  const xAxis = d3
-    .axisBottom(x)
-    .tickSizeOuter(0);
-
+  // X-axis with slightly less rotation (-45)
+  const xAxis = d3.axisBottom(x).tickSizeOuter(0);
   const xAxisGroup = svg
     .append("g")
     .attr("transform", `translate(0, ${height - margin.bottom})`)
@@ -245,10 +236,10 @@ function plotBarChart(container, data, title) {
 
   xAxisGroup
     .selectAll("text")
-    .attr("transform", "rotate(-60) translate(-5, -5)")
+    .attr("transform", "rotate(-45) translate(-5, -5)")
     .style("text-anchor", "end");
 
-  // Uncomment to wrap if needed
+  // If needed, wrap text:
   // xAxisGroup.selectAll(".tick text").call(wrap, x.bandwidth());
 
   // Y-axis
@@ -290,7 +281,6 @@ const Form6Charts = ({ allResponses }) => {
   useEffect(() => {
     if (!allResponses || allResponses.length === 0) return;
 
-    // For each attribute, gather data and plot
     attributes.forEach((attribute, index) => {
       const data = aggregateAttributeData(allResponses, attribute);
       const container = chartsRef.current[attribute].current;
