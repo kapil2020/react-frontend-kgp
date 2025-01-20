@@ -2,71 +2,63 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 /**
- * Plot a 100%-stacked Likert scale chart for form3Data in allResponses.
+ * Example: Diverging Likert Chart
+ * 
+ * By default, we combine:
+ *   negative: 1,2
+ *   neutral:  3
+ *   positive: 4,5
+ *
+ * If you prefer each Likert item separate, you'd adapt the logic
+ * for the domain [-1, +1], etc.
  */
-function plotLikertScale(container, allResponses) {
-  // We define the numeric values (1..5)
-  const likertValues = ["1", "2", "3", "4", "5"];
-
-  // Provide descriptive labels for each Likert score in the legend
-  const likertLegend = [
-    { value: "1", label: "Strongly Disagree" },
-    { value: "2", label: "Disagree" },
-    { value: "3", label: "Neutral" },
-    { value: "4", label: "Agree" },
-    { value: "5", label: "Strongly Agree" },
-  ];
-
-  // Find a sample response that has form3Data to determine which questions are present
+function plotDivergingLikert(container, allResponses) {
+  // Identify all question keys from a sample
   const sample = allResponses.find((r) => r.data?.form3Data);
-  if (!sample) return; // no form3Data found
+  if (!sample) return;
 
   const questions = Object.keys(sample.data.form3Data);
 
-  // Initialize aggregator
+  // We'll aggregate into { question: { negativeCount, neutralCount, positiveCount, total } }
   const aggregated = {};
   questions.forEach((q) => {
-    aggregated[q] = {};
-    likertValues.forEach((v) => {
-      aggregated[q][v] = 0;
+    aggregated[q] = { neg: 0, neu: 0, pos: 0, total: 0 };
+  });
+
+  // Tally responses
+  allResponses.forEach((resp) => {
+    const form3 = resp.data?.form3Data;
+    if (!form3) return;
+    questions.forEach((q) => {
+      const val = form3[q];
+      if (val === "1" || val === "2") aggregated[q].neg += 1;
+      else if (val === "3") aggregated[q].neu += 1;
+      else if (val === "4" || val === "5") aggregated[q].pos += 1;
     });
   });
 
-  // Count how many respondents selected each value for each question
-  allResponses.forEach((response) => {
-    const form3 = response.data?.form3Data;
-    if (form3) {
-      questions.forEach((q) => {
-        const val = form3[q];
-        if (val && likertValues.includes(val)) {
-          aggregated[q][val] += 1;
-        }
-      });
-    }
-  });
-
-  // Compute total for each question
+  // Sum up total
   questions.forEach((q) => {
-    const total = likertValues.reduce((sum, v) => sum + aggregated[q][v], 0);
-    aggregated[q].total = total;
+    aggregated[q].total = aggregated[q].neg + aggregated[q].neu + aggregated[q].pos;
   });
 
-  // Container size & margins
+  // For each question, find percentage negative, neutral, positive
+  // negative%  = -(negCount / total * 100)   (negative side)
+  // neutral%   = neuCount / total * 100
+  // positive%  = posCount / total * 100      (positive side)
+  // We'll place them so that 0 is in the center of the axis.
+
+  // -----------
+  // Dimensions
+  // -----------
   const containerWidth = container.getBoundingClientRect().width || 800;
   const width = containerWidth;
   const barHeight = 40;
-  const margin = {
-    top: 70,
-    right: 30,
-    bottom: 50,
-    left: Math.min(containerWidth * 0.3, 250),
-  };
+  const margin = { top: 60, right: 20, bottom: 40, left: 200 };
   const height = questions.length * barHeight + margin.top + margin.bottom;
 
-  // Remove old chart
-  d3.select(container).select("svg").remove();
+  d3.select(container).select("svg").remove(); // Clear old
 
-  // Create responsive SVG
   const svg = d3
     .select(container)
     .append("svg")
@@ -75,152 +67,225 @@ function plotLikertScale(container, allResponses) {
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  // X scale for 0..1 => 0..100% (since we want a 100% stacked bar)
-  const x = d3.scaleLinear().domain([0, 1]).range([margin.left, width - margin.right]);
+  // X scale from -100% to +100%
+  const x = d3.scaleLinear().domain([-100, 100]).range([margin.left, width - margin.right]);
 
-  // Y scale for each question
+  // Y scale: each question is a row
   const y = d3
     .scaleBand()
     .domain(questions)
     .range([margin.top, height - margin.bottom])
     .padding(0.2);
 
-  // Color scale (red→green)
-  const colorScale = d3
-    .scaleOrdinal()
-    .domain(likertValues)
-    .range(["#d73027", "#fc8d59", "#fee08b", "#d9ef8b", "#1a9850"]);
+  // Color scheme for negative / neutral / positive segments
+  const color = {
+    neg: "#d73027", // red
+    neu: "#f7f7f7", // light gray or something
+    pos: "#1a9850", // green
+  };
 
+  // -----------
   // Legend
-  const legendGroup = svg
-    .append("g")
-    .attr("transform", `translate(${margin.left},${margin.top - 40})`);
-
+  // -----------
+  const legendGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top - 40})`);
   legendGroup
     .append("text")
     .attr("x", 0)
     .attr("y", -10)
     .style("font-weight", "bold")
-    .style("fill", "#333")
-    .text("Likert Scale Legend:");
-
-  likertLegend.forEach((item, i) => {
-    const row = legendGroup
-      .append("g")
-      .attr("transform", `translate(${i * 130},0)`);
-
+    .text("Diverging Likert Legend:");
+  const items = [
+    { key: "neg", label: "Disagree (1,2)", color: color.neg },
+    { key: "neu", label: "Neutral (3)", color: color.neu },
+    { key: "pos", label: "Agree (4,5)", color: color.pos },
+  ];
+  items.forEach((item, i) => {
+    const row = legendGroup.append("g").attr("transform", `translate(${i * 120}, 0)`);
     row
       .append("rect")
       .attr("width", 16)
       .attr("height", 16)
-      .attr("fill", colorScale(item.value));
-
+      .attr("fill", item.color);
     row
       .append("text")
-      .attr("x", 22)
+      .attr("x", 24)
       .attr("y", 8)
       .attr("dy", "0.35em")
       .style("font-size", "12px")
       .text(item.label);
   });
 
-  // For each question, draw a single horizontal bar subdivided by Likert values
+  // -----------
+  // Draw bars
+  // -----------
+  // For each question, we'll place a bar that extends left for negative,
+  // a segment in the middle for neutral, and right for positive.
+
   questions.forEach((q) => {
-    const total = aggregated[q].total || 1; // avoid /0
-    let cumulative = 0; // track the left edge of each sub-bar
+    const { neg, neu, pos, total } = aggregated[q];
+    const negPct = total ? (-neg / total) * 100 : 0;  // negative side
+    const neuPct = total ? (neu / total) * 100 : 0;
+    const posPct = total ? (pos / total) * 100 : 0;
 
-    likertValues.forEach((lv) => {
-      const count = aggregated[q][lv];
-      const proportion = count / total; // fraction for this Likert value
-      if (proportion > 0) {
-        const xStart = x(cumulative);
-        const xEnd = x(cumulative + proportion);
+    // The center of the bar is at x(0).
+    // negative goes from x(negPct) to x(0).
+    // neutral is in the center around x(0).
+    // positive goes from x(0) to x(posPct).
 
+    // Y position for this question
+    const yPos = y(q);
+
+    // Negative rectangle
+    if (negPct < 0) {
+      svg
+        .append("rect")
+        .attr("y", yPos)
+        .attr("x", x(negPct)) // because negPct is negative, x(negPct) < x(0)
+        .attr("width", x(0) - x(negPct))
+        .attr("height", y.bandwidth())
+        .attr("fill", color.neg);
+
+      // Label if wide enough
+      const negWidth = x(0) - x(negPct);
+      if (negWidth > 30) {
         svg
-          .append("rect")
-          .attr("y", y(q))
-          .attr("x", xStart)
-          .attr("width", xEnd - xStart)
-          .attr("height", y.bandwidth())
-          .attr("fill", colorScale(lv));
-
-        // Label if wide enough
-        const segWidth = xEnd - xStart;
-        if (segWidth > 30) {
-          svg
-            .append("text")
-            .attr("x", (xStart + xEnd) / 2)
-            .attr("y", y(q) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .attr("text-anchor", "middle")
-            .style("font-size", "12px")
-            .style("fill", "#000")
-            .text(`${(proportion * 100).toFixed(1)}%`);
-        }
+          .append("text")
+          .attr("x", x(negPct) + negWidth / 2)
+          .attr("y", yPos + y.bandwidth() / 2)
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.35em")
+          .style("fill", "#fff")
+          .style("font-size", "12px")
+          .text(`${Math.abs(negPct).toFixed(1)}%`);
       }
-      cumulative += proportion;
-    });
+    }
+
+    // Positive rectangle
+    if (posPct > 0) {
+      svg
+        .append("rect")
+        .attr("y", yPos)
+        .attr("x", x(0))
+        .attr("width", x(posPct) - x(0))
+        .attr("height", y.bandwidth())
+        .attr("fill", color.pos);
+
+      // Label if wide enough
+      const posWidth = x(posPct) - x(0);
+      if (posWidth > 30) {
+        svg
+          .append("text")
+          .attr("x", x(0) + posWidth / 2)
+          .attr("y", yPos + y.bandwidth() / 2)
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.35em")
+          .style("fill", "#fff")
+          .style("font-size", "12px")
+          .text(`${posPct.toFixed(1)}%`);
+      }
+    }
+
+    // Neutral rectangle: we'll center it at 0.
+    // e.g. if neutral is 20%, it will occupy 10% to the left, 10% to the right
+    // But you might choose to just stack it on the positive side or negative side.
+    // There's no single standard for how to place "neutral" in a diverging chart, so let's
+    // place it to the right of negative. So the left edge is at x(negPct), the right edge is x(negPct + neuPct).
+    const neuLeft = negPct;
+    const neuRight = negPct + neuPct;
+    // if neuPct > 0 => we draw it
+    if (neuPct > 0) {
+      const barX = x(neuLeft);
+      const barW = x(neuRight) - barX;
+
+      svg
+        .append("rect")
+        .attr("y", yPos)
+        .attr("x", barX)
+        .attr("width", barW)
+        .attr("height", y.bandwidth())
+        .attr("fill", color.neu);
+
+      // label if wide enough
+      if (barW > 30) {
+        svg
+          .append("text")
+          .attr("x", barX + barW / 2)
+          .attr("y", yPos + y.bandwidth() / 2)
+          .attr("text-anchor", "middle")
+          .attr("dy", "0.35em")
+          .style("fill", "#000")
+          .style("font-size", "12px")
+          .text(`${neuPct.toFixed(1)}%`);
+      }
+    }
   });
 
-  // Y Axis (question labels)
+  // -----------
+  // Y-axis: question labels
+  // -----------
   const yAxis = d3.axisLeft(y).tickSize(0);
   svg
     .append("g")
-    .attr("transform", `translate(${margin.left},0)`)
+    .attr("transform", `translate(${x(0)},0)`) // normally left, but let's keep them aligned at x(0)? or margin.left
+    // If you prefer them flush on the left, do `translate(${margin.left},0)`.
     .call(yAxis)
     .selectAll("text")
-    .style("font-size", Math.min(containerWidth * 0.018, 14))
-    .style("fill", "#333")
-    .call((g) => g.selectAll(".domain, .tick line").remove()); // remove lines
+    .style("font-size", "12px")
+    .style("text-anchor", "end")
+    .attr("dx", "-0.5em");
 
-  // X Axis in percentages (0%..100%)
+  svg.selectAll(".domain, .tick line").remove(); // remove lines
+
+  // -----------
+  // X-axis: -100% to +100%
+  // -----------
   const xAxis = d3
     .axisBottom(x)
-    .tickFormat(d3.format(".0%"))
-    .tickValues([0, 0.25, 0.5, 0.75, 1]);
+    .tickFormat((d) => `${d}%`)
+    .tickValues([-100, -50, 0, 50, 100]);
 
   svg
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(xAxis)
-    .selectAll("text")
-    .style("font-size", "12px");
+    .call(xAxis);
 
-  // Title or X-axis label
+  // Title
   svg
     .append("text")
     .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
-    .attr("y", height - margin.bottom / 4)
+    .attr("y", margin.top / 2)
     .attr("text-anchor", "middle")
-    .style("font-size", "14px")
-    .style("fill", "#333")
-    .text("Distribution of Responses (100% stacked)");
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text("Diverging Likert Responses (Negative ← 0% → Positive)");
 }
 
-const Form3_info = ({ allResponses }) => {
-  const likertRef = useRef();
+/**
+ * React component
+ */
+const Form3Diverging = ({ allResponses }) => {
+  const ref = useRef();
 
   useEffect(() => {
     if (allResponses && allResponses.length > 0) {
-      plotLikertScale(likertRef.current, allResponses);
+      plotDivergingLikert(ref.current, allResponses);
     }
   }, [allResponses]);
 
   return (
-    <div className="mb-8 flex flex-col items-center">
-      <h3
-        className="font-serif font-semibold text-lg mb-4 text-center"
-        style={{ fontSize: "clamp(14px, 4vw, 20px)" }}
-      >
-        Form3 Likert Scale Overview
-      </h3>
+    <div style={{ width: "100%" }}>
+      <h3>Diverging Likert Example</h3>
       <div
-        ref={likertRef}
-        className="rounded-md shadow-lg w-full bg-slate-200 flex justify-center scale-90 p-4"
-        style={{ maxWidth: "100%" }}
-      ></div>
+        ref={ref}
+        style={{
+          background: "#f0f0f0",
+          padding: "1rem",
+          borderRadius: "6px",
+          overflowX: "auto",
+        }}
+      />
     </div>
   );
 };
 
-export default Form3_info;
+export default Form3Diverging;
