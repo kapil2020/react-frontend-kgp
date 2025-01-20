@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 /**
- * Plot a Likert scale distribution for form3Data within allResponses.
+ * Plot a 100%-stacked Likert scale chart for form3Data in allResponses.
  */
 function plotLikertScale(container, allResponses) {
-  // 1..5 scale
+  // We define the numeric values (1..5)
   const likertValues = ["1", "2", "3", "4", "5"];
 
   // Provide descriptive labels for each Likert score in the legend
@@ -45,29 +45,28 @@ function plotLikertScale(container, allResponses) {
     }
   });
 
-  // Compute total responses for each question
+  // Compute total for each question
   questions.forEach((q) => {
     const total = likertValues.reduce((sum, v) => sum + aggregated[q][v], 0);
     aggregated[q].total = total;
   });
 
-  // Container size
+  // Container size & margins
   const containerWidth = container.getBoundingClientRect().width || 800;
   const width = containerWidth;
-
   const barHeight = 40;
   const margin = {
-    top: 60,
-    right: 20,
-    bottom: 60,
-    left: Math.min(containerWidth * 0.3, 250), // dynamic left margin
+    top: 70,
+    right: 30,
+    bottom: 50,
+    left: Math.min(containerWidth * 0.3, 250),
   };
   const height = questions.length * barHeight + margin.top + margin.bottom;
 
-  // Remove any old chart
+  // Remove old chart
   d3.select(container).select("svg").remove();
 
-  // Create the SVG, with responsive scaling
+  // Create responsive SVG
   const svg = d3
     .select(container)
     .append("svg")
@@ -76,24 +75,26 @@ function plotLikertScale(container, allResponses) {
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  // X scale: domain based on the largest total across questions
-  const maxTotal = d3.max(questions, (q) => aggregated[q].total);
-  const x = d3.scaleLinear().range([margin.left, width - margin.right]);
-  x.domain([0, maxTotal || 1]); // fallback if maxTotal=0
+  // X scale for 0..1 => 0..100% (since we want a 100% stacked bar)
+  const x = d3.scaleLinear().domain([0, 1]).range([margin.left, width - margin.right]);
 
-  // Color scale: red→green gradient
+  // Y scale for each question
+  const y = d3
+    .scaleBand()
+    .domain(questions)
+    .range([margin.top, height - margin.bottom])
+    .padding(0.2);
+
+  // Color scale (red→green)
   const colorScale = d3
     .scaleOrdinal()
     .domain(likertValues)
     .range(["#d73027", "#fc8d59", "#fee08b", "#d9ef8b", "#1a9850"]);
 
-  // -----------
-  // Draw Legend
-  // -----------
+  // Legend
   const legendGroup = svg
     .append("g")
-    // Shift the legend above the bars
-    .attr("transform", `translate(${margin.left}, ${margin.top - 30})`);
+    .attr("transform", `translate(${margin.left},${margin.top - 40})`);
 
   legendGroup
     .append("text")
@@ -106,95 +107,94 @@ function plotLikertScale(container, allResponses) {
   likertLegend.forEach((item, i) => {
     const row = legendGroup
       .append("g")
-      .attr("transform", `translate(${i * 120},0)`); // spacing between each legend item
+      .attr("transform", `translate(${i * 130},0)`);
 
     row
       .append("rect")
-      .attr("width", 14)
-      .attr("height", 14)
+      .attr("width", 16)
+      .attr("height", 16)
       .attr("fill", colorScale(item.value));
 
     row
       .append("text")
-      .attr("x", 20)
-      .attr("y", 7)
+      .attr("x", 22)
+      .attr("y", 8)
       .attr("dy", "0.35em")
       .style("font-size", "12px")
       .text(item.label);
   });
 
-  // -----------
-  // Draw Bars
-  // -----------
-  const questionGroups = svg
-    .selectAll(".question")
-    .data(questions)
-    .enter()
-    .append("g")
-    .attr("class", "question")
-    .attr("transform", (d, i) => `translate(0, ${margin.top + i * barHeight})`);
-
-  // Question label
-  questionGroups
-    .append("text")
-    .attr("x", margin.left - 10)
-    .attr("y", barHeight / 2)
-    .attr("dy", ".35em")
-    .style("text-anchor", "end")
-    .style("font-size", Math.min(containerWidth * 0.02, 14))
-    .style("fill", "#333")
-    .text((d) => d);
-
-  // For each question, create sub-rectangles for each Likert value
-  questionGroups.each(function (q) {
-    const group = d3.select(this);
-    let xStart = margin.left;
+  // For each question, draw a single horizontal bar subdivided by Likert values
+  questions.forEach((q) => {
+    const total = aggregated[q].total || 1; // avoid /0
+    let cumulative = 0; // track the left edge of each sub-bar
 
     likertValues.forEach((lv) => {
       const count = aggregated[q][lv];
-      const total = aggregated[q].total;
-      const percentage = total ? ((count / total) * 100).toFixed(1) : 0;
-      // width for this sub-segment
-      const segmentWidth = x(count) - x(0);
+      const proportion = count / total; // fraction for this Likert value
+      if (proportion > 0) {
+        const xStart = x(cumulative);
+        const xEnd = x(cumulative + proportion);
 
-      if (segmentWidth > 0) {
-        // Rect for this sub-segment
-        group
+        svg
           .append("rect")
+          .attr("y", y(q))
           .attr("x", xStart)
-          .attr("y", 5)
-          .attr("height", barHeight - 10)
-          .attr("width", segmentWidth)
+          .attr("width", xEnd - xStart)
+          .attr("height", y.bandwidth())
           .attr("fill", colorScale(lv));
 
-        // Label the segment with a percentage if > 0
-        if (percentage > 0) {
-          group
+        // Label if wide enough
+        const segWidth = xEnd - xStart;
+        if (segWidth > 30) {
+          svg
             .append("text")
-            .attr("x", xStart + segmentWidth / 2)
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
+            .attr("x", (xStart + xEnd) / 2)
+            .attr("y", y(q) + y.bandwidth() / 2)
+            .attr("dy", "0.35em")
             .attr("text-anchor", "middle")
-            .style("font-size", Math.min(containerWidth * 0.02, 12))
+            .style("font-size", "12px")
             .style("fill", "#000")
-            .text(`${percentage}%`);
+            .text(`${(proportion * 100).toFixed(1)}%`);
         }
-        xStart += segmentWidth;
       }
+      cumulative += proportion;
     });
   });
 
-  // -----------
-  // X-axis Label
-  // -----------
+  // Y Axis (question labels)
+  const yAxis = d3.axisLeft(y).tickSize(0);
+  svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(yAxis)
+    .selectAll("text")
+    .style("font-size", Math.min(containerWidth * 0.018, 14))
+    .style("fill", "#333")
+    .call((g) => g.selectAll(".domain, .tick line").remove()); // remove lines
+
+  // X Axis in percentages (0%..100%)
+  const xAxis = d3
+    .axisBottom(x)
+    .tickFormat(d3.format(".0%"))
+    .tickValues([0, 0.25, 0.5, 0.75, 1]);
+
+  svg
+    .append("g")
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(xAxis)
+    .selectAll("text")
+    .style("font-size", "12px");
+
+  // Title or X-axis label
   svg
     .append("text")
-    .attr("x", width / 2)
-    .attr("y", height - margin.bottom / 2)
+    .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
+    .attr("y", height - margin.bottom / 4)
     .attr("text-anchor", "middle")
-    .style("font-size", Math.min(containerWidth * 0.03, 16))
+    .style("font-size", "14px")
     .style("fill", "#333")
-    .text("Percentage of Responses (Proportional Bar Width by Count)");
+    .text("Distribution of Responses (100% stacked)");
 }
 
 const Form3_info = ({ allResponses }) => {
