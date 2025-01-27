@@ -67,7 +67,10 @@ function plotLikertScaleStacked(container, allResponses) {
     .attr("preserveAspectRatio", "xMidYMid meet");
 
   // X scale: 0..1 => 0..100%
-  const x = d3.scaleLinear().domain([0, 1]).range([margin.left, width - margin.right]);
+  const x = d3
+    .scaleLinear()
+    .domain([0, 1])
+    .range([margin.left, width - margin.right]);
 
   // Y scale: each question is a row
   const y = d3
@@ -86,6 +89,7 @@ function plotLikertScaleStacked(container, allResponses) {
   const legendGroup = svg
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top - 40})`);
+
   legendGroup
     .append("text")
     .attr("x", 0)
@@ -101,6 +105,7 @@ function plotLikertScaleStacked(container, allResponses) {
     "4: Agree",
     "5: Strongly Agree",
   ];
+
   legendLabels.forEach((lbl, i) => {
     const row = legendGroup.append("g").attr("transform", `translate(${i * 130},0)`);
     row
@@ -108,6 +113,7 @@ function plotLikertScaleStacked(container, allResponses) {
       .attr("width", 16)
       .attr("height", 16)
       .attr("fill", colorScale((i + 1).toString()));
+
     row
       .append("text")
       .attr("x", 22)
@@ -121,6 +127,7 @@ function plotLikertScaleStacked(container, allResponses) {
   questions.forEach((q) => {
     const total = aggregated[q].total || 1;
     let cumulative = 0;
+
     likertValues.forEach((v) => {
       const count = aggregated[q][v];
       const proportion = count / total;
@@ -162,10 +169,15 @@ function plotLikertScaleStacked(container, allResponses) {
     .selectAll("text")
     .style("font-size", "12px")
     .style("fill", "#333");
+
   svg.selectAll(".domain, .tick line").remove();
 
   // X-axis: 0..100%
-  const xAxis = d3.axisBottom(x).tickFormat(d3.format(".0%")).tickValues([0, 0.25, 0.5, 0.75, 1]);
+  const xAxis = d3
+    .axisBottom(x)
+    .tickFormat(d3.format(".0%"))
+    .tickValues([0, 0.25, 0.5, 0.75, 1]);
+
   svg
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -183,12 +195,13 @@ function plotLikertScaleStacked(container, allResponses) {
 }
 
 /* ---------------------------------------
-   2) Bar chart for average Likert (1..5)
+  2) Lollipop Chart for Average Likert (1..5)
 -----------------------------------------*/
-function plotAverageLikertBarChart(container, allResponses) {
+function plotAverageLikertLollipopChart(container, allResponses) {
   // Find the question set
   const sample = allResponses.find((r) => r.data?.form3Data);
   if (!sample) return;
+
   const questions = Object.keys(sample.data.form3Data);
 
   // For each question, sum numeric values 1..5, and count
@@ -209,7 +222,7 @@ function plotAverageLikertBarChart(container, allResponses) {
     });
   });
 
-  // Build array: {question, avg}
+  // Build array: { question, avg }
   const data = questions.map((q) => {
     const { totalScore, count } = sums[q];
     const avg = count > 0 ? totalScore / count : 0;
@@ -241,28 +254,47 @@ function plotAverageLikertBarChart(container, allResponses) {
     .range([margin.top, height - margin.bottom])
     .padding(0.2);
 
-  // X scale: From 0..5 (since Likert average is in [1..5])
-  const x = d3.scaleLinear().domain([0, 5]).range([margin.left, width - margin.right]);
+  // X scale: From 0..5
+  const x = d3
+    .scaleLinear()
+    .domain([0, 5])
+    .range([margin.left, width - margin.right]);
 
-  // Color scale from red (1) → green (5)
+  // Color scale from red (lowest avg) → green (highest avg)
+  // You can also use 'd3.interpolateRdYlGn', 'd3.interpolateGreens', etc.
   const color = d3
     .scaleSequential(d3.interpolateRdYlGn)
     .domain([1, 5]);
 
-  // Bars
+  // Lollipop lines
   svg
     .append("g")
-    .selectAll("rect")
+    .selectAll("line.lollipop-line")
     .data(data)
     .enter()
-    .append("rect")
-    .attr("y", (d) => y(d.question))
-    .attr("x", x(0))
-    .attr("width", (d) => x(d.avg) - x(0))
-    .attr("height", y.bandwidth())
-    .attr("fill", (d) => color(d.avg));
+    .append("line")
+    .attr("class", "lollipop-line")
+    .attr("y1", (d) => y(d.question) + y.bandwidth() / 2)
+    .attr("y2", (d) => y(d.question) + y.bandwidth() / 2)
+    .attr("x1", (d) => x(0))
+    .attr("x2", (d) => x(d.avg))
+    .style("stroke", "#999")
+    .style("stroke-width", 2);
 
-  // Value labels on each bar (optional)
+  // Circles at the average
+  svg
+    .append("g")
+    .selectAll("circle.lollipop-circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "lollipop-circle")
+    .attr("cy", (d) => y(d.question) + y.bandwidth() / 2)
+    .attr("cx", (d) => x(d.avg))
+    .attr("r", 7)
+    .style("fill", (d) => color(d.avg));
+
+  // Value labels near each circle (optional)
   svg
     .append("g")
     .selectAll("text.avg-label")
@@ -270,7 +302,7 @@ function plotAverageLikertBarChart(container, allResponses) {
     .enter()
     .append("text")
     .attr("class", "avg-label")
-    .attr("x", (d) => x(d.avg) + 5)
+    .attr("x", (d) => x(d.avg) + 10)
     .attr("y", (d) => y(d.question) + y.bandwidth() / 2)
     .attr("dy", "0.35em")
     .style("font-size", "12px")
@@ -283,6 +315,7 @@ function plotAverageLikertBarChart(container, allResponses) {
     .call(d3.axisLeft(y).tickSize(0))
     .selectAll("text")
     .style("font-size", "12px");
+
   svg.selectAll(".domain, .tick line").remove();
 
   // X-axis
@@ -310,7 +343,7 @@ function plotAverageLikertBarChart(container, allResponses) {
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
-    .text("Bar Chart: Average Likert Scores");
+    .text("Lollipop Chart: Average Likert Scores");
 }
 
 /* ---------------------------------------
@@ -318,22 +351,22 @@ function plotAverageLikertBarChart(container, allResponses) {
 -----------------------------------------*/
 const Form3Comparison = ({ allResponses }) => {
   const stackedRef = useRef();
-  const avgBarRef = useRef();
+  const lollipopRef = useRef();
 
   useEffect(() => {
     if (allResponses && allResponses.length > 0) {
       // 1) 100%-stacked Likert chart
       plotLikertScaleStacked(stackedRef.current, allResponses);
 
-      // 2) Horizontal bar chart for average Likert
-      plotAverageLikertBarChart(avgBarRef.current, allResponses);
+      // 2) Lollipop Chart for average Likert
+      plotAverageLikertLollipopChart(lollipopRef.current, allResponses);
     }
   }, [allResponses]);
 
   return (
     <div style={{ width: "100%" }}>
       <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>
-        Form3 Likert: Stacked & Avg Bar Chart
+        Form3 Likert: Stacked & Lollipop Charts
       </h2>
 
       {/* Stacked chart */}
@@ -347,9 +380,9 @@ const Form3Comparison = ({ allResponses }) => {
         }}
       />
 
-      {/* Average bar chart */}
+      {/* Lollipop chart */}
       <div
-        ref={avgBarRef}
+        ref={lollipopRef}
         style={{
           background: "#f0f0f0",
           padding: "1rem",
