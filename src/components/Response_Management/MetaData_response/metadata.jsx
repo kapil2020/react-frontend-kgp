@@ -2,26 +2,31 @@ import React, { useEffect, useRef } from "react";
 import * as Plot from "@observablehq/plot";
 
 const MetaData_info = ({ allResponses }) => {
-  const containerRef = useRef();
+  // Refs for both charts
+  const zoomedContainerRef = useRef(null);
+  const defaultContainerRef = useRef(null);
 
   useEffect(() => {
-    let isMount = true;
+    if (!allResponses || allResponses.length === 0) return;
 
-    function loadAndRenderPlot() {
-      if (!allResponses || allResponses.length === 0) return;
+    // 1) Data Extraction
+    const plotData = allResponses
+      .map((resp) => {
+        const m = resp?.data?.metadata?.timeTaken?.minutes;
+        const s = resp?.data?.metadata?.timeTaken?.seconds;
+        if (m == null || s == null) return null;
+        return { minutes: +m, seconds: +s };
+      })
+      .filter(Boolean);
 
-      // Prepare data: gather minutes/seconds from each response
-      const plotData = allResponses
-        .map((eachres) => {
-          const m = eachres?.data?.metadata?.timeTaken?.minutes;
-          const s = eachres?.data?.metadata?.timeTaken?.seconds;
-          if (m == null || s == null) return null;
-          return { minutes: +m, seconds: +s };
-        })
-        .filter(Boolean);
-
+    // 2) "Zoomed" Plot: 0..10 minutes, 0..60 seconds
+    (() => {
+      // Clear old
+      if (zoomedContainerRef.current) {
+        zoomedContainerRef.current.innerHTML = "";
+      }
       // Build the Plot
-      const plot = Plot.plot({
+      const zoomedPlot = Plot.plot({
         width: 600,
         height: 420,
         marginLeft: 60,
@@ -34,13 +39,12 @@ const MetaData_info = ({ allResponses }) => {
           color: "#333",
           fontFamily: "sans-serif",
         },
-        // Manually constrain the x-axis to [0..10] minutes
+        // Constrain the axes
         x: {
           label: "Minutes Spent (0–10) →",
           domain: [0, 10],
           tickFormat: (d) => `${d} min`,
         },
-        // Manually constrain the y-axis to [0..60] seconds
         y: {
           label: "Seconds Spent (0–60) ↑",
           domain: [0, 60],
@@ -50,55 +54,108 @@ const MetaData_info = ({ allResponses }) => {
           type: "linear",
           scheme: "spectral",
           label: "Minutes",
-          domain: [0, 10], // color-coded from 0..10 minutes
+          domain: [0, 10],
         },
         marks: [
-          // Optional origin lines
           Plot.ruleX([0], { stroke: "#999", strokeWidth: 0.6 }),
           Plot.ruleY([0], { stroke: "#999", strokeWidth: 0.6 }),
 
-          // Grid lines
           Plot.gridX({ stroke: "#ccc" }),
           Plot.gridY({ stroke: "#ccc" }),
 
-          // Scatter points, sized bigger for clarity
           Plot.dot(plotData, {
             x: "minutes",
             y: "seconds",
             r: 6,
-            fill: "minutes",  // color scale by minutes
+            fill: "minutes", // color-coded by minutes
             stroke: "#333",
             strokeWidth: 0.5,
             title: (d) => `Time: ${d.minutes}m ${d.seconds}s`,
           }),
         ],
-        caption: "Scatter: 0–10 min / 0–60 sec (Manual Axes Domains)",
+        caption: "Zoomed Scatter: 0–10 min / 0–60 sec",
       });
 
-      if (isMount && containerRef.current) {
-        containerRef.current.innerHTML = "";
-        containerRef.current.appendChild(plot);
+      if (zoomedContainerRef.current) {
+        zoomedContainerRef.current.appendChild(zoomedPlot);
       }
-    }
+    })();
 
-    loadAndRenderPlot();
-
-    return () => {
-      isMount = false;
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+    // 3) "Default" Plot: automatic domain, simpler style
+    (() => {
+      // Clear old
+      if (defaultContainerRef.current) {
+        defaultContainerRef.current.innerHTML = "";
       }
-    };
+      // Build the Plot
+      const defaultPlot = Plot.plot({
+        width: 600,
+        height: 400,
+        marginLeft: 50,
+        marginBottom: 50,
+        marginTop: 40,
+        marginRight: 30,
+        grid: true, // turn on default grid lines
+        style: {
+          background: "#fafafa",
+          color: "#333",
+          fontFamily: "sans-serif",
+        },
+        x: {
+          label: "Minutes Spent →",
+          type: "linear",
+          tickFormat: (d) => `${d} min`,
+        },
+        y: {
+          label: "↑ Seconds Spent",
+          type: "linear",
+          tickFormat: (d) => `${d} sec`,
+        },
+        marks: [
+          Plot.gridX({ stroke: "#ccc" }),
+          Plot.gridY({ stroke: "#ccc" }),
+
+          Plot.ruleX([0], { stroke: "gray", strokeWidth: 0.7 }),
+          Plot.ruleY([0], { stroke: "gray", strokeWidth: 0.7 }),
+
+          Plot.dot(plotData, {
+            x: "minutes",
+            y: "seconds",
+            r: 4,
+            fill: "#1B9E77",
+            fillOpacity: 0.8,
+          }),
+        ],
+        caption: "Scatter of Time Spent on Survey (auto domain)",
+      });
+
+      if (defaultContainerRef.current) {
+        defaultContainerRef.current.appendChild(defaultPlot);
+      }
+    })();
   }, [allResponses]);
 
   return (
-    <div className="flex flex-col items-center">
-      <h3 className="font-semibold text-gray-700">Metadata Information</h3>
-      <h2 className="mb-2">Time Spent on Survey (Under 10 Minutes)</h2>
-      <div
-        ref={containerRef}
-        className="max-w-[650px] w-full mx-8 py-4 mt-4 bg-pink-50 shadow-md rounded"
-      />
+    <div className="flex flex-col items-center w-full">
+      <h2 className="font-semibold text-lg mb-4">Metadata Information</h2>
+
+      {/* Plot A: Zoomed (Top) */}
+      <div className="flex flex-col items-center mb-8">
+        <h3 className="mb-2">Time Spent (Zoomed View)</h3>
+        <div
+          ref={zoomedContainerRef}
+          className="max-w-[650px] w-full bg-pink-50 shadow-md rounded p-4"
+        />
+      </div>
+
+      {/* Plot B: Default (Bottom) */}
+      <div className="flex flex-col items-center">
+        <h3 className="mb-2">Time Spent (Full Range)</h3>
+        <div
+          ref={defaultContainerRef}
+          className="max-w-[650px] w-full bg-pink-50 shadow-md rounded p-4"
+        />
+      </div>
     </div>
   );
 };
