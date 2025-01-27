@@ -45,7 +45,7 @@ function aggregateAttributeData(allResponses, attribute) {
 
 /**
  * Utility function to wrap text onto multiple lines if it's too long.
- * Uncomment its usage in plotBarChart if you want multi-line x-axis labels.
+ * (Optional usage below)
  */
 function wrap(text, width) {
   text.each(function () {
@@ -85,7 +85,8 @@ function wrap(text, width) {
 }
 
 /**
- * Plots a Pie Chart with improved layout, bigger titles, and clearer legend.
+ * Plots a Pie Chart with bigger margins, centered title,
+ * and legend to the right.
  */
 function plotPieChart(container, data, title) {
   d3.select(container).select("svg").remove();
@@ -96,14 +97,15 @@ function plotPieChart(container, data, title) {
   const margin = 20;
   const radius = Math.min(width, height) / 2 - margin;
 
-  // Create SVG
+  // Create SVG and allow overflow to ensure labels aren't clipped
   const svg = d3
     .select(container)
     .append("svg")
-    .attr("width", width + 180) // extra space on the right for legend
-    .attr("height", height + 40) // extra top space for title
+    .attr("width", width + 180) // extra space for legend
+    .attr("height", height + 60) // extra space for top title
+    .style("overflow", "visible")
     .append("g")
-    .attr("transform", `translate(${(width + 180) / 2}, ${(height + 40) / 2})`);
+    .attr("transform", `translate(${(width + 180) / 2}, ${(height + 60) / 2})`);
 
   // Color scale
   const color = d3.scaleOrdinal().domain(Object.keys(data)).range(colorScheme);
@@ -113,41 +115,38 @@ function plotPieChart(container, data, title) {
     label: key,
     value,
   }));
-
-  // Sum for percentage
   const total = d3.sum(dataset, (d) => d.value);
 
-  // Create arc & pie
+  // Pie / Arc generators
+  const pie = d3
+    .pie()
+    .value((d) => d.value)
+    .sort(null);
   const arc = d3.arc().outerRadius(radius).innerRadius(0);
 
-  const pie = d3.pie().value((d) => d.value).sort(null);
-
-  // Title (centered at the very top)
+  // Title (above the chart)
   svg
     .append("text")
     .attr("x", 0)
-    .attr("y", -(height / 2) + 20)
+    .attr("y", -(height / 2))
     .attr("text-anchor", "middle")
     .style("font-weight", "bold")
     .style("font-size", "16px")
     .text(title);
 
-  // Pie arcs
-  const arcs = svg
+  // Draw arcs
+  svg
     .selectAll(".arc")
     .data(pie(dataset))
     .enter()
-    .append("g")
-    .attr("class", "arc");
-
-  arcs
     .append("path")
+    .attr("class", "arc")
     .attr("d", arc)
     .attr("fill", (d) => color(d.data.label))
     .style("stroke", "#fff")
     .style("stroke-width", "1px");
 
-  // Legend (to the right of the chart)
+  // Legend (on the right side)
   const legend = svg
     .append("g")
     .attr("transform", `translate(${radius + 40}, ${-radius})`);
@@ -163,21 +162,22 @@ function plotPieChart(container, data, title) {
       .attr("height", 16)
       .attr("fill", color(d.label));
 
-    const percentage = ((d.value / total) * 100).toFixed(1);
     legendRow
       .append("text")
       .attr("x", 24)
       .attr("y", 8)
       .attr("dy", "0.35em")
       .style("font-size", "13px")
-      .style("font-family", "sans-serif")
-      .text(`${d.label}: ${percentage}%`);
+      .text(() => {
+        const percentage = ((d.value / total) * 100).toFixed(1);
+        return `${d.label}: ${percentage}%`;
+      });
   });
 }
 
 /**
- * Plots a Bar Chart with percentage labels above each bar
- * and a Y-axis label for clarity.
+ * Plots a Bar Chart with bigger margins and visible overflow
+ * to prevent label clipping.
  */
 function plotBarChart(container, data, title) {
   d3.select(container).select("svg").remove();
@@ -186,17 +186,18 @@ function plotBarChart(container, data, title) {
   const values = Object.values(data);
   const total = d3.sum(values);
 
-  // Larger margins for clarity
-  const margin = { top: 60, right: 40, bottom: 100, left: 80 };
-  const width = 640;
-  const height = 420;
+  // Large margins to avoid clipping
+  const margin = { top: 80, right: 60, bottom: 120, left: 90 };
+  const width = 700;
+  const height = 500;
 
-  // Create SVG
+  // Create SVG with overflow visible
   const svg = d3
     .select(container)
     .append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("overflow", "visible");
 
   // Title
   svg
@@ -222,7 +223,6 @@ function plotBarChart(container, data, title) {
     .nice()
     .range([height - margin.bottom, margin.top]);
 
-  // Color scale
   const color = d3.scaleOrdinal().domain(keys).range(colorScheme);
 
   // Bars
@@ -250,7 +250,6 @@ function plotBarChart(container, data, title) {
     .attr("y", (d) => y(data[d]) - 8)
     .attr("text-anchor", "middle")
     .style("font-size", "12px")
-    .style("font-family", "sans-serif")
     .text((d) => {
       const percentage = ((data[d] / total) * 100).toFixed(1);
       return `${percentage}%`;
@@ -264,12 +263,13 @@ function plotBarChart(container, data, title) {
     .attr("transform", `translate(0, ${height - margin.bottom})`)
     .call(xAxis);
 
+  // Slight rotation to prevent overlap
   xAxisGroup
     .selectAll("text")
-    .attr("transform", "rotate(-45) translate(-5, -5)")
+    .attr("transform", "rotate(-35) translate(-5, -5)")
     .style("text-anchor", "end");
 
-  // (Optional) If you want to auto-wrap:
+  // (Optional) If your text is long, you could wrap it:
   // xAxisGroup.selectAll(".tick text").call(wrap, x.bandwidth());
 
   // Y-axis
@@ -283,11 +283,10 @@ function plotBarChart(container, data, title) {
   svg
     .append("text")
     .attr("x", -(height / 2))
-    .attr("y", margin.left / 4)
+    .attr("y", margin.left / 3)
     .attr("transform", "rotate(-90)")
     .attr("text-anchor", "middle")
     .style("font-size", "14px")
-    .style("font-family", "sans-serif")
     .style("font-weight", "bold")
     .text("Count of Responses");
 }
@@ -327,9 +326,9 @@ const Form6Charts = ({ allResponses }) => {
 
       // Even index -> Pie Chart, Odd index -> Bar Chart
       if (index % 2 === 0) {
-        plotPieChart(container, data, `${attrLabel}`);
+        plotPieChart(container, data, attrLabel);
       } else {
-        plotBarChart(container, data, `${attrLabel}`);
+        plotBarChart(container, data, attrLabel);
       }
     });
   }, [allResponses]);
@@ -342,7 +341,7 @@ const Form6Charts = ({ allResponses }) => {
           <div
             key={attribute}
             className="bg-slate-100 rounded-md shadow-md p-4 w-full flex flex-col items-center"
-            style={{ minHeight: "420px" }}
+            style={{ minHeight: "520px" }} // Adjust if needed
           >
             <div
               ref={chartsRef.current[attribute]}
