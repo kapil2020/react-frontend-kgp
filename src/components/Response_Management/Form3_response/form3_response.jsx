@@ -67,7 +67,10 @@ function plotLikertScaleStacked(container, allResponses) {
     .attr("preserveAspectRatio", "xMidYMid meet");
 
   // X scale: 0..1 => 0..100%
-  const x = d3.scaleLinear().domain([0, 1]).range([margin.left, width - margin.right]);
+  const x = d3
+    .scaleLinear()
+    .domain([0, 1])
+    .range([margin.left, width - margin.right]);
 
   // Y scale: each question is a row
   const y = d3
@@ -186,51 +189,35 @@ function plotLikertScaleStacked(container, allResponses) {
 }
 
 /* ---------------------------------------
-   2) Diverging Likert Chart
+  2) "Strip Plot" of Individual Likert Responses
 -----------------------------------------*/
-function plotDivergingLikertChart(container, allResponses) {
-  // We treat Likert "1" & "2" as negative, "3" as neutral, "4" & "5" as positive.
-  const likertValues = ["1", "2", "3", "4", "5"];
+function plotLikertStripPlot(container, allResponses) {
+  // 1..5 possible
+  // We'll treat them as numeric for plotting.
+  // We'll gather an array of { question, value } for each response
+  const data = [];
   const sample = allResponses.find((r) => r.data?.form3Data);
   if (!sample) return;
   const questions = Object.keys(sample.data.form3Data);
 
-  // Aggregate
-  const aggregated = {};
-  questions.forEach((q) => {
-    aggregated[q] = { total: 0 };
-    likertValues.forEach((v) => {
-      aggregated[q][v] = 0;
-    });
-  });
-
   allResponses.forEach((resp) => {
     const form3 = resp.data?.form3Data;
     if (!form3) return;
+
     questions.forEach((q) => {
-      const val = form3[q];
-      if (likertValues.includes(val)) {
-        aggregated[q][val]++;
-        aggregated[q].total++;
+      const val = parseFloat(form3[q]);
+      if (!isNaN(val) && val >= 1 && val <= 5) {
+        // Push each individual response
+        data.push({ question: q, value: val });
       }
     });
   });
 
-  // We'll plot from negative to positive around 0.
-  // For each question, we have up to 5 segments: 1,2 (negative), 3 (neutral), 4,5 (positive).
-  // Each segment's "width" is its proportion of the total.
-
-  // Sizing
-  const containerWidth = container.getBoundingClientRect().width || 800;
+  // Dimensions
+  const containerWidth = container.getBoundingClientRect().width || 700;
   const width = containerWidth;
-  const barHeight = 40;
-  const margin = {
-    top: 70,
-    right: 30,
-    bottom: 50,
-    left: Math.min(containerWidth * 0.3, 250),
-  };
-  const height = questions.length * barHeight + margin.top + margin.bottom;
+  const margin = { top: 70, right: 30, bottom: 60, left: 200 };
+  const height = questions.length * 60 + margin.top + margin.bottom;
 
   // Clear old
   d3.select(container).select("svg").remove();
@@ -244,176 +231,66 @@ function plotDivergingLikertChart(container, allResponses) {
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  // X scale: -1..1 (for proportions), with 0 in the center
-  // We'll plot negative categories to the left, positive to the right
-  const x = d3
-    .scaleLinear()
-    .domain([-1, 1]) // -100% to +100%
-    .range([margin.left, width - margin.right]);
-
-  // Y scale
+  // Y scale: each question => a horizontal band
   const y = d3
     .scaleBand()
     .domain(questions)
     .range([margin.top, height - margin.bottom])
-    .padding(0.2);
+    .padding(0.4); // extra padding so dots have space
 
-  // Create color scale for the 5 categories
-  // Negative categories (1,2) => reds
-  // Neutral (3) => gray
-  // Positive (4,5) => greens
-  const colorScale = {
-    "1": "#d73027", // strongly disagree
-    "2": "#fc8d59", // disagree
-    "3": "#f0f0f0", // neutral
-    "4": "#d9ef8b", // agree
-    "5": "#1a9850", // strongly agree
-  };
+  // X scale: 1..5 => [ left..right ]
+  const x = d3
+    .scaleLinear()
+    .domain([1, 5])
+    .range([margin.left, width - margin.right]);
 
-  // Legend
-  const legendGroup = svg
-    .append("g")
-    .attr("transform", `translate(${margin.left}, ${margin.top - 40})`);
+  // We'll randomly jitter the dots in the vertical direction
+  // within each question's band to avoid overlap.
+  function jitter(question) {
+    // pick a random offset within bandheight/2
+    const band = y.bandwidth();
+    return y(question) + band / 2 + (Math.random() - 0.5) * (band * 0.8);
+  }
 
-  legendGroup
-    .append("text")
-    .attr("x", 0)
-    .attr("y", -10)
-    .style("font-weight", "bold")
-    .text("Diverging Likert Legend:");
+  // Color scale from red (1) -> green (5)
+  const color = d3.scaleSequential(d3.interpolateRdYlGn).domain([1, 5]);
 
-  const legendData = [
-    { key: "1", label: "Strongly Disagree" },
-    { key: "2", label: "Disagree" },
-    { key: "3", label: "Neutral" },
-    { key: "4", label: "Agree" },
-    { key: "5", label: "Strongly Agree" },
-  ];
+  // Add dots
+  svg
+    .selectAll(".dot")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "dot")
+    .attr("cx", (d) => x(d.value))
+    .attr("cy", (d) => jitter(d.question))
+    .attr("r", 6)
+    .attr("fill", (d) => color(d.value))
+    .attr("fill-opacity", 0.8);
 
-  legendData.forEach((d, i) => {
-    const g = legendGroup.append("g").attr("transform", `translate(${i * 120}, 0)`);
-    g.append("rect").attr("width", 16).attr("height", 16).attr("fill", colorScale[d.key]);
-    g.append("text")
-      .attr("x", 22)
-      .attr("y", 8)
-      .attr("dy", "0.35em")
-      .style("font-size", "12px")
-      .text(d.label);
-  });
-
-  // For each question, we create up to 5 segments:
-  //  - negative side: categories "1" and "2"
-  //  - neutral: "3"
-  //  - positive side: "4" and "5"
-  // We'll track cumulative negative from left->0, positive from 0->right.
-
-  questions.forEach((q) => {
-    const total = aggregated[q].total || 1;
-    // negative categories: [1,2]
-    let negCumulative = 0; // proportion
-    ["1", "2"].forEach((v) => {
-      const count = aggregated[q][v];
-      if (count > 0) {
-        const proportion = count / total;
-        // This bar goes from x(-negCumulative - proportion) to x(-negCumulative)
-        const startVal = -(negCumulative + proportion);
-        const endVal = -negCumulative;
-
-        const xStart = x(startVal);
-        const xEnd = x(endVal);
-
-        svg
-          .append("rect")
-          .attr("y", y(q))
-          .attr("x", xStart)
-          .attr("width", Math.abs(xEnd - xStart))
-          .attr("height", y.bandwidth())
-          .attr("fill", colorScale[v]);
-
-        // Optional label if large enough
-        if (Math.abs(xEnd - xStart) > 30) {
-          svg
-            .append("text")
-            .attr("x", (xStart + xEnd) / 2)
-            .attr("y", y(q) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .attr("text-anchor", "middle")
-            .style("font-size", "12px")
-            .style("fill", "#000")
-            .text(`${(proportion * 100).toFixed(1)}%`);
-        }
-
-        negCumulative += proportion;
-      }
-    });
-
-    // neutral category: "3"
-    const neutralCount = aggregated[q]["3"];
-    if (neutralCount > 0) {
-      const proportion = neutralCount / total;
-      const xStart = x(-negCumulative);
-      const xEnd = x(-negCumulative + proportion);
-
-      svg
-        .append("rect")
-        .attr("y", y(q))
-        .attr("x", xStart)
-        .attr("width", Math.abs(xEnd - xStart))
-        .attr("height", y.bandwidth())
-        .attr("fill", colorScale["3"]);
-
-      // Label if wide enough
-      if (Math.abs(xEnd - xStart) > 30) {
-        svg
-          .append("text")
-          .attr("x", (xStart + xEnd) / 2)
-          .attr("y", y(q) + y.bandwidth() / 2)
-          .attr("dy", "0.35em")
-          .attr("text-anchor", "middle")
-          .style("font-size", "12px")
-          .style("fill", "#000")
-          .text(`${(proportion * 100).toFixed(1)}%`);
-      }
-
-      // We update negCumulative by adding neutral proportion
-      negCumulative += proportion;
-    }
-
-    // positive categories: [4,5]
-    let posCumulative = 0; // proportion from the center outward
-    ["4", "5"].forEach((v) => {
-      const count = aggregated[q][v];
-      if (count > 0) {
-        const proportion = count / total;
-        // This bar goes from x(posCumulative) to x(posCumulative + proportion)
-        const xStart = x(posCumulative);
-        const xEnd = x(posCumulative + proportion);
-
-        svg
-          .append("rect")
-          .attr("y", y(q))
-          .attr("x", xStart)
-          .attr("width", xEnd - xStart)
-          .attr("height", y.bandwidth())
-          .attr("fill", colorScale[v]);
-
-        // Label if wide enough
-        if (xEnd - xStart > 30) {
-          svg
-            .append("text")
-            .attr("x", (xStart + xEnd) / 2)
-            .attr("y", y(q) + y.bandwidth() / 2)
-            .attr("dy", "0.35em")
-            .attr("text-anchor", "middle")
-            .style("font-size", "12px")
-            .style("fill", "#000")
-            .text(`${(proportion * 100).toFixed(1)}%`);
-        }
-
-        posCumulative += proportion;
-      }
-    });
-  });
+  // (Optional) Show a mean or median line for each question
+  // ----------
+  // 1) Group data by question
+  // const grouped = d3.group(data, d => d.question);
+  // grouped.forEach((arr, question) => {
+  //   const values = arr.map(d => d.value).sort((a,b) => a-b);
+  //   // Example: compute median
+  //   const mid = Math.floor(values.length / 2);
+  //   let median;
+  //   if (values.length % 2 === 1) {
+  //     median = values[mid];
+  //   } else {
+  //     median = (values[mid - 1] + values[mid]) / 2;
+  //   }
+  //   // Draw a small line at x(median), y(question)
+  //   svg.append("line")
+  //     .attr("x1", x(median))
+  //     .attr("x2", x(median))
+  //     .attr("y1", y(question) + y.bandwidth()*0.2)
+  //     .attr("y2", y(question) + y.bandwidth()*0.8)
+  //     .style("stroke", "#333")
+  //     .style("stroke-width", 2);
+  // });
 
   // Y-axis
   const yAxis = d3.axisLeft(y).tickSize(0);
@@ -422,66 +299,61 @@ function plotDivergingLikertChart(container, allResponses) {
     .attr("transform", `translate(${margin.left},0)`)
     .call(yAxis)
     .selectAll("text")
-    .style("font-size", "12px");
+    .style("font-size", "13px");
   svg.selectAll(".domain, .tick line").remove();
 
-  // X-axis: from -100%..+100%
-  const xAxis = d3
-    .axisBottom(x)
-    .tickFormat((d) => `${(d * 100).toFixed(0)}%`)
-    .tickValues([-1, -0.5, 0, 0.5, 1]);
-
+  // X-axis
+  const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0f"));
   svg
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(xAxis);
 
-  // Vertical reference line at 0
-  svg
-    .append("line")
-    .attr("x1", x(0))
-    .attr("x2", x(0))
-    .attr("y1", margin.top - 10)
-    .attr("y2", height - margin.bottom + 5)
-    .style("stroke", "#333")
-    .style("stroke-width", 1)
-    .style("stroke-dasharray", "2,2");
-
   // X-axis label
   svg
     .append("text")
     .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
-    .attr("y", height - margin.bottom / 4)
+    .attr("y", height - margin.bottom + 40)
     .attr("text-anchor", "middle")
     .style("font-size", "14px")
-    .style("fill", "#333")
-    .text("← Disagree            % of Responses            Agree →");
+    .style("font-weight", "bold")
+    .text("Likert Scale (1 = Disagree, 5 = Agree)");
+
+  // Title
+  svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", margin.top / 2)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text("Strip Plot: Individual Likert Responses");
 }
 
 /* ---------------------------------------
-   Main component with both charts
+   Main component with both plots
 -----------------------------------------*/
-const Form3ComparisonDiverging = ({ allResponses }) => {
-  const stackedRef = useRef(null);
-  const divergingRef = useRef(null);
+const Form3Comparison = ({ allResponses }) => {
+  const stackedRef = useRef();
+  const stripRef = useRef();
 
   useEffect(() => {
     if (allResponses && allResponses.length > 0) {
-      // 1) Standard 100%-stacked Likert
+      // 1) Standard 100%-stacked
       plotLikertScaleStacked(stackedRef.current, allResponses);
 
-      // 2) Diverging Likert
-      plotDivergingLikertChart(divergingRef.current, allResponses);
+      // 2) Strip plot for individual responses
+      plotLikertStripPlot(stripRef.current, allResponses);
     }
   }, [allResponses]);
 
   return (
     <div style={{ width: "100%" }}>
       <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>
-        Form3 Likert Examples: Stacked & Diverging
+        Form3 Likert: Stacked & Strip Plot
       </h2>
 
-      {/* 100%-Stacked Chart */}
+      {/* Stacked Chart */}
       <div
         ref={stackedRef}
         style={{
@@ -492,9 +364,9 @@ const Form3ComparisonDiverging = ({ allResponses }) => {
         }}
       />
 
-      {/* Diverging Chart */}
+      {/* Strip Plot */}
       <div
-        ref={divergingRef}
+        ref={stripRef}
         style={{
           background: "#f0f0f0",
           padding: "1rem",
@@ -505,4 +377,4 @@ const Form3ComparisonDiverging = ({ allResponses }) => {
   );
 };
 
-export default Form3ComparisonDiverging;
+export default Form3Comparison;
