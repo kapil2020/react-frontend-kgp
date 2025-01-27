@@ -1,161 +1,108 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import * as Plot from "@observablehq/plot";
 
-const MetaData_info_ECDF_D3 = ({ allResponses }) => {
-  const containerRef = useRef(null);
+const MetaData_info = ({ allResponses }) => {
+  const containerRef = useRef();
 
   useEffect(() => {
-    if (!allResponses || allResponses.length === 0) return;
+    let isMount = true;
 
-    // 1) Gather total time for each participant, in seconds
-    let times = allResponses
-      .map((resp) => {
-        const m = resp?.data?.metadata?.timeTaken?.minutes;
-        const s = resp?.data?.metadata?.timeTaken?.seconds;
-        if (m == null || s == null) return null;
-        return m * 60 + s; // total time in seconds
-      })
-      .filter((val) => val !== null);
+    function loadAndRenderPlot() {
+      if (!allResponses || allResponses.length === 0) return;
 
-    // If no valid data, exit
-    if (times.length === 0) return;
+      // Prepare data: gather seconds/minutes from each response
+      const plotData = allResponses
+        .map((eachres) => {
+          const m = eachres?.data?.metadata?.timeTaken?.minutes;
+          const s = eachres?.data?.metadata?.timeTaken?.seconds;
+          if (m == null || s == null) return null;
+          return { minutes: +m, seconds: +s };
+        })
+        .filter(Boolean);
 
-    // 2) Sort times ascending
-    times.sort((a, b) => a - b);
+      // Build the Plot
+      const plot = Plot.plot({
+        width: 600,
+        height: 420,
+        marginLeft: 60,
+        marginBottom: 50,
+        marginTop: 40,
+        marginRight: 40,
+        grid: true, // turn on default grid lines
+        style: {
+          background: "#fafafa",
+          color: "#333",
+          fontFamily: "sans-serif",
+        },
+        // Define a color scale for "minutes"
+        color: {
+          type: "linear",
+          scheme: "spectral", // try "blues", "greens", "reds", etc.
+          label: "Minutes",
+          // If you want to clamp or expand domain, do domain: [0, d3.max(...)],
+          // or let Plot infer from your data.
+        },
+        x: {
+          label: "Minutes Spent →",
+          tickFormat: (d) => `${d} min`,
+          nice: true,
+        },
+        y: {
+          label: "↑ Seconds Spent",
+          tickFormat: (d) => `${d} sec`,
+          nice: true,
+        },
+        marks: [
+          // Grid lines
+          Plot.gridX({ stroke: "#ccc" }),
+          Plot.gridY({ stroke: "#ccc" }),
 
-    // 3) Build ECDF data: For each sorted time, the fraction of participants <= that time
-    //    i-th point => x = times[i], y = (i+1)/n  (for i=0..n-1)
-    const n = times.length;
-    const ecdfData = times.map((time, i) => ({
-      time,
-      fraction: (i + 1) / n, // fraction from 1/n up to n/n
-    }));
+          // Optional origin lines
+          Plot.ruleX([0], { stroke: "#999", strokeWidth: 0.6 }),
+          Plot.ruleY([0], { stroke: "#999", strokeWidth: 0.6 }),
 
-    // 4) Setup chart dimensions
-    const width = 640;
-    const height = 400;
-    const margin = { top: 40, right: 30, bottom: 50, left: 60 };
+          // Scatter points colored by "minutes"
+          Plot.dot(plotData, {
+            x: "minutes",
+            y: "seconds",
+            fill: "minutes",
+            r: 6,
+            stroke: "#333", // outline
+            strokeWidth: 0.5,
+            title: (d) => `Time: ${d.minutes} min ${d.seconds} sec`,
+          }),
+        ],
+        // Subtitle (optional), displayed below the chart
+        caption: "Time Spent on Survey (minutes vs seconds) with Color Encoding",
+      });
 
-    // Clear any old chart
-    d3.select(containerRef.current).select("svg").remove();
+      if (isMount && containerRef.current) {
+        containerRef.current.innerHTML = "";
+        containerRef.current.appendChild(plot);
+      }
+    }
 
-    // 5) Create SVG
-    const svg = d3
-      .select(containerRef.current)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .style("background", "#fafafa")
-      .style("font-family", "sans-serif");
+    loadAndRenderPlot();
 
-    // 6) Scales
-    // X scale from [0..maxTime], Y scale from [0..1]
-    const maxTime = d3.max(ecdfData, (d) => d.time) || 0;
-    const x = d3
-      .scaleLinear()
-      .domain([0, maxTime])
-      .range([margin.left, width - margin.right]);
-
-    const y = d3.scaleLinear().domain([0, 1]).range([height - margin.bottom, margin.top]);
-
-    // 7) Axes
-    const xAxis = d3.axisBottom(x).ticks(6);
-    const yAxis = d3
-      .axisLeft(y)
-      .ticks(5)
-      .tickFormat(d3.format(".0%")); // show as percentages
-
-    svg
-      .append("g")
-      .attr("transform", `translate(0, ${height - margin.bottom})`)
-      .call(xAxis)
-      .append("text")
-      .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
-      .attr("y", 40)
-      .attr("fill", "#333")
-      .style("font-size", "14px")
-      .style("font-weight", "bold")
-      .style("text-anchor", "middle")
-      .text("Total Time (seconds)");
-
-    svg
-      .append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(yAxis)
-      .append("text")
-      .attr("x", -(height - margin.top - margin.bottom) / 2)
-      .attr("y", -50)
-      .attr("fill", "#333")
-      .attr("transform", "rotate(-90)")
-      .attr("text-anchor", "middle")
-      .style("font-size", "14px")
-      .style("font-weight", "bold")
-      .text("Proportion of Participants");
-
-    // 8) Grid lines (optional)
-    // Horizontal grid lines
-    svg
-      .append("g")
-      .attr("stroke", "#ccc")
-      .attr("stroke-opacity", 0.5)
-      .selectAll("line.y-grid")
-      .data(y.ticks(5))
-      .join("line")
-      .attr("class", "y-grid")
-      .attr("x1", margin.left)
-      .attr("x2", width - margin.right)
-      .attr("y1", (d) => y(d))
-      .attr("y2", (d) => y(d));
-
-    // Vertical grid lines
-    svg
-      .append("g")
-      .attr("stroke", "#ccc")
-      .attr("stroke-opacity", 0.5)
-      .selectAll("line.x-grid")
-      .data(x.ticks(6))
-      .join("line")
-      .attr("class", "x-grid")
-      .attr("y1", margin.top)
-      .attr("y2", height - margin.bottom)
-      .attr("x1", (d) => x(d))
-      .attr("x2", (d) => x(d));
-
-    // 9) ECDF line generator: we use a “step” so it stays flat until next data point
-    const lineGenerator = d3
-      .line()
-      .x((d) => x(d.time))
-      .y((d) => y(d.fraction))
-      .curve(d3.curveStepAfter);
-
-    // 10) Draw the ECDF line
-    svg
-      .append("path")
-      .datum(ecdfData)
-      .attr("fill", "none")
-      .attr("stroke", "#1B9E77")
-      .attr("stroke-width", 2)
-      .attr("d", lineGenerator);
-
-    // 11) Title
-    svg
-      .append("text")
-      .attr("x", width / 2)
-      .attr("y", margin.top / 1.3)
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("font-weight", "bold")
-      .text("Cumulative Distribution of Survey Completion Times");
-
-    // If you need a tooltip or percentile lines, you could implement them here.
+    return () => {
+      isMount = false;
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+    };
   }, [allResponses]);
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <h3 style={{ marginBottom: "0.5rem" }}>Survey Time ECDF (Pure D3)</h3>
-      <div ref={containerRef} />
+    <div className="flex flex-col items-center">
+      <h3 className="font-semibold text-gray-700">Metadata Information</h3>
+      <h2 className="mb-2">Time Spent on Survey</h2>
+      <div
+        ref={containerRef}
+        className="max-w-[650px] w-full mx-8 py-4 mt-4 bg-pink-50 shadow-md rounded"
+      />
     </div>
   );
 };
 
-export default MetaData_info_ECDF_D3;
+export default MetaData_info;
