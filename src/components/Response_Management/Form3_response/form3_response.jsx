@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-/* -------------------------------------------
+/* -----------------------------------------------------
    1) 100%-Stacked Likert Chart
----------------------------------------------*/
+------------------------------------------------------*/
 function plotLikertScaleStacked(container, allResponses) {
   // Likert values 1..5
   const likertValues = ["1", "2", "3", "4", "5"];
@@ -189,11 +189,11 @@ function plotLikertScaleStacked(container, allResponses) {
     .text("% of count");
 }
 
-/* -------------------------------------------
+/* -----------------------------------------------------
    2) Likert Response Heatmap
----------------------------------------------*/
+------------------------------------------------------*/
 function plotLikertHeatmap(container, allResponses) {
-  // Instead of "Likert 1..5" text, we'll have "1: Strongly Disagree," etc.
+  // We'll label columns as "1: Strongly Disagree", etc.
   const ratingLabels = {
     "1": "1: Strongly Disagree",
     "2": "2: Disagree",
@@ -201,11 +201,9 @@ function plotLikertHeatmap(container, allResponses) {
     "4": "4: Agree",
     "5": "5: Strongly Agree",
   };
+  const likertValues = Object.keys(ratingLabels); // ["1","2","3","4","5"]
 
-  // We'll still treat the domain as ["1","2","3","4","5"]
-  const likertValues = Object.keys(ratingLabels);
-
-  // Find a sample to identify questions
+  // Sample to identify questions
   const sample = allResponses.find((r) => r.data?.form3Data);
   if (!sample) return;
 
@@ -273,7 +271,7 @@ function plotLikertHeatmap(container, allResponses) {
   // 5) Scales
   const x = d3
     .scaleBand()
-    .domain(likertValues) // "1","2","3","4","5"
+    .domain(likertValues)
     .range([margin.left, width - margin.right])
     .padding(0.05);
 
@@ -283,7 +281,6 @@ function plotLikertHeatmap(container, allResponses) {
     .range([margin.top, height - margin.bottom])
     .padding(0.05);
 
-  // Color scale
   const colorScale = d3
     .scaleSequential(d3.interpolateBlues)
     .domain([0, maxProp]);
@@ -307,7 +304,6 @@ function plotLikertHeatmap(container, allResponses) {
           .attr("text-anchor", "middle")
           .attr("dy", "0.35em")
           .style("font-size", "12px")
-          // Switch text color if background is too dark
           .style("fill", cell.proportion < 0.5 * maxProp ? "#000" : "#fff")
           .text(`${(cell.proportion * 100).toFixed(1)}%`);
       }
@@ -316,10 +312,7 @@ function plotLikertHeatmap(container, allResponses) {
 
   // 7) Axes
   // Top axis with custom tick labels from ratingLabels dictionary
-  const xAxis = d3
-    .axisTop(x)
-    .tickFormat((d) => ratingLabels[d]); // <-- use the dictionary
-
+  const xAxis = d3.axisTop(x).tickFormat((d) => ratingLabels[d]);
   svg
     .append("g")
     .attr("transform", `translate(0, ${margin.top - 5})`)
@@ -362,7 +355,7 @@ function plotLikertHeatmap(container, allResponses) {
   const numStops = 10;
   d3.range(numStops + 1).forEach((i) => {
     const t = i / numStops;
-    const val = t * maxProp; // from 0..maxProp
+    const val = t * maxProp;
     gradient
       .append("stop")
       .attr("offset", `${t * 100}%`)
@@ -400,27 +393,237 @@ function plotLikertHeatmap(container, allResponses) {
     .text("Likert Response Heatmap (Percentage)");
 }
 
-/* -------------------------------------------
-   Main component: show both charts
----------------------------------------------*/
-const Form3ComparisonBoth = ({ allResponses }) => {
+/* -----------------------------------------------------
+   3) Density Histograms by Gender (Male/Female)
+------------------------------------------------------*/
+function plotGenderDensityHistograms(container, allResponses) {
+  // We expect a 'gender' field in the response data
+  // We'll gather all numeric Likert responses for Males & Females, then show overlapping histograms.
+  const maleValues = [];
+  const femaleValues = [];
+
+  // Here we assume:
+  //   - gender is in resp.data?.gender (or similar)
+  //   - Likert values are in resp.data?.form3Data, with question => "1".."5"
+  // Adjust accordingly if your real data differs.
+  allResponses.forEach((resp) => {
+    const form3 = resp.data?.form3Data;
+    const g = resp.data?.gender?.toLowerCase(); // 'male' or 'female'
+    if (!form3 || !g) return;
+
+    Object.keys(form3).forEach((question) => {
+      const val = parseFloat(form3[question]);
+      if (!isNaN(val) && val >= 1 && val <= 5) {
+        if (g === "male") {
+          maleValues.push(val);
+        } else if (g === "female") {
+          femaleValues.push(val);
+        }
+      }
+    });
+  });
+
+  // If we have no data for either group, just return
+  if (maleValues.length === 0 && femaleValues.length === 0) {
+    d3.select(container).select("svg").remove();
+    return;
+  }
+
+  // Create a histogram for each gender
+  // We'll do a standard bin from [1..5] in steps of 1 (5 bins).
+  // Then scale Y as a fraction (density) of total in each group.
+
+  const containerWidth = container.getBoundingClientRect().width || 700;
+  const width = containerWidth;
+  const margin = { top: 60, right: 40, bottom: 60, left: 60 };
+  const height = 300;
+
+  // Clear old
+  d3.select(container).select("svg").remove();
+
+  // Create SVG
+  const svg = d3
+    .select(container)
+    .append("svg")
+    .attr("width", "100%")
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("preserveAspectRatio", "xMidYMid meet");
+
+  // X scale for Likert domain 1..5
+  const x = d3.scaleLinear().domain([1, 5]).range([margin.left, width - margin.right]);
+
+  // Prepare bins
+  const binGen = d3
+    .bin()
+    .domain(x.domain())
+    .thresholds([1, 2, 3, 4, 5]); // 4 cut points => 4 or 5 bins
+
+  const maleBins = binGen(maleValues);
+  const femaleBins = binGen(femaleValues);
+
+  // Convert bin counts to densities (fraction of group size)
+  const maleTotal = maleValues.length || 1;
+  const femaleTotal = femaleValues.length || 1;
+
+  maleBins.forEach((b) => {
+    b.density = b.length / maleTotal;
+  });
+  femaleBins.forEach((b) => {
+    b.density = b.length / femaleTotal;
+  });
+
+  // Y scale for densities: 0..maxDensity
+  const maxDensity = Math.max(
+    d3.max(maleBins, (d) => d.density) || 0,
+    d3.max(femaleBins, (d) => d.density) || 0
+  );
+  const y = d3.scaleLinear().domain([0, maxDensity]).range([height - margin.bottom, margin.top]);
+
+  // Colors
+  const colorMale = "steelblue";
+  const colorFemale = "tomato";
+
+  // Create a sub-scale so we can shift male/female bars slightly horizontally
+  // so they don't fully overlap. Each bin is from [bin.x0..bin.x1]. We'll apply a small offset.
+  const barOffset = (x(2) - x(1)) * 0.2; // some fraction of the bin width
+
+  // Draw male bars
+  svg
+    .append("g")
+    .selectAll("rect.male-bar")
+    .data(maleBins)
+    .enter()
+    .append("rect")
+    .attr("class", "male-bar")
+    .attr("x", (d) => x(d.x0) + barOffset)
+    .attr("width", (d) => Math.max(0, x(d.x1) - x(d.x0) - barOffset))
+    .attr("y", (d) => y(d.density))
+    .attr("height", (d) => y(0) - y(d.density))
+    .attr("fill", colorMale)
+    .attr("fill-opacity", 0.6);
+
+  // Draw female bars
+  svg
+    .append("g")
+    .selectAll("rect.female-bar")
+    .data(femaleBins)
+    .enter()
+    .append("rect")
+    .attr("class", "female-bar")
+    .attr("x", (d) => x(d.x0))
+    .attr("width", (d) => Math.max(0, x(d.x1) - x(d.x0) - barOffset))
+    .attr("y", (d) => y(d.density))
+    .attr("height", (d) => y(0) - y(d.density))
+    .attr("fill", colorFemale)
+    .attr("fill-opacity", 0.6);
+
+  // X-axis
+  const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format(".0f"));
+  svg
+    .append("g")
+    .attr("transform", `translate(0,${height - margin.bottom})`)
+    .call(xAxis);
+
+  // X-axis label
+  svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", height - 15)
+    .attr("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("font-weight", "bold")
+    .text("Likert Rating");
+
+  // Y-axis
+  const yAxis = d3.axisLeft(y).ticks(5).tickFormat(d3.format(".0%"));
+  svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(yAxis);
+
+  // Y-axis label
+  svg
+    .append("text")
+    .attr("x", -(height / 2))
+    .attr("y", margin.left / 3)
+    .attr("transform", "rotate(-90)")
+    .attr("text-anchor", "middle")
+    .style("font-size", "14px")
+    .style("font-weight", "bold")
+    .text("Proportion of Responses");
+
+  // Title
+  svg
+    .append("text")
+    .attr("x", width / 2)
+    .attr("y", margin.top * 0.6)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text("Likert Distribution by Gender (Density Histogram)");
+
+  // Simple legend
+  const legendX = width - margin.right - 90;
+  const legendY = margin.top;
+  const legend = svg.append("g").attr("transform", `translate(${legendX}, ${legendY})`);
+
+  legend
+    .append("rect")
+    .attr("y", 0)
+    .attr("width", 12)
+    .attr("height", 12)
+    .attr("fill", colorMale)
+    .attr("fill-opacity", 0.6);
+  legend
+    .append("text")
+    .attr("x", 20)
+    .attr("y", 6)
+    .attr("dy", "0.35em")
+    .style("font-size", "12px")
+    .text("Male");
+
+  legend
+    .append("rect")
+    .attr("y", 20)
+    .attr("width", 12)
+    .attr("height", 12)
+    .attr("fill", colorFemale)
+    .attr("fill-opacity", 0.6);
+  legend
+    .append("text")
+    .attr("x", 20)
+    .attr("y", 26)
+    .attr("dy", "0.35em")
+    .style("font-size", "12px")
+    .text("Female");
+}
+
+/* -----------------------------------------------------
+   Main component: Show all three plots
+------------------------------------------------------*/
+const Form3ComparisonAll = ({ allResponses }) => {
   const stackedRef = useRef(null);
   const heatmapRef = useRef(null);
+  const genderHistRef = useRef(null);
 
   useEffect(() => {
     if (allResponses && allResponses.length > 0) {
-      // (A) 100%-Stacked Chart
+      // 1) 100%-Stacked
       plotLikertScaleStacked(stackedRef.current, allResponses);
 
-      // (B) Heatmap with custom x-axis labels
+      // 2) Heatmap
       plotLikertHeatmap(heatmapRef.current, allResponses);
+
+      // 3) Gender-based density histograms
+      plotGenderDensityHistograms(genderHistRef.current, allResponses);
     }
   }, [allResponses]);
 
   return (
     <div style={{ width: "100%" }}>
       <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>
-        Form3 Likert: Stacked + Heatmap
+        Form3 Likert: Stacked, Heatmap & Gender Hist
       </h2>
 
       {/* Chart A: 100%-Stacked Likert */}
@@ -440,6 +643,17 @@ const Form3ComparisonBoth = ({ allResponses }) => {
         style={{
           background: "#f0f0f0",
           padding: "1rem",
+          marginBottom: "2rem",
+          borderRadius: "5px",
+        }}
+      />
+
+      {/* Chart C: Density Histograms by Gender */}
+      <div
+        ref={genderHistRef}
+        style={{
+          background: "#f0f0f0",
+          padding: "1rem",
           borderRadius: "5px",
         }}
       />
@@ -447,4 +661,4 @@ const Form3ComparisonBoth = ({ allResponses }) => {
   );
 };
 
-export default Form3ComparisonBoth;
+export default Form3ComparisonAll;
