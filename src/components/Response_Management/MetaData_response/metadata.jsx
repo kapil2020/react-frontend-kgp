@@ -1,28 +1,29 @@
 import React, { useEffect, useRef } from "react";
 import * as Plot from "@observablehq/plot";
 
-const MetaData_info_Histogram = ({ allResponses }) => {
+const MetaData_info_Hexbin = ({ allResponses }) => {
   const containerRef = useRef();
 
   useEffect(() => {
     let isMount = true;
 
-    function loadAndRenderHistogram() {
+    function loadAndRenderHexPlot() {
       if (!allResponses || allResponses.length === 0) return;
 
-      // Combine (minutes * 60 + seconds) => totalSeconds
-      const data = allResponses
+      // Prepare data: gather seconds/minutes from each response
+      const plotData = allResponses
         .map((eachres) => {
           const m = eachres?.data?.metadata?.timeTaken?.minutes;
           const s = eachres?.data?.metadata?.timeTaken?.seconds;
           if (m == null || s == null) return null;
-          return (m * 60) + s;
+          return { minutes: +m, seconds: +s };
         })
-        .filter((val) => val !== null);
+        .filter(Boolean);
 
-      if (data.length === 0) return;
+      // Only proceed if we actually have data
+      if (plotData.length === 0) return;
 
-      // Create the histogram
+      // Create the Plot
       const plot = Plot.plot({
         width: 600,
         height: 400,
@@ -37,22 +38,29 @@ const MetaData_info_Histogram = ({ allResponses }) => {
           fontFamily: "sans-serif",
         },
         x: {
-          label: "Total Seconds Spent →",
+          label: "Minutes Spent →",
+          tickFormat: (d) => `${d} min`,
         },
         y: {
-          label: "↑ Count of People",
+          label: "↑ Seconds Spent",
+          tickFormat: (d) => `${d} sec`,
         },
+        // “Hexbin” mark: bins the data in 2D hexagons, coloring by count
         marks: [
-          // Basic histogram
-          Plot.rectY(data, {
-            x: (d) => d,         // total seconds as x
-            // set number of bins or extent if needed
-            // e.g. bin: 20 for 20 bins
-            fill: "#1B9E77",
-            fillOpacity: 0.7,
+          Plot.hexbin(plotData, {
+            x: "minutes",
+            y: "seconds",
+            fill: "count",
+            // The radius of each hex cell; adjust for your data range
+            // so it doesn't look too chunky or too granular.
+            r: 10,
+            // White outline around each hex cell for clarity
+            stroke: "#fff",
+            // You can also set a color scheme or range:
+            // e.g. fillScale: d3.scaleSequential([0, maxCount], d3.interpolateBlues)
           }),
         ],
-        caption: "Distribution of Time Spent (in total seconds)",
+        caption: "Time Spent on Survey (Hexbin of minutes vs. seconds)",
       });
 
       if (isMount && containerRef.current) {
@@ -61,7 +69,7 @@ const MetaData_info_Histogram = ({ allResponses }) => {
       }
     }
 
-    loadAndRenderHistogram();
+    loadAndRenderHexPlot();
 
     return () => {
       isMount = false;
@@ -73,7 +81,7 @@ const MetaData_info_Histogram = ({ allResponses }) => {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="font-semibold text-gray-700">Metadata: Histogram</h3>
+      <h3 className="font-semibold text-gray-700">Metadata: Hexbin Plot</h3>
       <div
         ref={containerRef}
         className="max-w-[650px] w-full mx-8 py-4 flex content-center mt-4 bg-pink-50 shadow-md rounded"
@@ -82,4 +90,4 @@ const MetaData_info_Histogram = ({ allResponses }) => {
   );
 };
 
-export default MetaData_info_Histogram;
+export default MetaData_info_Hexbin;
