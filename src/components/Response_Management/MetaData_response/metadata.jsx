@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import * as d3 from "d3";
 import * as Plot from "@observablehq/plot";
 
 const MetaData_info = ({ allResponses }) => {
@@ -11,7 +10,7 @@ const MetaData_info = ({ allResponses }) => {
     function loadAndRenderPlot() {
       if (!allResponses || allResponses.length === 0) return;
 
-      // Prepare data: gather seconds/minutes from each response
+      // Prepare data: gather minutes/seconds from each response
       const plotData = allResponses
         .map((eachres) => {
           const m = eachres?.data?.metadata?.timeTaken?.minutes;
@@ -29,52 +28,51 @@ const MetaData_info = ({ allResponses }) => {
         marginBottom: 50,
         marginTop: 40,
         marginRight: 40,
-        grid: true, // turn on default grid lines
+        grid: true,
         style: {
           background: "#fafafa",
           color: "#333",
           fontFamily: "sans-serif",
         },
-        // Define a color scale for "minutes"
+        // Manually constrain the x-axis to [0..10] minutes
+        x: {
+          label: "Minutes Spent (0–10) →",
+          domain: [0, 10],
+          tickFormat: (d) => `${d} min`,
+        },
+        // Manually constrain the y-axis to [0..60] seconds
+        y: {
+          label: "Seconds Spent (0–60) ↑",
+          domain: [0, 60],
+          tickFormat: (d) => `${d} sec`,
+        },
         color: {
           type: "linear",
-          scheme: "spectral", // try "blues", "greens", "reds", etc.
+          scheme: "spectral",
           label: "Minutes",
-          // If you want to clamp or expand domain, do domain: [0, d3.max(...)],
-          // or let Plot infer from your data.
-        },
-        x: {
-          label: "Minutes Spent →",
-          tickFormat: (d) => `${d} min`,
-          nice: true,
-        },
-        y: {
-          label: "↑ Seconds Spent",
-          tickFormat: (d) => `${d} sec`,
-          nice: true,
+          domain: [0, 10], // color-coded from 0..10 minutes
         },
         marks: [
-          // Grid lines
-          Plot.gridX({ stroke: "#ccc" }),
-          Plot.gridY({ stroke: "#ccc" }),
-
           // Optional origin lines
           Plot.ruleX([0], { stroke: "#999", strokeWidth: 0.6 }),
           Plot.ruleY([0], { stroke: "#999", strokeWidth: 0.6 }),
 
-          // Scatter points colored by "minutes"
+          // Grid lines
+          Plot.gridX({ stroke: "#ccc" }),
+          Plot.gridY({ stroke: "#ccc" }),
+
+          // Scatter points, sized bigger for clarity
           Plot.dot(plotData, {
             x: "minutes",
             y: "seconds",
-            fill: "minutes",
             r: 6,
-            stroke: "#333", // outline
+            fill: "minutes",  // color scale by minutes
+            stroke: "#333",
             strokeWidth: 0.5,
-            title: (d) => `Time: ${d.minutes} min ${d.seconds} sec`,
+            title: (d) => `Time: ${d.minutes}m ${d.seconds}s`,
           }),
         ],
-        // Subtitle (optional), displayed below the chart
-        caption: "Time Spent on Survey (minutes vs seconds) with Color Encoding",
+        caption: "Scatter: 0–10 min / 0–60 sec (Manual Axes Domains)",
       });
 
       if (isMount && containerRef.current) {
@@ -96,7 +94,7 @@ const MetaData_info = ({ allResponses }) => {
   return (
     <div className="flex flex-col items-center">
       <h3 className="font-semibold text-gray-700">Metadata Information</h3>
-      <h2 className="mb-2">Time Spent on Survey</h2>
+      <h2 className="mb-2">Time Spent on Survey (Under 10 Minutes)</h2>
       <div
         ref={containerRef}
         className="max-w-[650px] w-full mx-8 py-4 mt-4 bg-pink-50 shadow-md rounded"
