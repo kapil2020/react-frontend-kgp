@@ -36,14 +36,22 @@ function plotLikertScaleStacked(container, allResponses) {
 
   // Compute total for each question
   questions.forEach((q) => {
-    aggregated[q].total = likertValues.reduce((sum, v) => sum + aggregated[q][v], 0);
+    aggregated[q].total = likertValues.reduce(
+      (sum, v) => sum + aggregated[q][v],
+      0
+    );
   });
 
   // Sizing
   const containerWidth = container.getBoundingClientRect().width || 800;
   const width = containerWidth;
   const barHeight = 40;
-  const margin = { top: 70, right: 30, bottom: 50, left: Math.min(containerWidth * 0.3, 250) };
+  const margin = {
+    top: 70,
+    right: 30,
+    bottom: 50,
+    left: Math.min(containerWidth * 0.3, 250),
+  };
   const height = questions.length * barHeight + margin.top + margin.bottom;
 
   // Clear old
@@ -109,7 +117,7 @@ function plotLikertScaleStacked(container, allResponses) {
       .text(lbl);
   });
 
-  // Draw bars
+  // Draw stacked bars
   questions.forEach((q) => {
     const total = aggregated[q].total || 1;
     let cumulative = 0;
@@ -157,10 +165,7 @@ function plotLikertScaleStacked(container, allResponses) {
   svg.selectAll(".domain, .tick line").remove();
 
   // X-axis: 0..100%
-  const xAxis = d3
-    .axisBottom(x)
-    .tickFormat(d3.format(".0%"))
-    .tickValues([0, 0.25, 0.5, 0.75, 1]);
+  const xAxis = d3.axisBottom(x).tickFormat(d3.format(".0%")).tickValues([0, 0.25, 0.5, 0.75, 1]);
   svg
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
@@ -178,9 +183,9 @@ function plotLikertScaleStacked(container, allResponses) {
 }
 
 /* ---------------------------------------
-   2) Radar chart for average Likert
+   2) Bar chart for average Likert (1..5)
 -----------------------------------------*/
-function plotRadarLikert(container, allResponses) {
+function plotAverageLikertBarChart(container, allResponses) {
   // Find the question set
   const sample = allResponses.find((r) => r.data?.form3Data);
   if (!sample) return;
@@ -214,12 +219,13 @@ function plotRadarLikert(container, allResponses) {
   // Dimensions
   const containerWidth = container.getBoundingClientRect().width || 600;
   const width = containerWidth;
-  const height = Math.min(600, containerWidth);
-  const margin = 50;
-  const radius = Math.min(width, height) / 2 - margin;
+  const margin = { top: 60, right: 40, bottom: 80, left: 200 };
+  const height = data.length * 40 + margin.top + margin.bottom;
 
+  // Clear any existing SVG
   d3.select(container).select("svg").remove();
 
+  // Create SVG
   const svg = d3
     .select(container)
     .append("svg")
@@ -228,112 +234,83 @@ function plotRadarLikert(container, allResponses) {
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
-  const centerX = width / 2;
-  const centerY = height / 2;
+  // Y scale: Each question is a band
+  const y = d3
+    .scaleBand()
+    .domain(data.map((d) => d.question))
+    .range([margin.top, height - margin.bottom])
+    .padding(0.2);
 
-  // Scale from 0..5 => radial 0..radius
-  const radialScale = d3.scaleLinear().domain([0, 5]).range([0, radius]);
-  const angleSlice = (2 * Math.PI) / questions.length; // each question's angle
+  // X scale: From 0..5 (since Likert average is in [1..5])
+  const x = d3.scaleLinear().domain([0, 5]).range([margin.left, width - margin.right]);
 
-  // Draw background circles for scores 1..5
-  const levels = d3.range(1, 6);
+  // Color scale from red (1) → green (5)
+  const color = d3
+    .scaleSequential(d3.interpolateRdYlGn)
+    .domain([1, 5]);
+
+  // Bars
   svg
-    .selectAll(".levels")
-    .data(levels)
+    .append("g")
+    .selectAll("rect")
+    .data(data)
     .enter()
-    .append("circle")
-    .attr("cx", centerX)
-    .attr("cy", centerY)
-    .attr("r", (d) => radialScale(d))
-    .style("fill", "#ccc")
-    .style("fill-opacity", 0.1)
-    .style("stroke", "#999")
-    .style("stroke-dasharray", "2,2");
+    .append("rect")
+    .attr("y", (d) => y(d.question))
+    .attr("x", x(0))
+    .attr("width", (d) => x(d.avg) - x(0))
+    .attr("height", y.bandwidth())
+    .attr("fill", (d) => color(d.avg));
 
-  // Label each ring
+  // Value labels on each bar (optional)
   svg
-    .selectAll(".level-label")
-    .data(levels)
+    .append("g")
+    .selectAll("text.avg-label")
+    .data(data)
     .enter()
     .append("text")
-    .attr("x", centerX)
-    .attr("y", (d) => centerY - radialScale(d))
-    .attr("dy", "-0.3em")
+    .attr("class", "avg-label")
+    .attr("x", (d) => x(d.avg) + 5)
+    .attr("y", (d) => y(d.question) + y.bandwidth() / 2)
+    .attr("dy", "0.35em")
     .style("font-size", "12px")
-    .style("fill", "#666")
+    .text((d) => d.avg.toFixed(2));
+
+  // Y-axis (question labels)
+  svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(d3.axisLeft(y).tickSize(0))
+    .selectAll("text")
+    .style("font-size", "12px");
+  svg.selectAll(".domain, .tick line").remove();
+
+  // X-axis
+  const xAxis = d3.axisBottom(x).ticks(5).tickFormat(d3.format(".1f"));
+  svg
+    .append("g")
+    .attr("transform", `translate(0, ${height - margin.bottom})`)
+    .call(xAxis);
+
+  // X-axis label
+  svg
+    .append("text")
+    .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
+    .attr("y", height - 30)
     .attr("text-anchor", "middle")
-    .text((d) => d);
-
-  // Axes for each question
-  questions.forEach((q, i) => {
-    const angle = i * angleSlice - Math.PI / 2;
-    // End of axis
-    const xEnd = centerX + radialScale(5) * Math.cos(angle);
-    const yEnd = centerY + radialScale(5) * Math.sin(angle);
-
-    // Axis line
-    svg
-      .append("line")
-      .attr("x1", centerX)
-      .attr("y1", centerY)
-      .attr("x2", xEnd)
-      .attr("y2", yEnd)
-      .style("stroke", "#999")
-      .style("stroke-width", 1);
-
-    // Question label
-    const labelOffset = 15;
-    const lx = centerX + (radialScale(5) + labelOffset) * Math.cos(angle);
-    const ly = centerY + (radialScale(5) + labelOffset) * Math.sin(angle);
-    svg
-      .append("text")
-      .attr("x", lx)
-      .attr("y", ly)
-      .attr("text-anchor", "middle")
-      .style("font-size", "12px")
-      .style("fill", "#333")
-      .text(q);
-  });
-
-  // Build polygon
-  const points = data.map((d, i) => {
-    const angle = i * angleSlice - Math.PI / 2;
-    const r = radialScale(d.avg);
-    const xPos = centerX + r * Math.cos(angle);
-    const yPos = centerY + r * Math.sin(angle);
-    return [xPos, yPos];
-  });
-
-  // Draw polygon
-  svg
-    .append("polygon")
-    .attr("points", points.map((p) => p.join(",")).join(" "))
-    .style("fill", "#1a9850")
-    .style("fill-opacity", 0.2)
-    .style("stroke", "#1a9850")
-    .style("stroke-width", 2);
-
-  // Circles for each data point
-  svg
-    .selectAll(".radar-circle")
-    .data(points)
-    .enter()
-    .append("circle")
-    .attr("class", "radar-circle")
-    .attr("cx", (d) => d[0])
-    .attr("cy", (d) => d[1])
-    .attr("r", 4)
-    .style("fill", "#1a9850");
+    .style("font-size", "14px")
+    .style("font-weight", "bold")
+    .text("Average Likert Score (1 = Disagree, 5 = Agree)");
 
   // Title
   svg
     .append("text")
-    .attr("x", centerX)
-    .attr("y", margin / 2)
+    .attr("x", width / 2)
+    .attr("y", margin.top / 2)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
-    .text("Radar Chart: Average Likert Scores");
+    .text("Bar Chart: Average Likert Scores");
 }
 
 /* ---------------------------------------
@@ -341,22 +318,22 @@ function plotRadarLikert(container, allResponses) {
 -----------------------------------------*/
 const Form3Comparison = ({ allResponses }) => {
   const stackedRef = useRef();
-  const radarRef = useRef();
+  const avgBarRef = useRef();
 
   useEffect(() => {
     if (allResponses && allResponses.length > 0) {
-      // 1) standard 100%-stacked
+      // 1) 100%-stacked Likert chart
       plotLikertScaleStacked(stackedRef.current, allResponses);
 
-      // 2) radar chart (average Likert)
-      plotRadarLikert(radarRef.current, allResponses);
+      // 2) Horizontal bar chart for average Likert
+      plotAverageLikertBarChart(avgBarRef.current, allResponses);
     }
   }, [allResponses]);
 
   return (
     <div style={{ width: "100%" }}>
       <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>
-        Form3 Likert: Stacked & Radar
+        Form3 Likert: Stacked & Avg Bar Chart
       </h2>
 
       {/* Stacked chart */}
@@ -370,9 +347,9 @@ const Form3Comparison = ({ allResponses }) => {
         }}
       />
 
-      {/* Radar chart */}
+      {/* Average bar chart */}
       <div
-        ref={radarRef}
+        ref={avgBarRef}
         style={{
           background: "#f0f0f0",
           padding: "1rem",
