@@ -1,258 +1,288 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
-// Generic function to plot a grouped stacked bar chart
-function plotGroupedStacked(container, nestedData, title) {
-  const categories = Object.keys(nestedData).sort();
-  const gendersSet = new Set();
-  const ageGroupsSet = new Set();
+/**
+ * Safely increment the 4D structure:
+ *   nested[ category ][ gender ][ ageGroup ][ income ]++
+ */
+function updateNestCount(nested, category, gender, age, inc) {
+  if (!nested[category]) nested[category] = {};
+  if (!nested[category][gender]) nested[category][gender] = {};
+  if (!nested[category][gender][age]) nested[category][gender][age] = {};
+  if (!nested[category][gender][age][inc]) nested[category][gender][age][inc] = 0;
+  nested[category][gender][age][inc] += 1;
+}
 
-  // Gather unique genders and age groups across all categories
+/**
+ * Flatten from 4D → 2D, based on an aggregator:
+ *   aggregator in {"gender", "age", "income"}
+ *
+ * After flattening, we'll have:
+ *   finalData[category][sub] = total_count
+ *
+ * Where "sub" depends on the aggregator:
+ *   - aggregator = "gender"  => sub ∈ {male, female, unknown, ...}
+ *   - aggregator = "age"     => sub ∈ {18-25, 26-40, ...}
+ *   - aggregator = "income"  => sub ∈ {low, medium, high, ...}
+ */
+function flattenData(nestedData, aggregator) {
+  const categories = Object.keys(nestedData).sort(); 
+  const subSet = new Set();
+  const finalData = {};
+
   categories.forEach((cat) => {
-    const genders = Object.keys(nestedData[cat]);
-    genders.forEach((g) => {
-      gendersSet.add(g);
-      const ageGroups = Object.keys(nestedData[cat][g]);
-      ageGroups.forEach((ag) => ageGroupsSet.add(ag));
+    finalData[cat] = {};
+    const catObj = nestedData[cat]; // => { gender: { ageGroup: { income: count } } }
+
+    Object.keys(catObj).forEach((g) => {
+      Object.keys(catObj[g]).forEach((a) => {
+        Object.keys(catObj[g][a]).forEach((inc) => {
+          const count = catObj[g][a][inc] || 0;
+          if (!count) return;
+
+          let subKey;
+          if (aggregator === "gender") {
+            subKey = g;      // sum across all ages + incomes
+          } else if (aggregator === "age") {
+            subKey = a;      // sum across all genders + incomes
+          } else {
+            subKey = inc;    // aggregator="income" => sum across all genders + ages
+          }
+          finalData[cat][subKey] = (finalData[cat][subKey] || 0) + count;
+          subSet.add(subKey);
+        });
+      });
     });
   });
 
-  const genders = Array.from(gendersSet).sort();
-  const ageGroups = Array.from(ageGroupsSet).sort();
+  const subCategories = Array.from(subSet).sort();
+  return { categories, subCategories, finalData };
+}
 
-  let yMax = 0;
-  categories.forEach((cat) => {
-    genders.forEach((g) => {
-      const data = nestedData[cat][g] || {};
-      const total = ageGroups.reduce((sum, ag) => sum + (data[ag] || 0), 0);
-      if (total > yMax) yMax = total;
-    });
-  });
+/**
+ * Draw a horizontal 100%-stacked bar chart:
+ *  - Each "category" is a row on the y-axis.
+ *  - Sub-categories (gender/age/income) stacked left→right in %.
+ *  - Labeled sub-segments, color-coded legend.
+ */
+function plotHorizontalStacked(container, nestedData, aggregator, title) {
+  // Flatten 4D data to 2D for aggregator
+  const { categories, subCategories, finalData } = flattenData(nestedData, aggregator);
 
-  const width = 800;
-  const height = 400;
-  const margin = { top: 40, right: 200, bottom: 80, left: 50 };
-
+  // Remove old chart
   d3.select(container).select("svg").remove();
 
+  // Dimensions
+  const width = 600;
+  const height = 40 * categories.length + 80;
+  const margin = { top: 40, right: 150, bottom: 40, left: 120 };
+
+  // Create SVG
   const svg = d3
     .select(container)
     .append("svg")
     .attr("width", width)
     .attr("height", height);
 
-  const x0 = d3
+  // X scale => 0..100%
+  const x = d3.scaleLinear().domain([0, 1]).range([margin.left, width - margin.right]);
+
+  // Y scale => each category is a row
+  const y = d3
     .scaleBand()
     .domain(categories)
-    .range([margin.left, width - margin.right])
-    .paddingInner(0.2);
+    .range([margin.top, height - margin.bottom])
+    .padding(0.2);
 
-  const x1 = d3
-    .scaleBand()
-    .domain(genders)
-    .range([0, x0.bandwidth()])
-    .padding(0.05);
+  // Color for sub-categories
+  const color = d3.scaleOrdinal().domain(subCategories).range(d3.schemeDark2);
 
-  const y = d3
-    .scaleLinear()
-    .domain([0, yMax])
-    .nice()
-    .range([height - margin.bottom, margin.top]);
-
-  const baseColors = {
-    male: "blue",
-    female: "#F8766D",
-    other: "green",
-  };
-
-  // Create grouped stacked bars
+  // Draw each stacked bar
   categories.forEach((cat) => {
-    const catGroup = svg
-      .append("g")
-      .attr("transform", `translate(${x0(cat)},0)`);
+    const rowObj = finalData[cat];
+    const totalCount = Object.values(rowObj).reduce((acc, v) => acc + v, 0);
+    if (!totalCount) return;
 
-    genders.forEach((g) => {
-      const data = nestedData[cat][g] || {};
-      const xPos = x1(g);
-      let cumulative = 0;
+    let cumulative = 0;
+    subCategories.forEach((sub) => {
+      const val = rowObj[sub] || 0;
+      if (!val) return;
 
-      ageGroups.forEach((ag, i) => {
-        const value = data[ag] || 0;
-        if (value > 0) {
-          const yStart = y(cumulative + value);
-          const yEnd = y(cumulative);
-          catGroup
-            .append("rect")
-            .attr("x", xPos)
-            .attr("y", yStart)
-            .attr("width", x1.bandwidth())
-            .attr("height", yEnd - yStart)
-            .attr("fill", baseColors[g] || "grey")
-            .attr("fill-opacity", 0.3 + (0.7 * (i + 1)) / ageGroups.length);
-          cumulative += value;
-        }
-      });
+      const proportion = val / totalCount;
+      const xStart = x(cumulative);
+      const xEnd = x(cumulative + proportion);
+
+      // rectangle
+      svg
+        .append("rect")
+        .attr("x", xStart)
+        .attr("y", y(cat))
+        .attr("width", xEnd - xStart)
+        .attr("height", y.bandwidth())
+        .attr("fill", color(sub));
+
+      // label if wide enough
+      if (xEnd - xStart > 20) {
+        svg
+          .append("text")
+          .attr("x", (xStart + xEnd) / 2)
+          .attr("y", y(cat) + y.bandwidth() / 2)
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "middle")
+          .style("font-size", "11px")
+          .style("fill", "white")
+          .text(d3.format(".0%")(proportion));
+      }
+
+      cumulative += proportion;
     });
   });
 
-  // Axes and Title
-  const xAxis = d3.axisBottom(x0);
+  // X axis
+  const xAxis = d3.axisBottom(x).tickFormat(d3.format(".0%")).ticks(5);
   svg
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(xAxis)
-    .selectAll("text")
-    .attr("transform", "rotate(-45)")
-    .style("text-anchor", "end");
+    .call(xAxis);
 
+  // Y axis
   const yAxis = d3.axisLeft(y);
-  svg.append("g").attr("transform", `translate(${margin.left},0)`).call(yAxis);
+  svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(yAxis);
 
+  // Title
   svg
     .append("text")
-    .attr("x", (width - margin.right) / 2 + margin.left)
+    .attr("x", (width - margin.left - margin.right) / 2 + margin.left)
     .attr("y", margin.top / 2)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .text(title);
 
-  // Refined Legend: Grouped by gender with age groups listed
+  // Legend (top-right)
   const legend = svg
     .append("g")
-    .attr("transform", `translate(${width - margin.right + 20},${margin.top})`);
+    .attr("transform", `translate(${width - margin.right + 10},${margin.top})`);
 
-  let legendYOffset = 0;
-
-  genders.forEach((g) => {
-    const genderGroup = legend.append("g");
-
-    // Gender label header
-    genderGroup
-      .append("text")
+  let legendY = 0;
+  subCategories.forEach((sub) => {
+    legend
+      .append("rect")
       .attr("x", 0)
-      .attr("y", legendYOffset)
-      .style("font-weight", "bold")
-      .text(g);
-    legendYOffset += 20;
+      .attr("y", legendY)
+      .attr("width", 14)
+      .attr("height", 14)
+      .attr("fill", color(sub));
 
-    ageGroups.forEach((ag, i) => {
-      // Colored rectangle for age group under the current gender
-      genderGroup
-        .append("rect")
-        .attr("x", 0)
-        .attr("y", legendYOffset)
-        .attr("width", 18)
-        .attr("height", 18)
-        .attr("fill", baseColors[g])
-        .attr("fill-opacity", 0.3 + (0.7 * (i + 1)) / ageGroups.length);
+    legend
+      .append("text")
+      .attr("x", 20)
+      .attr("y", legendY + 7)
+      .attr("dy", "0.35em")
+      .style("font-size", "12px")
+      .text(sub);
 
-      // Label text for the age group
-      genderGroup
-        .append("text")
-        .attr("x", 24)
-        .attr("y", legendYOffset + 9)
-        .attr("dy", "0.35em")
-        .text(ag);
-
-      legendYOffset += 20;
-    });
-
-    legendYOffset += 10; // Extra spacing after each gender group
+    legendY += 20;
   });
 }
 
+/** Small Pie Chart for overall gender distribution */
+function plotDemographics(container, allResponses) {
+  if (!container) return;
+  d3.select(container).selectAll("*").remove();
+
+  const genderCount = {};
+  allResponses.forEach((response) => {
+    const g = response.data.form6Data?.gender || "unknown";
+    genderCount[g] = (genderCount[g] || 0) + 1;
+  });
+
+  const data = Object.entries(genderCount).map(([label, value]) => ({
+    label,
+    value,
+  }));
+
+  const width = 300;
+  const height = 300;
+  const radius = Math.min(width, height) / 2;
+  const color = d3.scaleOrdinal(d3.schemeSet2);
+
+  const arc = d3.arc().outerRadius(radius - 10).innerRadius(0);
+  const pie = d3.pie().value((d) => d.value);
+
+  const svg = d3
+    .select(container)
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  const arcs = svg
+    .selectAll(".arc")
+    .data(pie(data))
+    .enter()
+    .append("g")
+    .attr("class", "arc");
+
+  arcs
+    .append("path")
+    .attr("d", arc)
+    .attr("fill", (d) => color(d.data.label));
+
+  arcs
+    .append("text")
+    .attr("transform", (d) => `translate(${arc.centroid(d)})`)
+    .attr("dy", ".35em")
+    .style("font-size", "12px")
+    .style("text-anchor", "middle")
+    .text((d) => d.data.label);
+}
+
+/**
+ * The main component:
+ *   - Builds 4D data: nestedData[dimension][gender][ageGroup][income] = count
+ *   - Draws a pie chart for overall gender distribution
+ *   - For each dimension (Access Mode, Distance, Purpose, Travel Mode),
+ *     plots 3 horizontal 100%-stacked charts:
+ *       (1) aggregator="gender"
+ *       (2) aggregator="age"
+ *       (3) aggregator="income"
+ */
 const Form1_info = ({ allResponses }) => {
+  // For each dimension, we store a 4D nested object.
+  // Example: form1_accessmode[ 'car' ][ 'male' ][ '18-25' ][ 'highIncome' ] = 3
   const [form1_accessmode, setForm1_AccessMode] = useState({});
   const [form1_distance, setForm1_Distance] = useState({});
   const [form1_purpose, setForm1_Purpose] = useState({});
   const [form1_travel_mode, setForm1_TravelMode] = useState({});
 
-  const accessModeRef = useRef();
-  const distanceRef = useRef();
-  const purposeRef = useRef();
-  const travelModeRef = useRef();
+  // We'll have 3 references per dimension => 12 total
+  // aggregator in { "gender", "age", "income" }
+  const accessModeRefGender = useRef();
+  const accessModeRefAge = useRef();
+  const accessModeRefIncome = useRef();
+
+  const distanceRefGender = useRef();
+  const distanceRefAge = useRef();
+  const distanceRefIncome = useRef();
+
+  const purposeRefGender = useRef();
+  const purposeRefAge = useRef();
+  const purposeRefIncome = useRef();
+
+  const travelModeRefGender = useRef();
+  const travelModeRefAge = useRef();
+  const travelModeRefIncome = useRef();
+
+  // Pie chart ref
   const demographicsRef = useRef();
 
-  const plotDemographics = (container, allResponses) => {
-    if (!container) return;
-
-    // Clear any existing content
-    d3.select(container).selectAll("*").remove();
-
-    // Aggregate gender distribution
-    const genderCount = {};
-    allResponses.forEach((response) => {
-      const form6 = response.data.form6Data;
-      if (form6) {
-        const gender = form6.gender || "unknown";
-        genderCount[gender] = (genderCount[gender] || 0) + 1;
-      }
-    });
-
-    const data = Object.keys(genderCount).map((g) => ({
-      label: g,
-      value: genderCount[g],
-    }));
-
-    const width = 300;
-    const height = 300;
-    const radius = Math.min(width, height) / 2;
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const arc = d3
-      .arc()
-      .outerRadius(radius - 10)
-      .innerRadius(0);
-    const pie = d3.pie().value((d) => d.value);
-
-    const svg = d3
-      .select(container)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", `translate(${width / 2},${height / 2})`);
-
-    const arcs = svg
-      .selectAll(".arc")
-      .data(pie(data))
-      .enter()
-      .append("g")
-      .attr("class", "arc");
-
-    arcs
-      .append("path")
-      .attr("d", arc)
-      .attr("fill", (d) => color(d.data.label));
-
-    arcs
-      .append("text")
-      .attr("transform", (d) => `translate(${arc.centroid(d)})`)
-      .attr("dy", ".35em")
-      .style("font-size", "12px")
-      .style("text-anchor", "middle")
-      .text((d) => d.data.label);
-  };
-
+  // 1) Build the 4D objects from responses
   useEffect(() => {
-    if (allResponses && allResponses.length > 0) {
-      plotDemographics(demographicsRef.current, allResponses);
-    }
-  }, [allResponses]);
-
-  // Helper to update nested counts for given variable
-  function updateNestCount(currentState, key, gender, ageGroup) {
-    const newState = { ...currentState };
-    if (!newState[key]) newState[key] = {};
-    if (!newState[key][gender]) newState[key][gender] = {};
-    if (!newState[key][gender][ageGroup]) newState[key][gender][ageGroup] = 0;
-    newState[key][gender][ageGroup] += 1;
-    return newState;
-  }
-
-  // Aggregate data for each variable on mount/update
-  useEffect(() => {
-    if (!allResponses || allResponses.length === 0) return;
+    if (!allResponses || !allResponses.length) return;
 
     let accessModeObj = {};
     let distanceObj = {};
@@ -260,28 +290,20 @@ const Form1_info = ({ allResponses }) => {
     let travelModeObj = {};
 
     allResponses.forEach((response) => {
-      const form1 = response.data.form1Data;
-      const form6 = response.data.form6Data;
-      if (form1 && form6) {
-        const { accessMode, distance, purpose, travelMode } = form1;
-        const gender = form6.gender;
-        const ageGroup = form6.age;
+      const form1 = response.data?.form1Data;
+      const form6 = response.data?.form6Data;
+      if (!form1 || !form6) return;
 
-        accessModeObj = updateNestCount(
-          accessModeObj,
-          accessMode,
-          gender,
-          ageGroup
-        );
-        distanceObj = updateNestCount(distanceObj, distance, gender, ageGroup);
-        purposeObj = updateNestCount(purposeObj, purpose, gender, ageGroup);
-        travelModeObj = updateNestCount(
-          travelModeObj,
-          travelMode,
-          gender,
-          ageGroup
-        );
-      }
+      const { accessMode, distance, purpose, travelMode } = form1;
+      const gender = form6.gender || "unknown";
+      const ageGroup = form6.age || "unknown";
+      const income = form6.income || "unknown"; // <-- new field for income
+
+      // Increment each dimension
+      updateNestCount(accessModeObj, accessMode, gender, ageGroup, income);
+      updateNestCount(distanceObj, distance, gender, ageGroup, income);
+      updateNestCount(purposeObj, purpose, gender, ageGroup, income);
+      updateNestCount(travelModeObj, travelMode, gender, ageGroup, income);
     });
 
     setForm1_AccessMode(accessModeObj);
@@ -290,83 +312,92 @@ const Form1_info = ({ allResponses }) => {
     setForm1_TravelMode(travelModeObj);
   }, [allResponses]);
 
-  // Plot each chart when data is ready
+  // 2) Once we have data, plot a gender pie
   useEffect(() => {
-    if (Object.keys(form1_accessmode).length && accessModeRef.current) {
-      plotGroupedStacked(
-        accessModeRef.current,
-        form1_accessmode,
-        "Access Mode"
-      );
+    if (allResponses && allResponses.length > 0) {
+      plotDemographics(demographicsRef.current, allResponses);
+    }
+  }, [allResponses]);
+
+  // 3) For each dimension, create 3 plots (gender, age, income)
+  useEffect(() => {
+    if (Object.keys(form1_accessmode).length) {
+      plotHorizontalStacked(accessModeRefGender.current, form1_accessmode, "gender", "Access Mode by Gender");
+      plotHorizontalStacked(accessModeRefAge.current, form1_accessmode, "age", "Access Mode by Age Group");
+      plotHorizontalStacked(accessModeRefIncome.current, form1_accessmode, "income", "Access Mode by Income");
     }
   }, [form1_accessmode]);
 
   useEffect(() => {
-    if (Object.keys(form1_distance).length && distanceRef.current) {
-      plotGroupedStacked(distanceRef.current, form1_distance, "Distance");
+    if (Object.keys(form1_distance).length) {
+      plotHorizontalStacked(distanceRefGender.current, form1_distance, "gender", "Distance by Gender");
+      plotHorizontalStacked(distanceRefAge.current, form1_distance, "age", "Distance by Age Group");
+      plotHorizontalStacked(distanceRefIncome.current, form1_distance, "income", "Distance by Income");
     }
   }, [form1_distance]);
 
   useEffect(() => {
-    if (Object.keys(form1_purpose).length && purposeRef.current) {
-      plotGroupedStacked(purposeRef.current, form1_purpose, "Purpose");
+    if (Object.keys(form1_purpose).length) {
+      plotHorizontalStacked(purposeRefGender.current, form1_purpose, "gender", "Purpose by Gender");
+      plotHorizontalStacked(purposeRefAge.current, form1_purpose, "age", "Purpose by Age Group");
+      plotHorizontalStacked(purposeRefIncome.current, form1_purpose, "income", "Purpose by Income");
     }
   }, [form1_purpose]);
 
   useEffect(() => {
-    if (Object.keys(form1_travel_mode).length && travelModeRef.current) {
-      plotGroupedStacked(
-        travelModeRef.current,
-        form1_travel_mode,
-        "Travel Mode"
-      );
+    if (Object.keys(form1_travel_mode).length) {
+      plotHorizontalStacked(travelModeRefGender.current, form1_travel_mode, "gender", "Travel Mode by Gender");
+      plotHorizontalStacked(travelModeRefAge.current, form1_travel_mode, "age", "Travel Mode by Age Group");
+      plotHorizontalStacked(travelModeRefIncome.current, form1_travel_mode, "income", "Travel Mode by Income");
     }
   }, [form1_travel_mode]);
 
+  // Render
   return (
-    <div className="my-10 scale-90 bg-slate-50 rounded-md p-4">
+    <div className="my-10 bg-white text-black rounded-md p-4">
       <h2 className="font-serif font-bold text-xl mb-4">Form1 Information</h2>
 
-      {/* Add Demographics section first */}
+      {/* Overall Gender Pie */}
       <div className="mb-8 flex flex-col items-center">
         <h3 className="font-serif font-semibold text-lg mb-2 text-center">
-          Demographics Overview
+          Overall Gender Distribution
         </h3>
         <div
           ref={demographicsRef}
-          className="bg-slate-200 rounded-md shadow-lg m-2 w-full max-w-[300px]"
+          className="rounded-md shadow-lg m-2 w-full max-w-[300px]"
         ></div>
       </div>
 
-      {/* Existing grid layout */}
-      <div className="grid grid-cols-2">
-        <div>
-          <div
-            ref={accessModeRef}
-            className="bg-slate-200 rounded-md shadow-lg m-2"
-          ></div>
-        </div>
-        <div>
-          <div
-            ref={distanceRef}
-            // className="bg-slate-200 rounded-md shadow-lg"
-            className="bg-slate-200 rounded-md shadow-lg m-2"
-          ></div>
-        </div>
-        <div>
-          <div
-            ref={purposeRef}
-            // className="bg-slate-200 rounded-md shadow-lg"
-            className="bg-slate-200 rounded-md shadow-lg m-2"
-          ></div>
-        </div>
-        <div>
-          <div
-            ref={travelModeRef}
-            className="bg-slate-200 rounded-md shadow-lg m-2"
-            // className="bg-slate-200 rounded-md shadow-lg"
-          ></div>
-        </div>
+      {/* Access Mode: aggregator = gender, age, income */}
+      <h3 className="font-semibold text-lg mt-8">Access Mode</h3>
+      <div className="grid grid-cols-3 gap-4 mt-2">
+        <div ref={accessModeRefGender} className="rounded-md shadow-lg" />
+        <div ref={accessModeRefAge} className="rounded-md shadow-lg" />
+        <div ref={accessModeRefIncome} className="rounded-md shadow-lg" />
+      </div>
+
+      {/* Distance */}
+      <h3 className="font-semibold text-lg mt-8">Distance</h3>
+      <div className="grid grid-cols-3 gap-4 mt-2">
+        <div ref={distanceRefGender} className="rounded-md shadow-lg" />
+        <div ref={distanceRefAge} className="rounded-md shadow-lg" />
+        <div ref={distanceRefIncome} className="rounded-md shadow-lg" />
+      </div>
+
+      {/* Purpose */}
+      <h3 className="font-semibold text-lg mt-8">Purpose</h3>
+      <div className="grid grid-cols-3 gap-4 mt-2">
+        <div ref={purposeRefGender} className="rounded-md shadow-lg" />
+        <div ref={purposeRefAge} className="rounded-md shadow-lg" />
+        <div ref={purposeRefIncome} className="rounded-md shadow-lg" />
+      </div>
+
+      {/* Travel Mode */}
+      <h3 className="font-semibold text-lg mt-8">Travel Mode</h3>
+      <div className="grid grid-cols-3 gap-4 mt-2">
+        <div ref={travelModeRefGender} className="rounded-md shadow-lg" />
+        <div ref={travelModeRefAge} className="rounded-md shadow-lg" />
+        <div ref={travelModeRefIncome} className="rounded-md shadow-lg" />
       </div>
     </div>
   );
