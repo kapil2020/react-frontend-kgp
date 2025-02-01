@@ -35,7 +35,16 @@ import TravelCostDisplay from "../../../../handlers/icons_for_cost";
 import WaitingTimeDisplay from "../../../../handlers/waiting_time_slider";
 import ChoiceInput from "../../../../handlers/travel_emoji";
 
-const index_no = Math.floor(Math.random() * 8);
+// Randomly select a set of options for the survey. This is done so that each
+// user is presented with a different set of options, which can help reduce
+// bias in the survey results. The set of options is selected randomly from
+// the 8 available sets of options. This is done using the Math.random()
+// function, which generates a random number between 0 and 1. The
+// Math.floor() function is used to round this number down to the nearest
+// whole number, and then multiplied by 8 to generate a number between 0 and
+// 7. This number is used as the index into the array of options, selecting
+// one of the 8 available sets of options.
+const index_no = Math.floor(Math.random() * 8); // 0 to 7
 
 const Section4 = ({
   thisFormData,
@@ -92,8 +101,10 @@ const Section4 = ({
     selectedTransport === "auto_rickshaw"
   ) {
     choiceData = pt_optionsDataAvailable[index_no];
+    console.log("Index is ", index_no, " and choice is ", choiceData);
   } else if (selectedTransport === "two_wheeler") {
     choiceData = tw_optionsDataAvailable[index_no];
+    console.log("Index is ", index_no, " and choice is ", choiceData);
   }
 
   const handleSelection = (choiceId, option) => {
