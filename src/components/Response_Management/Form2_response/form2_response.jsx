@@ -9,8 +9,7 @@ function updateNestCount(nested, category, gender, age, inc) {
   if (!nested[category]) nested[category] = {};
   if (!nested[category][gender]) nested[category][gender] = {};
   if (!nested[category][gender][age]) nested[category][gender][age] = {};
-  if (!nested[category][gender][age][inc])
-    nested[category][gender][age][inc] = 0;
+  if (!nested[category][gender][age][inc]) nested[category][gender][age][inc] = 0;
   nested[category][gender][age][inc] += 1;
 }
 
@@ -65,6 +64,8 @@ function flattenData(nestedData, aggregator) {
  *  - Each "category" is a row on the y-axis.
  *  - Sub-categories (gender/age/income) stacked left→right in %.
  *  - Labeled sub-segments, color-coded legend.
+ *
+ *  Updated to use a more "ggplot2-like" style + d3.schemeTableau10 colors.
  */
 function plotHorizontalStacked(container, nestedData, aggregator, title) {
   // Flatten 4D data to 2D for aggregator
@@ -86,7 +87,15 @@ function plotHorizontalStacked(container, nestedData, aggregator, title) {
     .select(container)
     .append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("font-family", "sans-serif");
+
+  // Light gray background (ggplot2-like)
+  svg
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "#f7f7f7");
 
   // X scale => 0..100%
   const x = d3
@@ -101,8 +110,8 @@ function plotHorizontalStacked(container, nestedData, aggregator, title) {
     .range([margin.top, height - margin.bottom])
     .padding(0.2);
 
-  // Color for sub-categories
-  const color = d3.scaleOrdinal().domain(subCategories).range(d3.schemeDark2);
+  // Color for sub-categories (more vibrant, e.g. Tableau10)
+  const color = d3.scaleOrdinal().domain(subCategories).range(d3.schemeTableau10);
 
   // Draw each stacked bar
   categories.forEach((cat) => {
@@ -145,16 +154,23 @@ function plotHorizontalStacked(container, nestedData, aggregator, title) {
     });
   });
 
-  // X axis
+  // X axis (in percent)
   const xAxis = d3.axisBottom(x).tickFormat(d3.format(".0%")).ticks(5);
   svg
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
-    .call(xAxis);
+    .call(xAxis)
+    .selectAll("path, line")
+    .attr("stroke", "#555");
 
   // Y axis
   const yAxis = d3.axisLeft(y);
-  svg.append("g").attr("transform", `translate(${margin.left},0)`).call(yAxis);
+  svg
+    .append("g")
+    .attr("transform", `translate(${margin.left},0)`)
+    .call(yAxis)
+    .selectAll("path, line")
+    .attr("stroke", "#555");
 
   // Title
   svg
@@ -163,6 +179,7 @@ function plotHorizontalStacked(container, nestedData, aggregator, title) {
     .attr("y", margin.top / 2)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
+    .style("font-weight", "bold")
     .text(title);
 
   // Legend (top-right)
@@ -192,42 +209,46 @@ function plotHorizontalStacked(container, nestedData, aggregator, title) {
   });
 }
 
-/** Small Pie Chart for overall gender distribution */
+/** Small Pie Chart for overall gender distribution (improved styling). */
 function plotDemographics(container, allResponses) {
   if (!container) return;
   d3.select(container).selectAll("*").remove();
 
   const genderCount = {};
   allResponses.forEach((response) => {
-    const g = response.data.form6Data?.gender || "unknown";
+    const g = response.data?.form6Data?.gender || "unknown";
     genderCount[g] = (genderCount[g] || 0) + 1;
   });
 
-  const data = Object.entries(genderCount).map(([label, value]) => ({
-    label,
-    value,
-  }));
+  const data = Object.entries(genderCount).map(([label, value]) => ({ label, value }));
+  const total = d3.sum(data, (d) => d.value);
 
   const width = 300;
   const height = 300;
   const radius = Math.min(width, height) / 2;
-  const color = d3.scaleOrdinal(d3.schemeSet2);
-
-  const arc = d3
-    .arc()
-    .outerRadius(radius - 10)
-    .innerRadius(0);
-  const pie = d3.pie().value((d) => d.value);
 
   const svg = d3
     .select(container)
     .append("svg")
     .attr("width", width)
     .attr("height", height)
-    .append("g")
-    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+    .style("font-family", "sans-serif");
 
-  const arcs = svg
+  // Light gray background
+  svg
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("fill", "#f7f7f7");
+
+  const g = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  const color = d3.scaleOrdinal().domain(data.map(d => d.label)).range(d3.schemeTableau10);
+
+  const pie = d3.pie().value((d) => d.value);
+  const arc = d3.arc().outerRadius(radius - 10).innerRadius(0);
+
+  const arcs = g
     .selectAll(".arc")
     .data(pie(data))
     .enter()
@@ -239,20 +260,45 @@ function plotDemographics(container, allResponses) {
     .attr("d", arc)
     .attr("fill", (d) => color(d.data.label));
 
+  // Add labels with percentage
   arcs
     .append("text")
     .attr("transform", (d) => `translate(${arc.centroid(d)})`)
     .attr("dy", ".35em")
     .style("font-size", "12px")
     .style("text-anchor", "middle")
-    .text((d) => d.data.label);
+    .style("fill", "#fff")
+    .text((d) => {
+      const pct = d3.format(".0%")(d.data.value / total);
+      return pct;
+    });
+
+  // Add a legend on the right
+  const legend = svg.append("g").attr("transform", `translate(${width - 80}, 20)`);
+  data.forEach((d, i) => {
+    const yPos = i * 20;
+    legend
+      .append("rect")
+      .attr("x", 0)
+      .attr("y", yPos)
+      .attr("width", 14)
+      .attr("height", 14)
+      .attr("fill", color(d.label));
+    legend
+      .append("text")
+      .attr("x", 20)
+      .attr("y", yPos + 7)
+      .attr("dy", "0.35em")
+      .style("font-size", "12px")
+      .text(`${d.label} (${d.value})`);
+  });
 }
 
 /**
  * Plot the Form2 (section 2) data.
  *
- * For each question in form2Data we count the frequency of each answer.
- * For the "symptoms" field (an array), each symptom is counted separately.
+ * For each question in form2Data we count the frequency of each answer,
+ * then plot them as a bar chart in percentages (count / totalResponses).
  */
 function plotForm2Section(container, allResponses) {
   if (!container) return;
@@ -276,32 +322,57 @@ function plotForm2Section(container, allResponses) {
     },
   ];
 
+  // Precompute total number of responses that have form2Data
+  const responsesWithForm2 = allResponses.filter((resp) => resp.data?.form2Data);
+  const totalNumResponses = responsesWithForm2.length;
+
   // For each question, build a frequency map.
   questions.forEach((question) => {
     const counts = {};
-    allResponses.forEach((response) => {
+    let validCount = 0; // how many answered this question
+
+    responsesWithForm2.forEach((response) => {
       const form2 = response.data?.form2Data;
       if (!form2) return;
       const value = form2[question.key];
+
+      // For array-type question
       if (question.isArray) {
-        // value should be an array.
-        if (Array.isArray(value)) {
+        if (Array.isArray(value) && value.length > 0) {
+          validCount++;
           value.forEach((v) => {
             if (!v) return;
             counts[v] = (counts[v] || 0) + 1;
           });
         }
       } else {
-        if (!value) return;
-        counts[value] = (counts[value] || 0) + 1;
+        // single value
+        if (value) {
+          validCount++;
+          counts[value] = (counts[value] || 0) + 1;
+        }
       }
     });
 
-    const data = Object.entries(counts).map(([k, v]) => ({ key: k, value: v }));
-    if (!data.length) return; // Skip if no data
+    // If no one answered, skip
+    const dataEntries = Object.entries(counts);
+    if (!dataEntries.length) return;
 
-    // Set dimensions for each question's chart.
-    const margin = { top: 30, right: 50, bottom: 30, left: 150 };
+    // Convert to array of objects and compute percentages
+    // `pct = count / validCount`, so we only consider those who actually answered
+    const data = dataEntries.map(([k, v]) => {
+      return {
+        key: k,
+        count: v,
+        pct: v / validCount,
+      };
+    });
+
+    // Sort data descending by count
+    data.sort((a, b) => b.count - a.count);
+
+    // Dimensions
+    const margin = { top: 40, right: 50, bottom: 30, left: 150 };
     const barHeight = 25;
     const height = data.length * barHeight + margin.top + margin.bottom;
     const width = 500;
@@ -312,7 +383,14 @@ function plotForm2Section(container, allResponses) {
       .append("svg")
       .attr("width", width)
       .attr("height", height)
-      .style("margin-bottom", "20px");
+      .style("font-family", "sans-serif");
+
+    // Light gray background
+    svg
+      .append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("fill", "#f7f7f7");
 
     // Title for the question.
     svg
@@ -324,51 +402,70 @@ function plotForm2Section(container, allResponses) {
       .style("font-weight", "bold")
       .text(question.label);
 
-    // x scale: from 0 to maximum count.
+    // x scale: 0..1 for percentages
     const x = d3
       .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.value)])
+      .domain([0, 1])
       .range([margin.left, width - margin.right]);
 
-    // y scale: each answer as a band.
+    // y scale: each answer as a band
     const y = d3
       .scaleBand()
       .domain(data.map((d) => d.key))
       .range([margin.top, height - margin.bottom])
       .padding(0.1);
 
-    // Draw bars.
+    // Color scale for the bars
+    const color = d3.scaleOrdinal().range(d3.schemeTableau10);
+    const colorDomain = data.map((d) => d.key);
+    color.domain(colorDomain);
+
+    // Draw bars
     svg
       .selectAll(".bar")
       .data(data)
       .enter()
       .append("rect")
       .attr("class", "bar")
-      .attr("x", margin.left)
       .attr("y", (d) => y(d.key))
-      .attr("width", (d) => x(d.value) - margin.left)
+      .attr("x", margin.left)
+      .attr("width", (d) => x(d.pct) - margin.left)
       .attr("height", y.bandwidth())
-      .attr("fill", "#69b3a2");
+      .attr("fill", (d) => color(d.key));
 
-    // Add labels (counts) inside the bars.
+    // Add labels (count & percent) at the end of the bar
     svg
       .selectAll(".label")
       .data(data)
       .enter()
       .append("text")
       .attr("class", "label")
-      .attr("x", (d) => x(d.value) + 5)
+      .attr("x", (d) => x(d.pct) + 5)
       .attr("y", (d) => y(d.key) + y.bandwidth() / 2)
       .attr("dy", "0.35em")
       .style("font-size", "12px")
-      .text((d) => d.value);
+      .text((d) => {
+        const pctStr = d3.format(".0%")(d.pct);
+        return `${d.count} (${pctStr})`;
+      });
 
-    // Add y-axis labels.
+    // y-axis
     const yAxis = d3.axisLeft(y);
     svg
       .append("g")
       .attr("transform", `translate(${margin.left},0)`)
-      .call(yAxis);
+      .call(yAxis)
+      .selectAll("path, line")
+      .attr("stroke", "#555");
+
+    // x-axis (in percent)
+    const xAxis = d3.axisBottom(x).tickFormat(d3.format(".0%"));
+    svg
+      .append("g")
+      .attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(xAxis)
+      .selectAll("path, line")
+      .attr("stroke", "#555");
   });
 }
 
@@ -381,7 +478,7 @@ function plotForm2Section(container, allResponses) {
  *       (1) aggregator="gender"
  *       (2) aggregator="age"
  *       (3) aggregator="income"
- *   - Additionally, plots a new section (Section 2) for form2Data.
+ *   - Additionally, plots a new section (Section 2) for form2Data (in percentages).
  */
 const Form2_info = ({ allResponses }) => {
   // For each dimension, we store a 4D nested object.
@@ -432,7 +529,7 @@ const Form2_info = ({ allResponses }) => {
       const { accessMode, distance, purpose, travelMode } = form1;
       const gender = form6.gender || "unknown";
       const ageGroup = form6.age || "unknown";
-      const income = form6.income || "unknown"; // <-- new field for income
+      const income = form6.income || "unknown"; // new field for income
 
       // Increment each dimension
       updateNestCount(accessModeObj, accessMode, gender, ageGroup, income);
@@ -573,63 +670,33 @@ const Form2_info = ({ allResponses }) => {
       {/* Access Mode: aggregator = gender, age, income */}
       <h3 className="font-semibold text-lg mt-8">Access Mode</h3>
       <div className="grid grid-cols-3 gap-3 mt-2">
-        <div
-          ref={accessModeRefGender}
-          className="rounded-md shadow-lg col-span-1"
-        />
-        <div
-          ref={accessModeRefAge}
-          className="rounded-md shadow-lg col-span-1"
-        />
-        <div
-          ref={accessModeRefIncome}
-          className="rounded-md shadow-lg col-span-1"
-        />
+        <div ref={accessModeRefGender} className="rounded-md shadow-lg col-span-1" />
+        <div ref={accessModeRefAge} className="rounded-md shadow-lg col-span-1" />
+        <div ref={accessModeRefIncome} className="rounded-md shadow-lg col-span-1" />
       </div>
 
       {/* Distance */}
       <h3 className="font-semibold text-lg mt-8">Distance</h3>
       <div className="grid grid-cols-3 gap-4 mt-2">
-        <div
-          ref={distanceRefGender}
-          className="rounded-md shadow-lg col-span-1"
-        />
+        <div ref={distanceRefGender} className="rounded-md shadow-lg col-span-1" />
         <div ref={distanceRefAge} className="rounded-md shadow-lg col-span-1" />
-        <div
-          ref={distanceRefIncome}
-          className="rounded-md shadow-lg col-span-1"
-        />
+        <div ref={distanceRefIncome} className="rounded-md shadow-lg col-span-1" />
       </div>
 
       {/* Purpose */}
       <h3 className="font-semibold text-lg mt-8">Purpose</h3>
       <div className="grid grid-cols-3 gap-4 mt-2">
-        <div
-          ref={purposeRefGender}
-          className="rounded-md shadow-lg col-span-1"
-        />
+        <div ref={purposeRefGender} className="rounded-md shadow-lg col-span-1" />
         <div ref={purposeRefAge} className="rounded-md shadow-lg col-span-1" />
-        <div
-          ref={purposeRefIncome}
-          className="rounded-md shadow-lg col-span-1"
-        />
+        <div ref={purposeRefIncome} className="rounded-md shadow-lg col-span-1" />
       </div>
 
       {/* Travel Mode */}
       <h3 className="font-semibold text-lg mt-8">Travel Mode</h3>
       <div className="grid grid-cols-3 gap-4 mt-2">
-        <div
-          ref={travelModeRefGender}
-          className="rounded-md shadow-lg col-span-1"
-        />
-        <div
-          ref={travelModeRefAge}
-          className="rounded-md shadow-lg col-span-1"
-        />
-        <div
-          ref={travelModeRefIncome}
-          className="rounded-md shadow-lg col-span-1"
-        />
+        <div ref={travelModeRefGender} className="rounded-md shadow-lg col-span-1" />
+        <div ref={travelModeRefAge} className="rounded-md shadow-lg col-span-1" />
+        <div ref={travelModeRefIncome} className="rounded-md shadow-lg col-span-1" />
       </div>
 
       {/* Form2 (Section 2) Data Visualization */}
