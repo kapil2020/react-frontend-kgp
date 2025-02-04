@@ -556,7 +556,7 @@ const Form2_info = ({ allResponses }) => {
 
   // Render
   return (
-    <div className="my-10 bg-white text-black rounded-md p-4">
+    <div className="my-10 bg-slate-100 text-black rounded-md p-4 ">
       <h2 className="font-serif font-bold text-xl mb-4">Form1 Information</h2>
 
       {/* Overall Gender Pie */}
