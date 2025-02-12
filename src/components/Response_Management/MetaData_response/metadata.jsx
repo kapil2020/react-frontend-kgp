@@ -79,4 +79,11 @@ const MetaData_info = ({ allResponses }) => {
         <h3 className="mb-2">Time Spent (Full Range)</h3>
         <div
           ref={defaultContainerRef}
-          className="max-w-[
+          className="max-w-[650px] w-full bg-pink-50 shadow-md rounded p-4"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default MetaData_info;
