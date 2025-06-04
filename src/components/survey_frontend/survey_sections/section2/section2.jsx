@@ -223,7 +223,7 @@ const AirQualityAwareness = ({
 
           <label htmlFor="aqi_exposure" className="block mt-4">
             Q.13 Which of the above scenarios describes your typical exposure to
-            air quality during your weekday commute in this winter season?
+            air quality during your weekday commute in this summer season?
           </label>
           <select
             id="aqi_exposure"
